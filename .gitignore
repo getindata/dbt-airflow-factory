@@ -1,0 +1,13 @@
+# Default ignored files
+target/
+dbt_modules/
+logs/
+dbt_airflow_manifest_parser.egg-info
+.idea
+
+.user.yml
+
+.coverage
+coverage.xml
+.tox
+
