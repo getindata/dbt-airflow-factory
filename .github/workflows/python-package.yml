@@ -35,11 +35,3 @@ jobs:
       - name: Test with tox
         run: |
           tox -e py37
-      - name: Report coverage
-        uses: paambaati/codeclimate-action@v2.7.5
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CODE_CLIMATE }}
-        with:
-          coverageCommand: coverage xml
-          debug: true
-          coverageLocations: coverage.xml:coverage.py
