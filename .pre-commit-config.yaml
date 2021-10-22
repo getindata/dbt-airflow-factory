@@ -1,8 +1,13 @@
 repos:
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v4.3.21
+  - repo: https://github.com/asottile/seed-isort-config
+    rev: v2.2.0
+    hooks:
+      - id: seed-isort-config
+  - repo: https://github.com/pycqa/isort
+    rev: 5.5.4
     hooks:
       - id: isort
+        args: ["--profile", "black"]
   - repo: https://github.com/psf/black
     rev: stable
     hooks:
