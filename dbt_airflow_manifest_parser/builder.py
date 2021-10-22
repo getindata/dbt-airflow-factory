@@ -42,9 +42,10 @@ class DbtAirflowTasksBuilder:
         for node_name in tasks.keys():
             for upstream_node in manifest["nodes"][node_name]["depends_on"]["nodes"]:
                 if self._is_model_run_task(upstream_node):
-                    tasks[upstream_node].test_airflow_task >> tasks[
-                        node_name
-                    ].run_airflow_task
+                    (
+                        tasks[upstream_node].test_airflow_task
+                        >> tasks[node_name].run_airflow_task
+                    )
                     if node_name in starting_tasks:
                         starting_tasks.remove(node_name)
                     if upstream_node in ending_tasks:
