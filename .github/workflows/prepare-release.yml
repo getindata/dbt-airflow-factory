@@ -42,7 +42,7 @@ jobs:
           git config user.email github-actions@github.com
           git checkout -b release-${{ steps.bump_version.outputs.package_version }}
           git push -u origin release-${{ steps.bump_version.outputs.package_version }}
-      - name: Open a PR to merge the release to master
+      - name: Open a PR to merge the release to main
         id: open_pr
         uses: vsoch/pull-request-action@1.0.12
         env:

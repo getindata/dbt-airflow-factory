@@ -18,7 +18,7 @@
 2. If the workflow has run sucessfully:
     - Go to the newly openened PR named `Release candidate <version>`
     - Check that changelog and version have been properly updated. If not pull the branch and apply manual changes if necessary.
-    - Merge the PR to master
+    - Merge the PR to main
 3. Checkout the [Publish](https://github.com/getindata/kedro-airflow-k8s/actions?query=workflow%3APublish) workflow to see if:
     - The package has been uploaded on PyPI successfully
     - The changes have been merged back to develop
