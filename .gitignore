@@ -13,3 +13,4 @@ dbt_airflow_manifest_parser.egg-info
 coverage.xml
 .tox
 
+*.iml
