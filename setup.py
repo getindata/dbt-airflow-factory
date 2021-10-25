@@ -26,7 +26,7 @@ EXTRA_REQUIRE = {
 }
 
 setup(
-    name="dbt_airflow_manifest_parser",
+    name="dbt-airflow-manifest-parser",
     version="0.1.0",
     description="Library to convert DBT manifest metadata to Airflow tasks",
     long_description=README,
@@ -41,7 +41,7 @@ setup(
     keywords="dbt airflow manifest parser python",
     author=u"Piotr Pekala",
     author_email="piotr.pekala@getindata.com",
-    url="https://github.com/getindata/dbt_airflow_manifest_parser/",
+    url="https://github.com/getindata/dbt-airflow-manifest-parser/",
     packages=find_packages(exclude=["ez_setup", "examples", "tests", "docs"]),
     include_package_data=True,
     zip_safe=False,
