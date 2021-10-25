@@ -47,7 +47,7 @@ jobs:
         uses: vsoch/pull-request-action@1.0.12
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PULL_REQUEST_BRANCH: master
+          PULL_REQUEST_BRANCH: main
           PULL_REQUEST_FROM_BRANCH: release-${{ steps.bump_version.outputs.package_version }}
           PULL_REQUEST_TITLE: "Release ${{ steps.bump_version.outputs.package_version }}"
           PULL_REQUEST_BODY: "Bump version and CHANGELOG for next release."
