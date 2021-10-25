@@ -15,7 +15,7 @@ jobs:
       matrix:
         python-version: [3.7, 3.9]
     env:
-      PYTHON_PACKAGE: dbt_airlfow_manifest_parser
+      PYTHON_PACKAGE: dbt_airflow_manifest_parser
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
