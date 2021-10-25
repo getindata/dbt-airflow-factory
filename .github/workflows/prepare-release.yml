@@ -51,7 +51,7 @@ jobs:
           PULL_REQUEST_FROM_BRANCH: release-${{ steps.bump_version.outputs.package_version }}
           PULL_REQUEST_TITLE: "Release ${{ steps.bump_version.outputs.package_version }}"
           PULL_REQUEST_BODY: "Bump version and CHANGELOG for next release."
-          PULL_REQUEST_ASSIGNEES: "em-pe"
+          PULL_REQUEST_ASSIGNEES: " p-pekala"
       - name: Commit the changes
         run: |
           git commit -am "FIX #${{ steps.open_pr.outputs.pull_request_number }}  - Bump version and CHANGELOG for release ${{ steps.bump_version.outputs.package_version }}"
