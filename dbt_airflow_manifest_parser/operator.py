@@ -1,20 +1,28 @@
 import abc
+from dbt_airflow_manifest_parser.parameters import DbtExecutionEnvironmentParameters, KubernetesExecutionParameters
 
-from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
+import airflow
+if airflow.__version__.startswith('1.'):
+    from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
+else:
+    from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
+
+from airflow.models.baseoperator import BaseOperator
 
 
 class DbtRunOperatorBuilder(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def create(self, name, model, command):
+    def create(self, name, model, command) -> BaseOperator:
         raise NotImplementedError
 
 
 class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
-    def __init__(self, dbt_execution_env_parameters, kubernetes_execution_parameters):
+    def __init__(self, dbt_execution_env_parameters: DbtExecutionEnvironmentParameters,
+                 kubernetes_execution_parameters: KubernetesExecutionParameters):
         self.dbt_execution_env_parameters = dbt_execution_env_parameters
         self.kubernetes_execution_parameters = kubernetes_execution_parameters
 
-    def create(self, name, model, command):
+    def create(self, name: str, model: str, command: str) -> BaseOperator:
         return KubernetesPodOperator(
             namespace=self.kubernetes_execution_parameters.namespace,
             image=self.kubernetes_execution_parameters.image,
