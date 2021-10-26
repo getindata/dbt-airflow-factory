@@ -1,11 +1,18 @@
 import abc
-from dbt_airflow_manifest_parser.parameters import DbtExecutionEnvironmentParameters, KubernetesExecutionParameters
 
 import airflow
-if airflow.__version__.startswith('1.'):
+
+from dbt_airflow_manifest_parser.parameters import (
+    DbtExecutionEnvironmentParameters,
+    KubernetesExecutionParameters,
+)
+
+if airflow.__version__.startswith("1."):
     from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 else:
-    from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
+    from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
+        KubernetesPodOperator,
+    )
 
 from airflow.models.baseoperator import BaseOperator
 
@@ -17,8 +24,11 @@ class DbtRunOperatorBuilder(metaclass=abc.ABCMeta):
 
 
 class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
-    def __init__(self, dbt_execution_env_parameters: DbtExecutionEnvironmentParameters,
-                 kubernetes_execution_parameters: KubernetesExecutionParameters):
+    def __init__(
+        self,
+        dbt_execution_env_parameters: DbtExecutionEnvironmentParameters,
+        kubernetes_execution_parameters: KubernetesExecutionParameters,
+    ):
         self.dbt_execution_env_parameters = dbt_execution_env_parameters
         self.kubernetes_execution_parameters = kubernetes_execution_parameters
 

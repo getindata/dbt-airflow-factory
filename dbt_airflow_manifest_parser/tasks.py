@@ -14,7 +14,12 @@ class ModelExecutionTask:
 
 
 class ModelExecutionTasks:
-    def __init__(self, tasks: List[ModelExecutionTask], starting_task_names: List[str], ending_task_names: List[str]):
+    def __init__(
+        self,
+        tasks: List[ModelExecutionTask],
+        starting_task_names: List[str],
+        ending_task_names: List[str],
+    ):
         self._tasks = tasks
         self._starting_task_names = starting_task_names
         self._ending_task_names = ending_task_names
@@ -36,4 +41,3 @@ class ModelExecutionTasks:
         for key in keys:
             tasks.append(self._tasks[key])
         return tasks
-

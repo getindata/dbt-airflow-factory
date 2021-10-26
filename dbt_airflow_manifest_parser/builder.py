@@ -1,14 +1,13 @@
 import json
 import logging
 
-from dbt_airflow_manifest_parser.tasks import ModelExecutionTask, ModelExecutionTasks
-from dbt_airflow_manifest_parser.operator import DbtRunOperatorBuilder
-
 from airflow.models.baseoperator import BaseOperator
+
+from dbt_airflow_manifest_parser.operator import DbtRunOperatorBuilder
+from dbt_airflow_manifest_parser.tasks import ModelExecutionTask, ModelExecutionTasks
 
 
 class DbtAirflowTasksBuilder:
-
     def __init__(self, operator_builder: DbtRunOperatorBuilder):
         self.operator_builder = operator_builder
 
@@ -41,7 +40,9 @@ class DbtAirflowTasksBuilder:
                 tasks[node_name] = ModelExecutionTask(run_task, test_task)
         return tasks
 
-    def _create_tasks_dependencies(self, manifest: dict, tasks: dict) -> ModelExecutionTasks:
+    def _create_tasks_dependencies(
+        self, manifest: dict, tasks: dict
+    ) -> ModelExecutionTasks:
         starting_tasks = list(tasks.keys())
         ending_tasks = list(tasks.keys())
         for node_name in tasks.keys():
