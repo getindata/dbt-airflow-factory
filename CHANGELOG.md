@@ -1,12 +1,16 @@
 ## [Unreleased]
 
+## [0.4.0] - 2021-10-27
+
 ## [0.3.0] - 2021-10-27
 
 ## [0.2.0] - 2021-10-25
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library. 
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.3.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.4.0...HEAD
+
+[0.4.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.3.0...0.4.0
 
 [0.3.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.2.0...0.3.0
 
