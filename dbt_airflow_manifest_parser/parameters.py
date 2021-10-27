@@ -20,7 +20,7 @@ class KubernetesExecutionParameters:
         tolerations: list = None,
         labels: dict = None,
         limit_resources: dict = None,
-        requested_resourses: dict = None,
+        requested_resources: dict = None,
         annotations: dict = None,
         secrets: List[Secret] = None,
         is_delete_operator_pod: bool = True,
@@ -31,7 +31,7 @@ class KubernetesExecutionParameters:
         self.tolerations = tolerations
         self.labels = labels
         self.limit_resources = limit_resources
-        self.requested_resourses = requested_resourses
+        self.requested_resources = requested_resources
         self.annotations = annotations
         self.secrets = secrets
         self.is_delete_operator_pod = is_delete_operator_pod
@@ -41,14 +41,14 @@ class KubernetesExecutionParameters:
             return {
                 "limit_memory": self.limit_resources["memory"],
                 "limit_cpu": self.limit_resources["cpu"],
-                "requests_memory": self.requested_resourses["memory"],
-                "requests_cpu": self.requested_resourses["memory"],
+                "requests_memory": self.requested_resources["memory"],
+                "requests_cpu": self.requested_resources["cpu"],
             }
         else:
             from kubernetes.client import models as k8s
 
             return k8s.V1ResourceRequirements(
-                limits=self.limit_resources, requests=self.requested_resourses
+                limits=self.limit_resources, requests=self.requested_resources
             )
 
 

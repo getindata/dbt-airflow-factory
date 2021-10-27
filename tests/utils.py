@@ -46,8 +46,8 @@ def kubernetes_parameters():
             },
         ],
         labels={"runner": "airflow"},
-        limit_resources={"memory": "1024M", "cpu": "1"},
-        requested_resourses={"memory": "1024M", "cpu": "1"},
+        limit_resources={"memory": "2048M", "cpu": "2"},
+        requested_resources={"memory": "1024M", "cpu": "1"},
         secrets=[
             Secret("env", None, "snowflake-access-user-key", None),
             Secret("volume", "/var", "snowflake-access-user-key", None),
