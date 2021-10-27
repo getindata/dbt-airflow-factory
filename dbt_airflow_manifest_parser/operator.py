@@ -39,6 +39,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             cmds=["bash", "-c"],
             node_selectors=self.kubernetes_execution_parameters.node_selectors,
             tolerations=self.kubernetes_execution_parameters.tolerations,
+            annotations=self.kubernetes_execution_parameters.annotations,
             arguments=[
                 f"set -e; "
                 f"dbt --no-write-json {command} "
@@ -50,7 +51,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             labels=self.kubernetes_execution_parameters.labels,
             name=name,
             task_id=name,
-            resources=self.kubernetes_execution_parameters.resources,
+            resources=self.kubernetes_execution_parameters.get_resources(),
             secrets=self.kubernetes_execution_parameters.secrets,
             is_delete_operator_pod=self.kubernetes_execution_parameters.is_delete_operator_pod,
             hostnetwork=False,

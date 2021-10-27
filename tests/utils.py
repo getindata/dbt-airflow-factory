@@ -3,7 +3,7 @@ import tempfile
 from datetime import datetime
 
 from airflow import DAG
-from airflow.contrib.kubernetes.secret import Secret
+from airflow.kubernetes.secret import Secret
 
 from dbt_airflow_manifest_parser.builder import DbtAirflowTasksBuilder
 from dbt_airflow_manifest_parser.operator import KubernetesPodOperatorBuilder
@@ -36,8 +36,8 @@ def kubernetes_parameters():
         namespace="apache-airflow",
         image="dbt-platform-poc:123",
         node_selectors={"group": "data-processing"},
+        annotations={"iam.amazonaws.com/role": "k8s-airflow"},
         tolerations=[
-            {"key": "group", "value": "data-processing", "effect": "NoExecute"},
             {
                 "key": "group",
                 "operator": "Equal",
@@ -46,7 +46,8 @@ def kubernetes_parameters():
             },
         ],
         labels={"runner": "airflow"},
-        resources={"limit_memory": "1024M", "limit_cpu": "1"},
+        limit_resources={"memory": "1024M", "cpu": "1"},
+        requested_resourses={"memory": "1024M", "cpu": "1"},
         secrets=[
             Secret("env", None, "snowflake-access-user-key", None),
             Secret("volume", "/var", "snowflake-access-user-key", None),
@@ -63,4 +64,5 @@ def task_builder():
     )
 
 
-TEST_DAG = DAG("test", default_args={"start_date": datetime(2021, 10, 13)})
+def test_dag():
+    return DAG("test", default_args={"start_date": datetime(2021, 10, 13)})

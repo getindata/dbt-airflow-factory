@@ -1,4 +1,4 @@
-from .utils import TEST_DAG, manifest_file_with_models, task_builder
+from .utils import test_dag, manifest_file_with_models, task_builder
 
 
 def test_starting_tasks():
@@ -15,7 +15,7 @@ def test_starting_tasks():
     )
 
     # when
-    with TEST_DAG:
+    with test_dag():
         tasks = builder.parse_manifest_into_tasks(manifest_path)
 
     # then
@@ -41,7 +41,7 @@ def test_ending_tasks():
     )
 
     # when
-    with TEST_DAG:
+    with test_dag():
         tasks = builder.parse_manifest_into_tasks(manifest_path)
 
     # then
