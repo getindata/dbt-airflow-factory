@@ -16,7 +16,7 @@ EXTRA_REQUIRE = {
         "tox==3.21.1",
         "pre-commit==2.9.3",
         "pandas==1.2.5",
-        "apache-airflow[kubernetes]==1.10.14",
+        "apache-airflow[kubernetes]==2.2.0",
     ],
     "docs": [
         "sphinx==3.4.2",
@@ -27,7 +27,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="dbt-airflow-manifest-parser",
-    version="0.2.0",
+    version="0.3.0",
     description="Library to convert DBT manifest metadata to Airflow tasks",
     long_description=README,
     long_description_content_type="text/markdown",

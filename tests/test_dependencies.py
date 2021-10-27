@@ -1,4 +1,4 @@
-from .utils import TEST_DAG, manifest_file_with_models, task_builder
+from .utils import manifest_file_with_models, task_builder, test_dag
 
 
 def test_run_test_dependency():
@@ -7,7 +7,7 @@ def test_run_test_dependency():
     manifest_path = manifest_file_with_models({"model.dbt_test.model1": []})
 
     # when
-    with TEST_DAG:
+    with test_dag():
         tasks = builder.parse_manifest_into_tasks(manifest_path)
 
     # then
@@ -32,7 +32,7 @@ def test_dependency():
     )
 
     # when
-    with TEST_DAG:
+    with test_dag():
         tasks = builder.parse_manifest_into_tasks(manifest_path)
 
     # then
@@ -60,7 +60,7 @@ def test_more_complex_dependencies():
     )
 
     # when
-    with TEST_DAG:
+    with test_dag():
         tasks = builder.parse_manifest_into_tasks(manifest_path)
 
     # then
