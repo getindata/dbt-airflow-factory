@@ -1,4 +1,4 @@
-from .utils import test_dag, manifest_file_with_models, task_builder
+from .utils import manifest_file_with_models, task_builder, test_dag
 
 
 def test_get_dag():

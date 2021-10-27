@@ -3,12 +3,11 @@ import abc
 import airflow
 
 from dbt_airflow_manifest_parser.parameters import (
-    DbtExecutionEnvironmentParameters,
-    KubernetesExecutionParameters,
-)
+    DbtExecutionEnvironmentParameters, KubernetesExecutionParameters)
 
 if airflow.__version__.startswith("1."):
-    from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
+    from airflow.contrib.operators.kubernetes_pod_operator import \
+        KubernetesPodOperator
 else:
     from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
         KubernetesPodOperator,

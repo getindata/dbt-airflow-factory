@@ -1,7 +1,7 @@
 from typing import List
 
-from airflow.kubernetes.secret import Secret
 import airflow
+from airflow.kubernetes.secret import Secret
 
 
 class DbtExecutionEnvironmentParameters:
@@ -38,12 +38,18 @@ class KubernetesExecutionParameters:
 
     def get_resources(self):
         if airflow.__version__.startswith("1."):
-            return {"limit_memory": self.limit_resources['memory'], "limit_cpu": self.limit_resources['cpu'],
-                    "requests_memory": self.requested_resourses['memory'], "requests_cpu": self.requested_resourses['memory']}
+            return {
+                "limit_memory": self.limit_resources["memory"],
+                "limit_cpu": self.limit_resources["cpu"],
+                "requests_memory": self.requested_resourses["memory"],
+                "requests_cpu": self.requested_resourses["memory"],
+            }
         else:
             from kubernetes.client import models as k8s
-            return k8s.V1ResourceRequirements(limits=self.limit_resources, requests=self.requested_resourses)
 
+            return k8s.V1ResourceRequirements(
+                limits=self.limit_resources, requests=self.requested_resourses
+            )
 
 
 # List[k8s.V1Toleration]:

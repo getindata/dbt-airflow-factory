@@ -8,9 +8,7 @@ from airflow.kubernetes.secret import Secret
 from dbt_airflow_manifest_parser.builder import DbtAirflowTasksBuilder
 from dbt_airflow_manifest_parser.operator import KubernetesPodOperatorBuilder
 from dbt_airflow_manifest_parser.parameters import (
-    DbtExecutionEnvironmentParameters,
-    KubernetesExecutionParameters,
-)
+    DbtExecutionEnvironmentParameters, KubernetesExecutionParameters)
 
 
 def manifest_file_with_models(nodes_with_dependencies):

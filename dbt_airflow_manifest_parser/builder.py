@@ -4,7 +4,8 @@ import logging
 from airflow.models.baseoperator import BaseOperator
 
 from dbt_airflow_manifest_parser.operator import DbtRunOperatorBuilder
-from dbt_airflow_manifest_parser.tasks import ModelExecutionTask, ModelExecutionTasks
+from dbt_airflow_manifest_parser.tasks import (ModelExecutionTask,
+                                               ModelExecutionTasks)
 
 
 class DbtAirflowTasksBuilder:
