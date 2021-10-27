@@ -26,6 +26,8 @@ def test_configuration():
         Secret("env", None, "snowflake-access-user-key", None),
         Secret("volume", "/var", "snowflake-access-user-key", None),
     ]
+    assert run_task.k8s_resources.limits == {"memory": "2048M", "cpu": "2"}
+    assert run_task.k8s_resources.requests == {"memory": "1024M", "cpu": "1"}
     assert run_task.is_delete_operator_pod
     assert "--project-dir /dbt" in run_task.arguments[0]
     assert "--profiles-dir /root/.dbt" in run_task.arguments[0]
