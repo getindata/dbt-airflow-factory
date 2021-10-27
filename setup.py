@@ -16,7 +16,7 @@ EXTRA_REQUIRE = {
         "tox==3.21.1",
         "pre-commit==2.9.3",
         "pandas==1.2.5",
-        "apache-airflow[kubernetes]==1.10.14",
+        "apache-airflow[kubernetes]==2.2.0",
     ],
     "docs": [
         "sphinx==3.4.2",

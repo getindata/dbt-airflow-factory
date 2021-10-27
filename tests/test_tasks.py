@@ -1,4 +1,4 @@
-from .utils import TEST_DAG, manifest_file_with_models, task_builder
+from .utils import manifest_file_with_models, task_builder, test_dag
 
 
 def test_get_dag():
@@ -7,7 +7,7 @@ def test_get_dag():
     manifest_path = manifest_file_with_models({"model.dbt_test.dim_users": []})
 
     # when
-    with TEST_DAG:
+    with test_dag():
         tasks = builder.parse_manifest_into_tasks(manifest_path)
 
     # then
@@ -23,7 +23,7 @@ def test_run_task():
     manifest_path = manifest_file_with_models({"model.dbt_test.dim_users": []})
 
     # when
-    with TEST_DAG:
+    with test_dag():
         tasks = builder.parse_manifest_into_tasks(manifest_path)
 
     # then
@@ -41,7 +41,7 @@ def test_test_task():
     manifest_path = manifest_file_with_models({"model.dbt_test.dim_users": []})
 
     # when
-    with TEST_DAG:
+    with test_dag():
         tasks = builder.parse_manifest_into_tasks(manifest_path)
 
     # then

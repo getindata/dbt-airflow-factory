@@ -1,6 +1,6 @@
-from airflow.contrib.kubernetes.secret import Secret
+from airflow.kubernetes.secret import Secret
 
-from .utils import TEST_DAG, manifest_file_with_models, task_builder
+from .utils import manifest_file_with_models, task_builder, test_dag
 
 
 def test_configuration():
@@ -9,24 +9,18 @@ def test_configuration():
     manifest_path = manifest_file_with_models({"model.dbt_test.dim_users": []})
 
     # when
-    with TEST_DAG:
+    with test_dag():
         tasks = builder.parse_manifest_into_tasks(manifest_path)
 
     # then
     run_task = tasks.get_task("model.dbt_test.dim_users").run_airflow_task
     assert run_task.namespace == "apache-airflow"
     assert run_task.image == "dbt-platform-poc:123"
-    assert run_task.node_selectors == {"group": "data-processing"}
-    assert run_task.tolerations == [
-        {"key": "group", "value": "data-processing", "effect": "NoExecute"},
-        {
-            "key": "group",
-            "operator": "Equal",
-            "value": "data-processing",
-            "effect": "NoSchedule",
-        },
-    ]
-
+    assert run_task.node_selector == {"group": "data-processing"}
+    assert run_task.tolerations[0].key == "group"
+    assert run_task.tolerations[0].operator == "Equal"
+    assert run_task.tolerations[0].value == "data-processing"
+    assert run_task.tolerations[0].effect == "NoSchedule"
     assert run_task.labels == {"runner": "airflow"}
     assert run_task.secrets == [
         Secret("env", None, "snowflake-access-user-key", None),
