@@ -1,9 +1,8 @@
-from .utils import manifest_file_with_models, task_builder, test_dag
+from .utils import manifest_file_with_models, builder_factory, test_dag
 
 
 def test_starting_tasks():
     # given
-    builder = task_builder()
     manifest_path = manifest_file_with_models(
         {
             "model.dbt_test.model1": [],
@@ -16,7 +15,7 @@ def test_starting_tasks():
 
     # when
     with test_dag():
-        tasks = builder.parse_manifest_into_tasks(manifest_path)
+        tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path)
 
     # then
     starting_tasks_names = [
@@ -29,7 +28,6 @@ def test_starting_tasks():
 
 def test_ending_tasks():
     # given
-    builder = task_builder()
     manifest_path = manifest_file_with_models(
         {
             "model.dbt_test.model1": [],
@@ -42,7 +40,7 @@ def test_ending_tasks():
 
     # when
     with test_dag():
-        tasks = builder.parse_manifest_into_tasks(manifest_path)
+        tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path)
 
     # then
     ending_tasks_names = [

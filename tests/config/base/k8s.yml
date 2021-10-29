@@ -1,0 +1,39 @@
+
+image:
+  registry: 123.gcr
+  repository: dbt-platform-poc
+  tag: 123
+
+image_pull_policy: IfNotPresent
+namespace: apache-airflow
+
+secrets:
+  - secret: snowflake-access-user-key
+    deploy_type: env
+    deploy_target: test
+  - secret: snowflake-access-user-key
+    deploy_type: volume
+    deploy_target: /var
+
+labels:
+  runner: airflow
+
+annotations:
+  iam.amazonaws.com/role: "k8s-airflow"
+
+is_delete_operator_pod: True
+
+resources:
+  node_selectors:
+    group: data-processing
+  tolerations:
+    - key: group
+      operator: Equal
+      value: data-processing
+      effect: NoSchedule
+  limit:
+    memory: 2048M
+    cpu: '2'
+  requests:
+    memory: 1024M
+    cpu: '1'

@@ -6,7 +6,9 @@ with open("README.md") as f:
     README = f.read()
 
 # Runtime Requirements.
-INSTALL_REQUIRES = []
+INSTALL_REQUIRES = [
+    "pytimeparse==1.1.8"
+]
 
 # Dev Requirements
 EXTRA_REQUIRE = {

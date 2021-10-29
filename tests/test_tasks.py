@@ -1,14 +1,13 @@
-from .utils import manifest_file_with_models, task_builder, test_dag
+from .utils import manifest_file_with_models, builder_factory, test_dag
 
 
 def test_get_dag():
     # given
-    builder = task_builder()
     manifest_path = manifest_file_with_models({"model.dbt_test.dim_users": []})
 
     # when
     with test_dag():
-        tasks = builder.parse_manifest_into_tasks(manifest_path)
+        tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path)
 
     # then
     assert tasks.length() == 1
@@ -19,12 +18,11 @@ def test_get_dag():
 
 def test_run_task():
     # given
-    builder = task_builder()
     manifest_path = manifest_file_with_models({"model.dbt_test.dim_users": []})
 
     # when
     with test_dag():
-        tasks = builder.parse_manifest_into_tasks(manifest_path)
+        tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path)
 
     # then
     run_task = tasks.get_task("model.dbt_test.dim_users").run_airflow_task
@@ -37,12 +35,11 @@ def test_run_task():
 
 def test_test_task():
     # given
-    builder = task_builder()
     manifest_path = manifest_file_with_models({"model.dbt_test.dim_users": []})
 
     # when
     with test_dag():
-        tasks = builder.parse_manifest_into_tasks(manifest_path)
+        tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path)
 
     # then
     test_task = tasks.get_task("model.dbt_test.dim_users").test_airflow_task
