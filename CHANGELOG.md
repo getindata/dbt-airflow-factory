@@ -10,11 +10,11 @@
 
 [Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.4.0...HEAD
 
+- Automatic parsing config files
+
 [0.4.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.3.0...0.4.0
 
 [0.3.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.2.0...0.3.0
-
--   Support for Airflow 2.x
 
 -   Support for Airflow 2.x
 
