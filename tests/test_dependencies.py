@@ -1,14 +1,13 @@
-from .utils import manifest_file_with_models, task_builder, test_dag
+from .utils import builder_factory, manifest_file_with_models, test_dag
 
 
 def test_run_test_dependency():
     # given
-    builder = task_builder()
     manifest_path = manifest_file_with_models({"model.dbt_test.model1": []})
 
     # when
     with test_dag():
-        tasks = builder.parse_manifest_into_tasks(manifest_path)
+        tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path)
 
     # then
     assert (
@@ -23,7 +22,6 @@ def test_run_test_dependency():
 
 def test_dependency():
     # given
-    builder = task_builder()
     manifest_path = manifest_file_with_models(
         {
             "model.dbt_test.model1": [],
@@ -33,7 +31,7 @@ def test_dependency():
 
     # when
     with test_dag():
-        tasks = builder.parse_manifest_into_tasks(manifest_path)
+        tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path)
 
     # then
     assert tasks.length() == 2
@@ -49,7 +47,6 @@ def test_dependency():
 
 def test_more_complex_dependencies():
     # given
-    builder = task_builder()
     manifest_path = manifest_file_with_models(
         {
             "model.dbt_test.model1": [],
@@ -61,7 +58,7 @@ def test_more_complex_dependencies():
 
     # when
     with test_dag():
-        tasks = builder.parse_manifest_into_tasks(manifest_path)
+        tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path)
 
     # then
     assert tasks.length() == 4

@@ -6,7 +6,7 @@ with open("README.md") as f:
     README = f.read()
 
 # Runtime Requirements.
-INSTALL_REQUIRES = []
+INSTALL_REQUIRES = ["pytimeparse==1.1.8"]
 
 # Dev Requirements
 EXTRA_REQUIRE = {
@@ -27,7 +27,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="dbt-airflow-manifest-parser",
-    version="0.4.0",
+    version="0.5.0",
     description="Library to convert DBT manifest metadata to Airflow tasks",
     long_description=README,
     long_description_content_type="text/markdown",

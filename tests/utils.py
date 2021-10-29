@@ -1,16 +1,11 @@
 import json
+import os
 import tempfile
 from datetime import datetime
 
 from airflow import DAG
-from airflow.kubernetes.secret import Secret
 
-from dbt_airflow_manifest_parser.builder import DbtAirflowTasksBuilder
-from dbt_airflow_manifest_parser.operator import KubernetesPodOperatorBuilder
-from dbt_airflow_manifest_parser.parameters import (
-    DbtExecutionEnvironmentParameters,
-    KubernetesExecutionParameters,
-)
+from dbt_airflow_manifest_parser.builder_factory import DbtAirflowTasksBuilderFactory
 
 
 def manifest_file_with_models(nodes_with_dependencies):
@@ -25,43 +20,9 @@ def manifest_file_with_models(nodes_with_dependencies):
         return tmp.name
 
 
-def execution_environment_parameters():
-    return DbtExecutionEnvironmentParameters(
-        target="dev", project_dir_path="/dbt", profile_dir_path="/root/.dbt"
-    )
-
-
-def kubernetes_parameters():
-    return KubernetesExecutionParameters(
-        namespace="apache-airflow",
-        image="dbt-platform-poc:123",
-        node_selectors={"group": "data-processing"},
-        annotations={"iam.amazonaws.com/role": "k8s-airflow"},
-        tolerations=[
-            {
-                "key": "group",
-                "operator": "Equal",
-                "value": "data-processing",
-                "effect": "NoSchedule",
-            },
-        ],
-        labels={"runner": "airflow"},
-        limit_resources={"memory": "2048M", "cpu": "2"},
-        requested_resources={"memory": "1024M", "cpu": "1"},
-        secrets=[
-            Secret("env", None, "snowflake-access-user-key", None),
-            Secret("volume", "/var", "snowflake-access-user-key", None),
-        ],
-        is_delete_operator_pod=True,
-    )
-
-
-def task_builder():
-    return DbtAirflowTasksBuilder(
-        KubernetesPodOperatorBuilder(
-            execution_environment_parameters(), kubernetes_parameters()
-        )
-    )
+def builder_factory():
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
+    return DbtAirflowTasksBuilderFactory(config_path, "dev")
 
 
 def test_dag():

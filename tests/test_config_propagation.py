@@ -1,21 +1,20 @@
 from airflow.kubernetes.secret import Secret
 
-from .utils import manifest_file_with_models, task_builder, test_dag
+from .utils import builder_factory, manifest_file_with_models, test_dag
 
 
 def test_configuration():
     # given
-    builder = task_builder()
     manifest_path = manifest_file_with_models({"model.dbt_test.dim_users": []})
 
     # when
     with test_dag():
-        tasks = builder.parse_manifest_into_tasks(manifest_path)
+        tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path)
 
     # then
     run_task = tasks.get_task("model.dbt_test.dim_users").run_airflow_task
     assert run_task.namespace == "apache-airflow"
-    assert run_task.image == "dbt-platform-poc:123"
+    assert run_task.image == "123.gcr/dbt-platform-poc:123"
     assert run_task.node_selector == {"group": "data-processing"}
     assert run_task.tolerations[0].key == "group"
     assert run_task.tolerations[0].operator == "Equal"
@@ -23,7 +22,7 @@ def test_configuration():
     assert run_task.tolerations[0].effect == "NoSchedule"
     assert run_task.labels == {"runner": "airflow"}
     assert run_task.secrets == [
-        Secret("env", None, "snowflake-access-user-key", None),
+        Secret("env", "test", "snowflake-access-user-key", None),
         Secret("volume", "/var", "snowflake-access-user-key", None),
     ]
     assert run_task.k8s_resources.limits == {"memory": "2048M", "cpu": "2"}
