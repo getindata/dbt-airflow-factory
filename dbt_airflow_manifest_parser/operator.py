@@ -2,10 +2,8 @@ import abc
 
 import airflow
 
-from dbt_airflow_manifest_parser.parameters import (
-    DbtExecutionEnvironmentParameters,
-    KubernetesExecutionParameters,
-)
+from dbt_airflow_manifest_parser.dbt_parameters import DbtExecutionEnvironmentParameters
+from dbt_airflow_manifest_parser.k8s_parameters import KubernetesExecutionParameters
 
 if airflow.__version__.startswith("1."):
     from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
@@ -36,6 +34,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
         return KubernetesPodOperator(
             namespace=self.kubernetes_execution_parameters.namespace,
             image=self.kubernetes_execution_parameters.image,
+            image_pull_policy=self.kubernetes_execution_parameters.image_pull_policy,
             cmds=["bash", "-c"],
             node_selectors=self.kubernetes_execution_parameters.node_selectors,
             tolerations=self.kubernetes_execution_parameters.tolerations,

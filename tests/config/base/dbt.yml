@@ -1,0 +1,3 @@
+target: local
+project_dir_path: /dbt
+profile_dir_path: /root/.dbt
