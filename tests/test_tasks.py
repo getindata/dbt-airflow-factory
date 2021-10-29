@@ -1,4 +1,4 @@
-from .utils import manifest_file_with_models, builder_factory, test_dag
+from .utils import builder_factory, manifest_file_with_models, test_dag
 
 
 def test_get_dag():

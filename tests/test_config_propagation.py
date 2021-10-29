@@ -1,6 +1,6 @@
 from airflow.kubernetes.secret import Secret
 
-from .utils import manifest_file_with_models, builder_factory, test_dag
+from .utils import builder_factory, manifest_file_with_models, test_dag
 
 
 def test_configuration():
@@ -22,7 +22,7 @@ def test_configuration():
     assert run_task.tolerations[0].effect == "NoSchedule"
     assert run_task.labels == {"runner": "airflow"}
     assert run_task.secrets == [
-        Secret("env", 'test', "snowflake-access-user-key", None),
+        Secret("env", "test", "snowflake-access-user-key", None),
         Secret("volume", "/var", "snowflake-access-user-key", None),
     ]
     assert run_task.k8s_resources.limits == {"memory": "2048M", "cpu": "2"}

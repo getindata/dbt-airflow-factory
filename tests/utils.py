@@ -1,9 +1,10 @@
-import os
 import json
+import os
 import tempfile
 from datetime import datetime
 
 from airflow import DAG
+
 from dbt_airflow_manifest_parser.builder_factory import DbtAirflowTasksBuilderFactory
 
 
@@ -20,8 +21,8 @@ def manifest_file_with_models(nodes_with_dependencies):
 
 
 def builder_factory():
-    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config')
-    return DbtAirflowTasksBuilderFactory(config_path, 'dev')
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
+    return DbtAirflowTasksBuilderFactory(config_path, "dev")
 
 
 def test_dag():

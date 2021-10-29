@@ -5,20 +5,19 @@ from airflow.kubernetes.secret import Secret
 
 
 class KubernetesExecutionParameters:
-
     def __init__(
-            self,
-            image: str,
-            namespace: str = 'default',
-            image_pull_policy: str = None,
-            node_selectors: dict = None,
-            tolerations: list = None,
-            labels: dict = None,
-            limit: dict = None,
-            requests: dict = None,
-            annotations: dict = None,
-            secrets: List[Secret] = None,
-            is_delete_operator_pod: bool = True,
+        self,
+        image: str,
+        namespace: str = "default",
+        image_pull_policy: str = None,
+        node_selectors: dict = None,
+        tolerations: list = None,
+        labels: dict = None,
+        limit: dict = None,
+        requests: dict = None,
+        annotations: dict = None,
+        secrets: List[Secret] = None,
+        is_delete_operator_pod: bool = True,
     ):
         self.namespace = namespace
         self.image = image
@@ -43,6 +42,4 @@ class KubernetesExecutionParameters:
         else:
             from kubernetes.client import models as k8s
 
-            return k8s.V1ResourceRequirements(
-                limits=self.limit, requests=self.requests
-            )
+            return k8s.V1ResourceRequirements(limits=self.limit, requests=self.requests)

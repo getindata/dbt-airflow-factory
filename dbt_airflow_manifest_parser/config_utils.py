@@ -1,10 +1,11 @@
-import yaml
 import logging
 from os import path
 
+import yaml
+
 
 def read_config(config_path, env, file_name):
-    config = read_env_config(config_path, 'base', file_name)
+    config = read_env_config(config_path, "base", file_name)
     config.update(read_env_config(config_path, env, file_name))
     return config
 
@@ -19,5 +20,5 @@ def read_env_config(config_path, env, file_name):
 
 
 def read_yaml_file(file_path):
-    with open(file_path, 'r') as f:
+    with open(file_path, "r") as f:
         return yaml.safe_load(f)
