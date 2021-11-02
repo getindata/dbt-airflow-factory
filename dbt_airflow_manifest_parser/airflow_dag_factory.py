@@ -11,16 +11,16 @@ from dbt_airflow_manifest_parser.config_utils import read_config
 class AirflowDagFactory:
     def __init__(
         self,
-        config_path,
+        dag_path,
         env: str,
         dbt_config_file_name: str = "dbt.yml",
         k8s_config_file_name: str = "k8s.yml",
         airflow_config_file_name: str = "airflow.yml",
     ):
         self._builder = DbtAirflowTasksBuilderFactory(
-            config_path, env, dbt_config_file_name, k8s_config_file_name
+            dag_path, env, dbt_config_file_name, k8s_config_file_name
         ).create()
-        self.config_path = config_path
+        self.dag_path = dag_path
         self.env = env
         self.airflow_config_file_name = airflow_config_file_name
 
@@ -40,11 +40,11 @@ class AirflowDagFactory:
             return dag
 
     def _manifest_file_path(self, config: dict) -> str:
-        file_dir = os.path.dirname(os.path.abspath(__file__))
-        return os.path.join(file_dir, config["manifest_file_name"])
+        file_dir = config.get("manifest_dir_path", self.dag_path)
+        return os.path.join(file_dir, config.get("manifest_file_name", "manifest.json"))
 
     def _read_config(self) -> dict:
-        config = read_config(self.config_path, self.env, self.airflow_config_file_name)
+        config = read_config(self.dag_path, self.env, self.airflow_config_file_name)
         if "retry_delay" in config["default_args"]:
             config["default_args"]["retry_delay"] = parse(
                 config["default_args"]["retry_delay"]

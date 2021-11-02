@@ -1,13 +1,12 @@
-import os
 from datetime import datetime, timezone
+from os import path
 
 from dbt_airflow_manifest_parser.airflow_dag_factory import AirflowDagFactory
 
 
 def test_dag_factory():
     # given
-    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
-    factory = AirflowDagFactory(config_path, "dev")
+    factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "dev")
 
     # when
     dag = factory.create()
