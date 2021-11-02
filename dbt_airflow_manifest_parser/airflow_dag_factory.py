@@ -28,13 +28,14 @@ class AirflowDagFactory:
         config = self._read_config()
         with DAG(default_args=config["default_args"], **config["dag"]) as dag:
             start = self._create_starting_task(config)
+            end = DummyOperator(task_id="end")
             tasks = self._builder.parse_manifest_into_tasks(
                 self._manifest_file_path(config)
             )
             for starting_task in tasks.get_starting_tasks():
                 start >> starting_task.run_airflow_task
             for ending_task in tasks.get_ending_tasks():
-                ending_task.test_airflow_task >> DummyOperator(task_id="end")
+                ending_task.test_airflow_task >> end
             return dag
 
     def _create_starting_task(self, config):
