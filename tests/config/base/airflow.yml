@@ -4,7 +4,7 @@ default_args:
   email:
     - "test@getindata.com"
   depends_on_past: False
-  start_date: 2021-10-20T00:00:00+0000
+  start_date: 2021-10-20T00:00:00
   email_on_failure: False
   email_on_retry: False
   retries: 0

@@ -26,4 +26,4 @@ def test_dag_factory():
         "retries": 0,
         "retry_delay": 300,
     }
-    assert len(dag.tasks) == 5
+    assert len(dag.tasks) == 4
