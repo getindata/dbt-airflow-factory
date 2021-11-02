@@ -27,17 +27,22 @@ class AirflowDagFactory:
     def create(self) -> DAG:
         config = self._read_config()
         with DAG(default_args=config["default_args"], **config["dag"]) as dag:
-            start = DummyOperator(task_id="start")
-            if config.get("seek_task", True):
-                start = self._builder.create_seed_task()
+            start = self._create_starting_task(config)
+            end = DummyOperator(task_id="end")
             tasks = self._builder.parse_manifest_into_tasks(
                 self._manifest_file_path(config)
             )
             for starting_task in tasks.get_starting_tasks():
                 start >> starting_task.run_airflow_task
             for ending_task in tasks.get_ending_tasks():
-                ending_task.test_airflow_task >> DummyOperator(task_id="end")
+                ending_task.test_airflow_task >> end
             return dag
+
+    def _create_starting_task(self, config):
+        if config.get("seek_task", True):
+            return self._builder.create_seed_task()
+        else:
+            return DummyOperator(task_id="start")
 
     def _manifest_file_path(self, config: dict) -> str:
         file_dir = config.get("manifest_dir_path", self.dag_path)
