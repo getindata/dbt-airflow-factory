@@ -10,13 +10,13 @@ from dbt_airflow_manifest_parser.operator import KubernetesPodOperatorBuilder
 class DbtAirflowTasksBuilderFactory:
     def __init__(
         self,
-        config_path: str,
+        dag_path: str,
         env: str,
         dbt_config_file_name: str = "dbt.yml",
         k8s_config_file_name: str = "k8s.yml",
     ):
         self.base_config_name = "base"
-        self.config_path = config_path
+        self.dag_path = dag_path
         self.env = env
         self.dbt_config_file_name = dbt_config_file_name
         self.k8s_config_file_name = k8s_config_file_name
@@ -30,11 +30,11 @@ class DbtAirflowTasksBuilderFactory:
 
     def _create_dbt_config(self):
         return DbtExecutionEnvironmentParameters(
-            **read_config(self.config_path, self.env, self.dbt_config_file_name)
+            **read_config(self.dag_path, self.env, self.dbt_config_file_name)
         )
 
     def _create_k8s_config(self):
-        config = read_config(self.config_path, self.env, self.k8s_config_file_name)
+        config = read_config(self.dag_path, self.env, self.k8s_config_file_name)
         config["image"] = self._prepare_image(config["image"])
         config["secrets"] = self._prepare_secrets(config)
         config.update(config.pop("resources"))
