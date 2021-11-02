@@ -40,7 +40,7 @@ class AirflowDagFactory:
             return dag
 
     def _manifest_file_path(self, config: dict) -> str:
-        file_dir = config.get("manifest_dir_path", dag_path)
+        file_dir = config.get("manifest_dir_path", self.dag_path)
         return os.path.join(file_dir, config.get("manifest_file_name", "manifest.json"))
 
     def _read_config(self) -> dict:

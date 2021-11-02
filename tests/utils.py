@@ -21,8 +21,9 @@ def manifest_file_with_models(nodes_with_dependencies):
 
 
 def builder_factory():
-    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
-    return DbtAirflowTasksBuilderFactory(config_path, "dev")
+    return DbtAirflowTasksBuilderFactory(
+        os.path.dirname(os.path.abspath(__file__)), "dev"
+    )
 
 
 def test_dag():
