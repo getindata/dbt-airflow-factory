@@ -42,9 +42,7 @@ class DbtAirflowTasksBuilderFactory:
 
     @staticmethod
     def _prepare_image(config):
-        return (
-            config["registry"] + "/" + config["repository"] + ":" + str(config["tag"])
-        )
+        return config["repository"] + ":" + str(config["tag"])
 
     def _prepare_secrets(self, config):
         return [self._prepare_secret(secret) for secret in config["secrets"]]

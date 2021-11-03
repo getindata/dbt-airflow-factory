@@ -1,7 +1,6 @@
 
 image:
-  registry: 123.gcr
-  repository: dbt-platform-poc
+  repository: 123.gcr/dbt-platform-poc
   tag: 123
 
 image_pull_policy: IfNotPresent
