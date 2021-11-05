@@ -39,7 +39,7 @@ class AirflowDagFactory:
             return dag
 
     def _create_starting_task(self, config):
-        if config.get("seek_task", True):
+        if config.get("seed_task", True):
             return self._builder.create_seed_task()
         else:
             return DummyOperator(task_id="start")
