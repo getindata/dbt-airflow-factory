@@ -1,7 +1,11 @@
 from typing import List
 
 import airflow
-from airflow.kubernetes.secret import Secret
+
+if airflow.__version__.startswith("1."):
+    from airflow.contrib.kubernetes.secret import Secret
+else:
+    from airflow.kubernetes.secret import Secret
 
 
 class KubernetesExecutionParameters:
