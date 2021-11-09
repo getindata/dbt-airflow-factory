@@ -40,8 +40,8 @@ class KubernetesExecutionParameters:
             return {
                 "limit_memory": self.limit["memory"],
                 "limit_cpu": self.limit["cpu"],
-                "requests_memory": self.requests["memory"],
-                "requests_cpu": self.requests["cpu"],
+                "request_memory": self.requests["memory"],
+                "request_cpu": self.requests["cpu"],
             }
         else:
             from kubernetes.client import models as k8s
