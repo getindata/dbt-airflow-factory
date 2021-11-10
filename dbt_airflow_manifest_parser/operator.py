@@ -31,33 +31,37 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
         self.kubernetes_execution_parameters = kubernetes_execution_parameters
 
     def create(self, name: str, command: str, model: str = None) -> BaseOperator:
-        return self._create(self._prepare_arguments(name, command, model))
+        return self._create(self._prepare_arguments(command, model), name)
 
-    def _prepare_arguments(command: str, model: str):
-        args = f"set -e; "
-               f"dbt --no-write-json {command} "
-               f"--target {self.dbt_execution_env_parameters.target} "
+    def _prepare_arguments(self, command: str, model: str):
+        args = (
+            f"set -e; "
+            f"dbt --no-write-json {command} "
+            f"--target {self.dbt_execution_env_parameters.target} "
+        )
         if model:
             args += f"--models {model} "
-        args += f"--project-dir {self.dbt_execution_env_parameters.project_dir_path} "
-                f"--profiles-dir {self.dbt_execution_env_parameters.profile_dir_path}"
-        return [ args ]
+        args += (
+            f"--project-dir {self.dbt_execution_env_parameters.project_dir_path} "
+            f"--profiles-dir {self.dbt_execution_env_parameters.profile_dir_path}"
+        )
+        return [args]
 
-    def _create(args):
-        KubernetesPodOperator(
-                    namespace=self.kubernetes_execution_parameters.namespace,
-                    image=self.kubernetes_execution_parameters.image,
-                    image_pull_policy=self.kubernetes_execution_parameters.image_pull_policy,
-                    cmds=["bash", "-c"],
-                    node_selectors=self.kubernetes_execution_parameters.node_selectors,
-                    tolerations=self.kubernetes_execution_parameters.tolerations,
-                    annotations=self.kubernetes_execution_parameters.annotations,
-                    arguments=args,
-                    labels=self.kubernetes_execution_parameters.labels,
-                    name=name,
-                    task_id=name,
-                    resources=self.kubernetes_execution_parameters.get_resources(),
-                    secrets=self.kubernetes_execution_parameters.secrets,
-                    is_delete_operator_pod=self.kubernetes_execution_parameters.is_delete_operator_pod,
-                    hostnetwork=False,
-                )
+    def _create(self, args, name):
+        return KubernetesPodOperator(
+            namespace=self.kubernetes_execution_parameters.namespace,
+            image=self.kubernetes_execution_parameters.image,
+            image_pull_policy=self.kubernetes_execution_parameters.image_pull_policy,
+            cmds=["bash", "-c"],
+            node_selectors=self.kubernetes_execution_parameters.node_selectors,
+            tolerations=self.kubernetes_execution_parameters.tolerations,
+            annotations=self.kubernetes_execution_parameters.annotations,
+            arguments=args,
+            labels=self.kubernetes_execution_parameters.labels,
+            name=name,
+            task_id=name,
+            resources=self.kubernetes_execution_parameters.get_resources(),
+            secrets=self.kubernetes_execution_parameters.secrets,
+            is_delete_operator_pod=self.kubernetes_execution_parameters.is_delete_operator_pod,
+            hostnetwork=False,
+        )
