@@ -17,7 +17,7 @@ from airflow.models.baseoperator import BaseOperator
 
 class DbtRunOperatorBuilder(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def create(self, name, model, command) -> BaseOperator:
+    def create(self, name: str, command: str, model: str = None) -> BaseOperator:
         raise NotImplementedError
 
 
@@ -30,7 +30,24 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
         self.dbt_execution_env_parameters = dbt_execution_env_parameters
         self.kubernetes_execution_parameters = kubernetes_execution_parameters
 
-    def create(self, name: str, model: str, command: str) -> BaseOperator:
+    def create(self, name: str, command: str, model: str = None) -> BaseOperator:
+        return self._create(self._prepare_arguments(command, model), name)
+
+    def _prepare_arguments(self, command: str, model: str):
+        args = (
+            f"set -e; "
+            f"dbt --no-write-json {command} "
+            f"--target {self.dbt_execution_env_parameters.target} "
+        )
+        if model:
+            args += f"--models {model} "
+        args += (
+            f"--project-dir {self.dbt_execution_env_parameters.project_dir_path} "
+            f"--profiles-dir {self.dbt_execution_env_parameters.profile_dir_path}"
+        )
+        return [args]
+
+    def _create(self, args, name):
         return KubernetesPodOperator(
             namespace=self.kubernetes_execution_parameters.namespace,
             image=self.kubernetes_execution_parameters.image,
@@ -39,14 +56,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             node_selectors=self.kubernetes_execution_parameters.node_selectors,
             tolerations=self.kubernetes_execution_parameters.tolerations,
             annotations=self.kubernetes_execution_parameters.annotations,
-            arguments=[
-                f"set -e; "
-                f"dbt --no-write-json {command} "
-                f"--target {self.dbt_execution_env_parameters.target} "
-                f"--models {model} "
-                f"--project-dir {self.dbt_execution_env_parameters.project_dir_path} "
-                f"--profiles-dir {self.dbt_execution_env_parameters.profile_dir_path}"
-            ],
+            arguments=args,
             labels=self.kubernetes_execution_parameters.labels,
             name=name,
             task_id=name,

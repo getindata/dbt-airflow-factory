@@ -18,10 +18,10 @@ class DbtAirflowTasksBuilder:
             return manifest_content
 
     def _make_dbt_test_task(self, model_name: str) -> BaseOperator:
-        return self.operator_builder.create(model_name + "_test", model_name, "test")
+        return self.operator_builder.create(model_name + "_test", "test", model_name)
 
     def _make_dbt_run_task(self, model_name: str) -> BaseOperator:
-        return self.operator_builder.create(model_name + "_run", model_name, "run")
+        return self.operator_builder.create(model_name + "_run", "run", model_name)
 
     @staticmethod
     def _is_model_run_task(node_name: str):
@@ -70,4 +70,4 @@ class DbtAirflowTasksBuilder:
         return self._make_dbt_tasks(manifest_path)
 
     def create_seed_task(self) -> BaseOperator:
-        return self.operator_builder.create("dbt_seed", None, "seed")
+        return self.operator_builder.create("dbt_seed", "seed")

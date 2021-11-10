@@ -1,7 +1,13 @@
 import os
 
+import airflow
 from airflow import DAG
-from airflow.operators.dummy import DummyOperator
+
+if airflow.__version__.startswith("1."):
+    from airflow.operators.dummy_operator import DummyOperator
+else:
+    from airflow.operators.dummy import DummyOperator
+
 from pytimeparse import parse
 
 from dbt_airflow_manifest_parser.builder_factory import DbtAirflowTasksBuilderFactory
