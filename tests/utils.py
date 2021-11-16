@@ -3,6 +3,7 @@ import os
 import tempfile
 from datetime import datetime
 
+import airflow
 from airflow import DAG
 
 from dbt_airflow_manifest_parser.builder_factory import DbtAirflowTasksBuilderFactory
@@ -28,3 +29,6 @@ def builder_factory():
 
 def test_dag():
     return DAG("test", default_args={"start_date": datetime(2021, 10, 13)})
+
+
+IS_FIRST_AIRFLOW_VERSION = airflow.__version__.startswith("1.")
