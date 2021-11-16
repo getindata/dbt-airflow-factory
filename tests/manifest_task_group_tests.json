@@ -1,0 +1,31 @@
+{
+  "nodes": {
+    "model.dbt_test.model1": {
+      "depends_on": {
+        "nodes": []
+      }
+    },
+    "model.dbt_test.model2": {
+      "depends_on": {
+        "nodes": [
+          "model.dbt_test.model1"
+        ]
+      }
+    },
+    "model.dbt_test.model3": {
+      "depends_on": {
+        "nodes": [
+          "model.dbt_test.model1"
+        ]
+      }
+    },
+    "model.dbt_test.model4": {
+      "depends_on": {
+        "nodes": [
+          "model.dbt_test.model2",
+          "model.dbt_test.model3"
+        ]
+      }
+    }
+  }
+}

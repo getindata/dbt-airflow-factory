@@ -40,7 +40,7 @@ class AirflowDagFactory:
         start = self._create_starting_task(config)
         end = DummyOperator(task_id="end")
         tasks = self._builder.parse_manifest_into_tasks(
-            self._manifest_file_path(config)
+            self._manifest_file_path(config), config.get("use_task_group") or False
         )
         for starting_task in tasks.get_starting_tasks():
             start >> starting_task.run_airflow_task

@@ -1,6 +1,11 @@
 from airflow.kubernetes.secret import Secret
 
-from .utils import builder_factory, IS_FIRST_AIRFLOW_VERSION, manifest_file_with_models, test_dag
+from .utils import (
+    IS_FIRST_AIRFLOW_VERSION,
+    builder_factory,
+    manifest_file_with_models,
+    test_dag,
+)
 
 
 def test_configuration():

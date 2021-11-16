@@ -26,6 +26,8 @@
 
 [Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.12.0...HEAD
 
+-   Allow usage of TaskGroup when `use_task_group` flag is set to `True`
+
 [0.12.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.11.0...0.12.0
 
 [0.11.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.10.0...0.11.0

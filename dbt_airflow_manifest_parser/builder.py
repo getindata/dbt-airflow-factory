@@ -1,7 +1,12 @@
 import json
 import logging
+import typing
 
+import airflow
 from airflow.models.baseoperator import BaseOperator
+
+if not airflow.__version__.startswith("1."):
+    from airflow.utils.task_group import TaskGroup
 
 from dbt_airflow_manifest_parser.operator import DbtRunOperatorBuilder
 from dbt_airflow_manifest_parser.tasks import ModelExecutionTask, ModelExecutionTasks
@@ -27,21 +32,40 @@ class DbtAirflowTasksBuilder:
     def _is_model_run_task(node_name: str):
         return node_name.split(".")[0] == "model"
 
-    def _create_tasks_for_each_model(self, manifest: dict) -> dict:
+    @staticmethod
+    def _create_task_group_for_model(model_name: str, use_task_group: bool):
+        import contextlib
+
+        is_first_version = airflow.__version__.startswith("1.")
+        task_group = (
+            None
+            if (is_first_version or not use_task_group)
+            else TaskGroup(group_id=model_name)
+        )
+        task_group_ctx = task_group or contextlib.nullcontext()
+        return task_group, task_group_ctx
+
+    def _create_tasks_for_each_model(
+        self, manifest: dict, use_task_group: bool
+    ) -> dict:
         tasks = {}
         for node_name in manifest["nodes"].keys():
             if self._is_model_run_task(node_name):
                 logging.info("Creating tasks for: " + node_name)
                 model_name = node_name.split(".")[-1]
-                run_task = self._make_dbt_run_task(model_name)
-                test_task = self._make_dbt_test_task(model_name)
-                # noinspection PyStatementEffect
-                run_task >> test_task
-                tasks[node_name] = ModelExecutionTask(run_task, test_task)
+                (task_group, task_group_ctx) = self._create_task_group_for_model(
+                    model_name, use_task_group
+                )
+                with task_group_ctx:
+                    run_task = self._make_dbt_run_task(model_name)
+                    test_task = self._make_dbt_test_task(model_name)
+                    # noinspection PyStatementEffect
+                    run_task >> test_task
+                tasks[node_name] = ModelExecutionTask(run_task, test_task, task_group)
         return tasks
 
     def _create_tasks_dependencies(
-        self, manifest: dict, tasks: dict
+        self, manifest: dict, tasks: typing.Dict[str, ModelExecutionTask]
     ) -> ModelExecutionTasks:
         starting_tasks = list(tasks.keys())
         ending_tasks = list(tasks.keys())
@@ -50,8 +74,8 @@ class DbtAirflowTasksBuilder:
                 if self._is_model_run_task(upstream_node):
                     # noinspection PyStatementEffect
                     (
-                        tasks[upstream_node].test_airflow_task
-                        >> tasks[node_name].run_airflow_task
+                        tasks[upstream_node].get_end_task()
+                        >> tasks[node_name].get_start_task()
                     )
                     if node_name in starting_tasks:
                         starting_tasks.remove(node_name)
@@ -59,15 +83,19 @@ class DbtAirflowTasksBuilder:
                         ending_tasks.remove(upstream_node)
         return ModelExecutionTasks(tasks, starting_tasks, ending_tasks)
 
-    def _make_dbt_tasks(self, manifest_path: str) -> ModelExecutionTasks:
+    def _make_dbt_tasks(
+        self, manifest_path: str, use_task_group: bool
+    ) -> ModelExecutionTasks:
         manifest = self._load_dbt_manifest(manifest_path)
-        tasks = self._create_tasks_for_each_model(manifest)
+        tasks = self._create_tasks_for_each_model(manifest, use_task_group)
         tasks_with_context = self._create_tasks_dependencies(manifest, tasks)
         logging.info(f"Created {str(tasks_with_context.length())} tasks groups")
         return tasks_with_context
 
-    def parse_manifest_into_tasks(self, manifest_path) -> ModelExecutionTasks:
-        return self._make_dbt_tasks(manifest_path)
+    def parse_manifest_into_tasks(
+        self, manifest_path: str, use_task_group: bool = True
+    ) -> ModelExecutionTasks:
+        return self._make_dbt_tasks(manifest_path, use_task_group)
 
     def create_seed_task(self) -> BaseOperator:
         return self.operator_builder.create("dbt_seed", "seed")
