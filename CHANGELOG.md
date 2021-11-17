@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.13.0] - 2021-11-17
+
 ## [0.12.0] - 2021-11-17
 
 ## [0.11.0] - 2021-11-10
@@ -24,7 +26,9 @@
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library. 
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.12.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.13.0...HEAD
+
+[0.13.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.12.0...0.13.0
 
 -   Allow usage of TaskGroup when `use_task_group` flag is set to `True`
 
