@@ -16,5 +16,5 @@ dag:
   schedule_interval: '0 12 * * *'
   catchup: False
 
-seek_task: True
+seed_task: True
 manifest_file_name: ../tests/manifest.json

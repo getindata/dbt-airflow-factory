@@ -31,18 +31,21 @@ class AirflowDagFactory:
         self.airflow_config_file_name = airflow_config_file_name
 
     def create(self) -> DAG:
-        config = self._read_config()
+        config = self.read_config()
         with DAG(default_args=config["default_args"], **config["dag"]) as dag:
-            start = self._create_starting_task(config)
-            end = DummyOperator(task_id="end")
-            tasks = self._builder.parse_manifest_into_tasks(
-                self._manifest_file_path(config)
-            )
-            for starting_task in tasks.get_starting_tasks():
-                start >> starting_task.run_airflow_task
-            for ending_task in tasks.get_ending_tasks():
-                ending_task.test_airflow_task >> end
-            return dag
+            self.create_tasks(config)
+        return dag
+
+    def create_tasks(self, config):
+        start = self._create_starting_task(config)
+        end = DummyOperator(task_id="end")
+        tasks = self._builder.parse_manifest_into_tasks(
+            self._manifest_file_path(config)
+        )
+        for starting_task in tasks.get_starting_tasks():
+            start >> starting_task.run_airflow_task
+        for ending_task in tasks.get_ending_tasks():
+            ending_task.test_airflow_task >> end
 
     def _create_starting_task(self, config):
         if config.get("seed_task", True):
@@ -54,7 +57,7 @@ class AirflowDagFactory:
         file_dir = config.get("manifest_dir_path", self.dag_path)
         return os.path.join(file_dir, config.get("manifest_file_name", "manifest.json"))
 
-    def _read_config(self) -> dict:
+    def read_config(self) -> dict:
         config = read_config(self.dag_path, self.env, self.airflow_config_file_name)
         if "retry_delay" in config["default_args"]:
             config["default_args"]["retry_delay"] = parse(
