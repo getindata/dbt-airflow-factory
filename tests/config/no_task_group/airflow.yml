@@ -1,0 +1,2 @@
+use_task_group: False
+manifest_file_name: ../tests/manifest_task_group_tests.json
