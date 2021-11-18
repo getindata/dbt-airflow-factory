@@ -1,4 +1,9 @@
-from .utils import builder_factory, manifest_file_with_models, test_dag
+from .utils import (
+    builder_factory,
+    manifest_file_with_models,
+    task_group_prefix_builder,
+    test_dag,
+)
 
 
 def test_starting_tasks():
@@ -21,9 +26,9 @@ def test_starting_tasks():
     starting_tasks_names = [
         task.run_airflow_task.task_id for task in tasks.get_starting_tasks()
     ]
-    assert "model1_run" in starting_tasks_names
-    assert "model2_run" in starting_tasks_names
-    assert "model5_run" in starting_tasks_names
+    assert task_group_prefix_builder("model1_run") in starting_tasks_names
+    assert task_group_prefix_builder("model2_run") in starting_tasks_names
+    assert task_group_prefix_builder("model5_run") in starting_tasks_names
 
 
 def test_ending_tasks():
@@ -46,5 +51,5 @@ def test_ending_tasks():
     ending_tasks_names = [
         task.test_airflow_task.task_id for task in tasks.get_ending_tasks()
     ]
-    assert "model4_test" in ending_tasks_names
-    assert "model5_test" in ending_tasks_names
+    assert task_group_prefix_builder("model4_test") in ending_tasks_names
+    assert task_group_prefix_builder("model5_test") in ending_tasks_names

@@ -18,3 +18,4 @@ dag:
 
 seed_task: True
 manifest_file_name: ../tests/manifest.json
+use_task_group: True

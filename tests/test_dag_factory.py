@@ -3,6 +3,8 @@ from os import path
 
 from dbt_airflow_manifest_parser.airflow_dag_factory import AirflowDagFactory
 
+from .utils import IS_FIRST_AIRFLOW_VERSION
+
 
 def test_dag_factory():
     # given
@@ -27,3 +29,33 @@ def test_dag_factory():
         "retry_delay": 300,
     }
     assert len(dag.tasks) == 4
+
+
+def test_task_group_dag_factory():
+    if IS_FIRST_AIRFLOW_VERSION:  # You cannot use TaskGroup in Airflow 1 anyway
+        return True
+
+    # given
+    factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "task_group")
+
+    # when
+    dag = factory.create()
+
+    # then
+    assert len(dag.tasks) == 10
+    assert len(dag.task_group.children) == 6
+
+
+def test_no_task_group_dag_factory():
+    if IS_FIRST_AIRFLOW_VERSION:  # You cannot use TaskGroup in Airflow 1 anyway
+        return True
+
+    # given
+    factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "no_task_group")
+
+    # when
+    dag = factory.create()
+
+    # then
+    assert len(dag.tasks) == 10
+    assert len(dag.task_group.children) == 10
