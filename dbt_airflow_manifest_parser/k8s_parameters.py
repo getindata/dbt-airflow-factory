@@ -22,6 +22,7 @@ class KubernetesExecutionParameters:
         annotations: dict = None,
         secrets: List[Secret] = None,
         is_delete_operator_pod: bool = True,
+        **kwargs,
     ):
         self.namespace = namespace
         self.image = image

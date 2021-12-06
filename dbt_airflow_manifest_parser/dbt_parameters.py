@@ -4,6 +4,7 @@ class DbtExecutionEnvironmentParameters:
         target: str,
         project_dir_path: str = "/dbt",
         profile_dir_path: str = "/root/.dbt",
+        **kwargs,
     ):
         self.target = target
         self.project_dir_path = project_dir_path
