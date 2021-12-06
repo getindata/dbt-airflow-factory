@@ -1,9 +1,12 @@
 ## [Unreleased]
 
+## [0.14.0] - 2021-12-06
+
 ### Changed
-- Add `**kwargs` argument to `DbtExecutionEnvironmentParameters` and `KubernetesExecutionParameters` constructors,
-making them ignore additional arguments, if provided.
-- Add support for Kubernetes environment variables.
+
+-   Add `**kwargs` argument to `DbtExecutionEnvironmentParameters` and `KubernetesExecutionParameters` constructors,
+    making them ignore additional arguments, if provided.
+-   Add support for Kubernetes environment variables.
 
 ## [0.13.0] - 2021-11-17
 
@@ -31,7 +34,9 @@ making them ignore additional arguments, if provided.
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library. 
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.13.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.14.0...HEAD
+
+[0.14.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.13.0...0.14.0
 
 [0.13.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.12.0...0.13.0
 
