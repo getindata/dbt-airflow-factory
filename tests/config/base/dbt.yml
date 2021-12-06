@@ -1,3 +1,4 @@
 target: local
+target_type: bigquery
 project_dir_path: /dbt
 profile_dir_path: /root/.dbt

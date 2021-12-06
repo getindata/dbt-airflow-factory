@@ -6,6 +6,10 @@ image:
 image_pull_policy: IfNotPresent
 namespace: apache-airflow
 
+envs:
+  EXAMPLE_ENV: "example"
+  SECOND_EXAMPLE_ENV: "second"
+
 secrets:
   - secret: snowflake-access-user-key
     deploy_type: env
