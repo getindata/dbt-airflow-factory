@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Changed
+- Add `**kwargs` argument to `DbtExecutionEnvironmentParameters` and `KubernetesExecutionParameters` constructors,
+making them ignore additional arguments, if provided.
+
 ## [0.13.0] - 2021-11-17
 
 ## [0.12.0] - 2021-11-17
