@@ -22,14 +22,32 @@ class DbtAirflowTasksBuilder:
             logging.debug("Manifest content: " + str(manifest_content))
             return manifest_content
 
-    def _make_dbt_test_task(self, model_name: str) -> BaseOperator:
-        return self.operator_builder.create(model_name + "_test", "test", model_name)
+    def _make_dbt_test_task(
+        self, model_name: str, is_in_task_group: bool
+    ) -> BaseOperator:
+        command = "test"
+        return self.operator_builder.create(
+            self._build_task_name(model_name, command, is_in_task_group),
+            command,
+            model_name,
+        )
 
-    def _make_dbt_run_task(self, model_name: str) -> BaseOperator:
-        return self.operator_builder.create(model_name + "_run", "run", model_name)
+    def _make_dbt_run_task(
+        self, model_name: str, is_in_task_group: bool
+    ) -> BaseOperator:
+        command = "run"
+        return self.operator_builder.create(
+            self._build_task_name(model_name, command, is_in_task_group),
+            command,
+            model_name,
+        )
 
     @staticmethod
-    def _is_model_run_task(node_name: str):
+    def _build_task_name(model_name: str, command: str, is_in_task_group: bool) -> str:
+        return command if is_in_task_group else f"{model_name}_{command}"
+
+    @staticmethod
+    def _is_model_run_task(node_name: str) -> bool:
         return node_name.split(".")[0] == "model"
 
     @staticmethod
@@ -56,9 +74,10 @@ class DbtAirflowTasksBuilder:
                 (task_group, task_group_ctx) = self._create_task_group_for_model(
                     model_name, use_task_group
                 )
+                is_in_task_group = task_group is not None
                 with task_group_ctx:
-                    run_task = self._make_dbt_run_task(model_name)
-                    test_task = self._make_dbt_test_task(model_name)
+                    run_task = self._make_dbt_run_task(model_name, is_in_task_group)
+                    test_task = self._make_dbt_test_task(model_name, is_in_task_group)
                     # noinspection PyStatementEffect
                     run_task >> test_task
                 tasks[node_name] = ModelExecutionTask(run_task, test_task, task_group)

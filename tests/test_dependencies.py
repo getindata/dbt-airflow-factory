@@ -16,11 +16,11 @@ def test_run_test_dependency():
 
     # then
     assert (
-        task_group_prefix_builder("model1_test")
+        task_group_prefix_builder("model1", "test")
         in tasks.get_task("model.dbt_test.model1").run_airflow_task.downstream_task_ids
     )
     assert (
-        task_group_prefix_builder("model1_run")
+        task_group_prefix_builder("model1", "run")
         in tasks.get_task("model.dbt_test.model1").test_airflow_task.upstream_task_ids
     )
 
@@ -42,11 +42,11 @@ def test_dependency():
     assert tasks.length() == 2
 
     assert (
-        task_group_prefix_builder("model1_test")
+        task_group_prefix_builder("model1", "test")
         in tasks.get_task("model.dbt_test.model2").run_airflow_task.upstream_task_ids
     )
     assert (
-        task_group_prefix_builder("model2_run")
+        task_group_prefix_builder("model2", "run")
         in tasks.get_task("model.dbt_test.model1").test_airflow_task.downstream_task_ids
     )
 
@@ -69,30 +69,30 @@ def test_more_complex_dependencies():
     # then
     assert tasks.length() == 4
     assert (
-        task_group_prefix_builder("model1_test")
+        task_group_prefix_builder("model1", "test")
         in tasks.get_task("model.dbt_test.model2").run_airflow_task.upstream_task_ids
     )
     assert (
-        task_group_prefix_builder("model1_test")
+        task_group_prefix_builder("model1", "test")
         in tasks.get_task("model.dbt_test.model3").run_airflow_task.upstream_task_ids
     )
     assert (
-        task_group_prefix_builder("model2_run")
+        task_group_prefix_builder("model2", "run")
         in tasks.get_task("model.dbt_test.model1").test_airflow_task.downstream_task_ids
     )
     assert (
-        task_group_prefix_builder("model3_run")
+        task_group_prefix_builder("model3", "run")
         in tasks.get_task("model.dbt_test.model1").test_airflow_task.downstream_task_ids
     )
     assert (
-        task_group_prefix_builder("model1_test")
+        task_group_prefix_builder("model1", "test")
         in tasks.get_task("model.dbt_test.model3").run_airflow_task.upstream_task_ids
     )
     assert (
-        task_group_prefix_builder("model2_test")
+        task_group_prefix_builder("model2", "test")
         in tasks.get_task("model.dbt_test.model3").run_airflow_task.upstream_task_ids
     )
     assert (
-        task_group_prefix_builder("model4_run")
+        task_group_prefix_builder("model4", "run")
         in tasks.get_task("model.dbt_test.model3").test_airflow_task.downstream_task_ids
     )
