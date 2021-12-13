@@ -1,6 +1,10 @@
 ## [Unreleased]
+
+## [0.15.0] - 2021-12-13
+
 ### Changed
-- Drop `<TASK_ID>_` prefix from Task names when using TaskGroup.
+
+-   Drop `<TASK_ID>_` prefix from Task names when using TaskGroup.
 
 ## [0.14.0] - 2021-12-06
 
@@ -42,7 +46,9 @@
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library. 
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.14.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.15.0...HEAD
+
+[0.15.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.14.0...0.15.0
 
 [0.14.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.13.0...0.14.0
 
