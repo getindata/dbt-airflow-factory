@@ -1,4 +1,5 @@
 from .utils import (
+    IS_FIRST_AIRFLOW_VERSION,
     builder_factory,
     manifest_file_with_models,
     task_group_prefix_builder,
@@ -34,8 +35,8 @@ def test_run_task():
     assert run_task.cmds == ["bash", "-c"]
     assert "set -e; dbt --no-write-json run " in run_task.arguments[0]
     assert "--models dim_users" in run_task.arguments[0]
-    assert run_task.name == "dim-users-run"
-    assert run_task.task_id == task_group_prefix_builder("dim_users_run")
+    assert run_task.name == "dim-users-run" if IS_FIRST_AIRFLOW_VERSION else "run"
+    assert run_task.task_id == task_group_prefix_builder("dim_users", "run")
 
 
 def test_test_task():
@@ -51,5 +52,5 @@ def test_test_task():
     assert test_task.cmds == ["bash", "-c"]
     assert "set -e; dbt --no-write-json test " in test_task.arguments[0]
     assert "--models dim_users" in test_task.arguments[0]
-    assert test_task.name == "dim-users-test"
-    assert test_task.task_id == task_group_prefix_builder("dim_users_test")
+    assert test_task.name == "dim-users-test" if IS_FIRST_AIRFLOW_VERSION else "test"
+    assert test_task.task_id == task_group_prefix_builder("dim_users", "test")
