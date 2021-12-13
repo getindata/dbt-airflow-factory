@@ -34,7 +34,9 @@ def test_dag():
 IS_FIRST_AIRFLOW_VERSION = airflow.__version__.startswith("1.")
 
 
-def task_group_prefix_builder(task_id: str):
-    task_model_id = "_".join(task_id.split("_")[:-1])
-    prefix = (task_model_id + ".") if not IS_FIRST_AIRFLOW_VERSION else ""
-    return prefix + task_id
+def task_group_prefix_builder(task_model_id: str, task_command: str):
+    return (
+        f"{task_model_id}_{task_command}"
+        if IS_FIRST_AIRFLOW_VERSION
+        else f"{task_model_id}.{task_command}"
+    )
