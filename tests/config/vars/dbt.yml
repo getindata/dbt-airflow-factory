@@ -1,0 +1,4 @@
+target: vars
+vars:
+  variable_1: 123
+  variable_2: "var2"

@@ -38,6 +38,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             f"set -e; "
             f"dbt --no-write-json {command} "
             f"--target {self.dbt_execution_env_parameters.target} "
+            f'--vars "{self.dbt_execution_env_parameters.vars}" '
         )
         if model:
             args += f"--models {model} "

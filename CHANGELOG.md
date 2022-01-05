@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.16.0] - 2022-01-05
+
+### Added
+
+-   Add support for `vars` in `dbt.yml`.
+
 ## [0.15.0] - 2021-12-13
 
 ### Changed
@@ -46,7 +52,9 @@
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library. 
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.15.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.16.0...HEAD
+
+[0.16.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.15.0...0.16.0
 
 [0.15.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.14.0...0.15.0
 
