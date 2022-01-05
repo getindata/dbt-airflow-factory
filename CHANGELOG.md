@@ -1,6 +1,8 @@
 ## [Unreleased]
-### Changed
-- Drop `<TASK_ID>_` prefix from Task names when using TaskGroup.
+
+### Added
+
+- Add support for `vars` in `dbt.yml`.
 
 ## [0.15.0] - 2021-12-13
 
