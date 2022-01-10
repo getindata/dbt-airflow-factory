@@ -1,6 +1,7 @@
 import abc
 
 import airflow
+from airflow.operators.dummy import DummyOperator
 
 from dbt_airflow_manifest_parser.dbt_parameters import DbtExecutionEnvironmentParameters
 from dbt_airflow_manifest_parser.k8s_parameters import KubernetesExecutionParameters
@@ -67,3 +68,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             is_delete_operator_pod=self.kubernetes_execution_parameters.is_delete_operator_pod,
             hostnetwork=False,
         )
+
+
+class EphemeralOperator(DummyOperator):
+    ui_color = "#F3E4F7"

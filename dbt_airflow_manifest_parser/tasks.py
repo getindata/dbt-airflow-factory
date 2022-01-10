@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from airflow.models.baseoperator import BaseOperator
 
@@ -7,7 +7,7 @@ class ModelExecutionTask:
     def __init__(
         self,
         run_airflow_task: BaseOperator,
-        test_airflow_task: BaseOperator,
+        test_airflow_task: Optional[BaseOperator],
         task_group=None,
     ):
         self.run_airflow_task = run_airflow_task
@@ -15,15 +15,20 @@ class ModelExecutionTask:
         self.task_group = task_group
 
     def __repr__(self):
-        return repr(self.task_group) or repr(
-            [self.run_airflow_task, self.test_airflow_task]
+        return (
+            repr(self.task_group)
+            if self.task_group
+            else repr(
+                [self.run_airflow_task]
+                + ([self.test_airflow_task] if self.test_airflow_task else [])
+            )
         )
 
     def get_start_task(self):
         return self.task_group or self.run_airflow_task
 
     def get_end_task(self):
-        return self.task_group or self.test_airflow_task
+        return self.task_group or self.test_airflow_task or self.run_airflow_task
 
 
 class ModelExecutionTasks:

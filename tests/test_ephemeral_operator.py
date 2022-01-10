@@ -1,0 +1,104 @@
+from os import path
+
+from dbt_airflow_manifest_parser.airflow_dag_factory import AirflowDagFactory
+from dbt_airflow_manifest_parser.operator import EphemeralOperator
+from tests.utils import task_group_prefix_builder, test_dag
+
+
+def _get_ephemeral_name(model_name: str) -> str:
+    return f"{model_name}__ephemeral"
+
+
+def test_ephemeral_dag_factory():
+    # given
+    factory = AirflowDagFactory(
+        path.dirname(path.abspath(__file__)), "ephemeral_operator"
+    )
+
+    # when
+    dag = factory.create()
+
+    # then
+    assert len(dag.tasks) == 15
+
+    task_group_names = [
+        el
+        for node_name in ["model1", "model4", "model6"]
+        for el in [
+            task_group_prefix_builder(node_name, "test"),
+            task_group_prefix_builder(node_name, "run"),
+        ]
+    ]
+    ephemeral_task_names = [
+        node_name + "__ephemeral"
+        for node_name in [
+            "model2",
+            "model3",
+            "model5",
+            "model7",
+            "model8",
+            "model9",
+            "model10",
+        ]
+    ]
+    assert set(dag.task_ids) == set(
+        ["dbt_seed", "end"] + task_group_names + ephemeral_task_names
+    )
+
+    for ephemeral_task_name in ephemeral_task_names:
+        assert isinstance(dag.task_dict[ephemeral_task_name], EphemeralOperator)
+
+
+def test_ephemeral_tasks():
+    with test_dag():
+        factory = AirflowDagFactory(
+            path.dirname(path.abspath(__file__)), "ephemeral_operator"
+        )
+        tasks = factory._builder.parse_manifest_into_tasks(
+            factory._manifest_file_path(factory.read_config())
+        )
+
+    # then
+    assert (
+        task_group_prefix_builder("model1", "test")
+        in tasks.get_task("model.dbt_test.model1").run_airflow_task.downstream_task_ids
+    )
+    assert (
+        task_group_prefix_builder("model1", "run")
+        in tasks.get_task("model.dbt_test.model1").test_airflow_task.upstream_task_ids
+    )
+
+    assert (
+        task_group_prefix_builder("model1", "test")
+        in tasks.get_task("model.dbt_test.model2").run_airflow_task.upstream_task_ids
+    )
+    assert (
+        "model2__ephemeral"
+        in tasks.get_task("model.dbt_test.model1").test_airflow_task.downstream_task_ids
+    )
+
+    assert (
+        "model2__ephemeral"
+        in tasks.get_task("model.dbt_test.model3").run_airflow_task.upstream_task_ids
+    )
+    assert (
+        "model3__ephemeral"
+        in tasks.get_task("model.dbt_test.model5").run_airflow_task.downstream_task_ids
+    )
+
+    assert (
+        "model3__ephemeral"
+        in tasks.get_task("model.dbt_test.model10").run_airflow_task.upstream_task_ids
+    )
+    assert (
+        "model9__ephemeral"
+        in tasks.get_task("model.dbt_test.model10").run_airflow_task.upstream_task_ids
+    )
+    assert (
+        "model10__ephemeral"
+        in tasks.get_task("model.dbt_test.model3").run_airflow_task.downstream_task_ids
+    )
+    assert (
+        "model10__ephemeral"
+        in tasks.get_task("model.dbt_test.model9").run_airflow_task.downstream_task_ids
+    )

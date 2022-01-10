@@ -1,0 +1,110 @@
+{
+  "nodes": {
+    "model.dbt_test.model1": {
+      "depends_on": {
+        "nodes": ["source.dbt_test.source1"]
+      },
+      "config": {
+        "materialized": "table"
+      }
+    },
+    "model.dbt_test.model2": {
+      "depends_on": {
+        "nodes": [
+          "model.dbt_test.model1"
+        ]
+      },
+      "config": {
+        "materialized": "ephemeral"
+      }
+    },
+    "model.dbt_test.model3": {
+      "depends_on": {
+        "nodes": [
+          "model.dbt_test.model2",
+          "model.dbt_test.model5"
+        ]
+      },
+      "config": {
+        "materialized": "ephemeral"
+      }
+    },
+    "model.dbt_test.model4": {
+      "depends_on": {
+        "nodes": [
+          "model.dbt_test.model10"
+        ]
+      },
+      "config": {
+        "materialized": "view"
+      }
+    },
+    "model.dbt_test.model5": {
+      "depends_on": {
+        "nodes": [
+          "source.dbt_test.source2"
+        ]
+      },
+      "config": {
+        "materialized": "ephemeral"
+      }
+    },
+    "model.dbt_test.model6": {
+      "depends_on": {
+        "nodes": [
+          "source.dbt_test.source3"
+        ]
+      },
+      "config": {
+        "materialized": "table"
+      }
+    },
+    "model.dbt_test.model7": {
+      "depends_on": {
+        "nodes": [
+          "model.dbt_test.model6"
+        ]
+      },
+      "config": {
+        "materialized": "ephemeral"
+      }
+    },
+    "model.dbt_test.model8": {
+      "depends_on": {
+        "nodes": [
+          "model.dbt_test.model6"
+        ]
+      },
+      "config": {
+        "materialized": "ephemeral"
+      }
+    },
+    "model.dbt_test.model9": {
+      "depends_on": {
+        "nodes": [
+          "model.dbt_test.model7",
+          "model.dbt_test.model8"
+        ]
+      },
+      "config": {
+        "materialized": "ephemeral"
+      }
+    },
+    "model.dbt_test.model10": {
+      "depends_on": {
+        "nodes": [
+          "model.dbt_test.model3",
+          "model.dbt_test.model9"
+        ]
+      },
+      "config": {
+        "materialized": "ephemeral"
+      }
+    }
+  },
+  "sources": {
+    "source.dbt_test.source1": {},
+    "source.dbt_test.source2": {},
+    "source.dbt_test.source3": {}
+  }
+}
