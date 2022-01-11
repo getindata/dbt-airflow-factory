@@ -13,7 +13,8 @@ def manifest_file_with_models(nodes_with_dependencies):
     content_nodes = {}
     for node_name in nodes_with_dependencies.keys():
         content_nodes[node_name] = {
-            "depends_on": {"nodes": nodes_with_dependencies[node_name]}
+            "depends_on": {"nodes": nodes_with_dependencies[node_name]},
+            "config": {"materialized": "view"},
         }
     content = {"nodes": content_nodes}
     with tempfile.NamedTemporaryFile(delete=False) as tmp:

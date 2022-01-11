@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Changed
+
+- Ephemeral models are not run anymore, presented as an `EphemeralOperator` deriving from the `DummyOperator`.
+
 ## [0.16.0] - 2022-01-05
 
 ### Added
