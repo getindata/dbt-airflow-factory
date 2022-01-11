@@ -3,6 +3,9 @@
     "model.dbt_test.model1": {
       "depends_on": {
         "nodes": []
+      },
+      "config": {
+        "materialized": "view"
       }
     },
     "model.dbt_test.model2": {
@@ -10,6 +13,9 @@
         "nodes": [
           "model.dbt_test.model1"
         ]
+      },
+      "config": {
+        "materialized": "view"
       }
     },
     "model.dbt_test.model3": {
@@ -17,6 +23,9 @@
         "nodes": [
           "model.dbt_test.model1"
         ]
+      },
+      "config": {
+        "materialized": "view"
       }
     },
     "model.dbt_test.model4": {
@@ -25,6 +34,9 @@
           "model.dbt_test.model2",
           "model.dbt_test.model3"
         ]
+      },
+      "config": {
+        "materialized": "view"
       }
     }
   }

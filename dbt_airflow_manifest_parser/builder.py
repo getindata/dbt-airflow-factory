@@ -1,6 +1,6 @@
 import json
 import logging
-import typing
+from typing import Dict
 
 import airflow
 from airflow.models.baseoperator import BaseOperator
@@ -8,7 +8,10 @@ from airflow.models.baseoperator import BaseOperator
 if not airflow.__version__.startswith("1."):
     from airflow.utils.task_group import TaskGroup
 
-from dbt_airflow_manifest_parser.operator import DbtRunOperatorBuilder
+from dbt_airflow_manifest_parser.operator import (
+    DbtRunOperatorBuilder,
+    EphemeralOperator,
+)
 from dbt_airflow_manifest_parser.tasks import ModelExecutionTask, ModelExecutionTasks
 
 
@@ -16,7 +19,8 @@ class DbtAirflowTasksBuilder:
     def __init__(self, operator_builder: DbtRunOperatorBuilder):
         self.operator_builder = operator_builder
 
-    def _load_dbt_manifest(self, manifest_path: str) -> dict:
+    @staticmethod
+    def _load_dbt_manifest(manifest_path: str) -> dict:
         with open(manifest_path, "r") as f:
             manifest_content = json.load(f)
             logging.debug("Manifest content: " + str(manifest_content))
@@ -51,6 +55,10 @@ class DbtAirflowTasksBuilder:
         return node_name.split(".")[0] == "model"
 
     @staticmethod
+    def _is_ephemeral_task(node: dict) -> bool:
+        return node["config"]["materialized"] == "ephemeral"
+
+    @staticmethod
     def _create_task_group_for_model(model_name: str, use_task_group: bool):
         import contextlib
 
@@ -63,28 +71,38 @@ class DbtAirflowTasksBuilder:
         task_group_ctx = task_group or contextlib.nullcontext()
         return task_group, task_group_ctx
 
+    def _create_task_for_model(self, model_name: str, use_task_group: bool):
+        (task_group, task_group_ctx) = self._create_task_group_for_model(
+            model_name, use_task_group
+        )
+        is_in_task_group = task_group is not None
+        with task_group_ctx:
+            run_task = self._make_dbt_run_task(model_name, is_in_task_group)
+            test_task = self._make_dbt_test_task(model_name, is_in_task_group)
+            # noinspection PyStatementEffect
+            run_task >> test_task
+        return ModelExecutionTask(run_task, test_task, task_group)
+
     def _create_tasks_for_each_model(
         self, manifest: dict, use_task_group: bool
-    ) -> dict:
+    ) -> Dict[str, ModelExecutionTask]:
         tasks = {}
-        for node_name in manifest["nodes"].keys():
+        for node_name, node in manifest["nodes"].items():
             if self._is_model_run_task(node_name):
                 logging.info("Creating tasks for: " + node_name)
                 model_name = node_name.split(".")[-1]
-                (task_group, task_group_ctx) = self._create_task_group_for_model(
-                    model_name, use_task_group
+
+                tasks[node_name] = (
+                    ModelExecutionTask(
+                        EphemeralOperator(task_id=f"{model_name}__ephemeral"), None
+                    )
+                    if self._is_ephemeral_task(node)
+                    else self._create_task_for_model(model_name, use_task_group)
                 )
-                is_in_task_group = task_group is not None
-                with task_group_ctx:
-                    run_task = self._make_dbt_run_task(model_name, is_in_task_group)
-                    test_task = self._make_dbt_test_task(model_name, is_in_task_group)
-                    # noinspection PyStatementEffect
-                    run_task >> test_task
-                tasks[node_name] = ModelExecutionTask(run_task, test_task, task_group)
         return tasks
 
     def _create_tasks_dependencies(
-        self, manifest: dict, tasks: typing.Dict[str, ModelExecutionTask]
+        self, manifest: dict, tasks: Dict[str, ModelExecutionTask]
     ) -> ModelExecutionTasks:
         starting_tasks = list(tasks.keys())
         ending_tasks = list(tasks.keys())
