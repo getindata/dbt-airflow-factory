@@ -1,8 +1,10 @@
 ## [Unreleased]
 
+## [0.17.0] - 2022-01-11
+
 ### Changed
 
-- Ephemeral models are not run anymore, presented as an `EphemeralOperator` deriving from the `DummyOperator`.
+-   Ephemeral models are not run anymore, presented as an `EphemeralOperator` deriving from the `DummyOperator`.
 
 ## [0.16.0] - 2022-01-05
 
@@ -56,7 +58,9 @@
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library. 
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.16.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.17.0...HEAD
+
+[0.17.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.16.0...0.17.0
 
 [0.16.0]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.15.0...0.16.0
 
