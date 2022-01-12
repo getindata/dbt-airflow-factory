@@ -11,8 +11,8 @@ else:
 
 from pytimeparse import parse
 
-from dbt_airflow_manifest_parser.builder_factory import DbtAirflowTasksBuilderFactory
-from dbt_airflow_manifest_parser.config_utils import read_config
+from dbt_airflow_factory.builder_factory import DbtAirflowTasksBuilderFactory
+from dbt_airflow_factory.config_utils import read_config
 
 
 class AirflowDagFactory:

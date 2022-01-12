@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from os import path
 
-from dbt_airflow_manifest_parser.airflow_dag_factory import AirflowDagFactory
+from dbt_airflow_factory.airflow_dag_factory import AirflowDagFactory
 
 from .utils import IS_FIRST_AIRFLOW_VERSION
 

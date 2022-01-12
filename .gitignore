@@ -5,6 +5,7 @@ dist/
 dbt_modules/
 logs/
 dbt_airflow_manifest_parser.egg-info
+dbt_airflow_factory.egg-info
 .idea
 
 .user.yml

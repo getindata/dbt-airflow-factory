@@ -1,4 +1,4 @@
-"""kedro_airflow_k8s module."""
+"""dbt_airflow_factory module."""
 
 from setuptools import find_packages, setup
 
@@ -26,7 +26,7 @@ EXTRA_REQUIRE = {
 }
 
 setup(
-    name="dbt-airflow-manifest-parser",
+    name="dbt-airflow-factory",
     version="0.17.0",
     description="Library to convert DBT manifest metadata to Airflow tasks",
     long_description=README,
@@ -41,7 +41,7 @@ setup(
     keywords="dbt airflow manifest parser python",
     author=u"Piotr Pekala",
     author_email="piotr.pekala@getindata.com",
-    url="https://github.com/getindata/dbt-airflow-manifest-parser/",
+    url="https://github.com/getindata/dbt-airflow-factory/",
     packages=find_packages(exclude=["ez_setup", "examples", "tests", "docs"]),
     include_package_data=True,
     zip_safe=False,

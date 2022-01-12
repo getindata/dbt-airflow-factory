@@ -8,11 +8,8 @@ from airflow.models.baseoperator import BaseOperator
 if not airflow.__version__.startswith("1."):
     from airflow.utils.task_group import TaskGroup
 
-from dbt_airflow_manifest_parser.operator import (
-    DbtRunOperatorBuilder,
-    EphemeralOperator,
-)
-from dbt_airflow_manifest_parser.tasks import ModelExecutionTask, ModelExecutionTasks
+from dbt_airflow_factory.operator import DbtRunOperatorBuilder, EphemeralOperator
+from dbt_airflow_factory.tasks import ModelExecutionTask, ModelExecutionTasks
 
 
 class DbtAirflowTasksBuilder:

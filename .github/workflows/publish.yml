@@ -12,7 +12,7 @@ jobs:
       matrix:
         python-version: [3.9]
     env:
-      PYTHON_PACKAGE: dbt_airflow_manifest_parser
+      PYTHON_PACKAGE: dbt_airflow_factory
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2

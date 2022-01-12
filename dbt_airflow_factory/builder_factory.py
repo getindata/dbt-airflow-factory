@@ -2,11 +2,11 @@ from typing import Any, List
 
 import airflow
 
-from dbt_airflow_manifest_parser.builder import DbtAirflowTasksBuilder
-from dbt_airflow_manifest_parser.config_utils import read_config
-from dbt_airflow_manifest_parser.dbt_parameters import DbtExecutionEnvironmentParameters
-from dbt_airflow_manifest_parser.k8s_parameters import KubernetesExecutionParameters
-from dbt_airflow_manifest_parser.operator import KubernetesPodOperatorBuilder
+from dbt_airflow_factory.builder import DbtAirflowTasksBuilder
+from dbt_airflow_factory.config_utils import read_config
+from dbt_airflow_factory.dbt_parameters import DbtExecutionEnvironmentParameters
+from dbt_airflow_factory.k8s_parameters import KubernetesExecutionParameters
+from dbt_airflow_factory.operator import KubernetesPodOperatorBuilder
 
 
 class DbtAirflowTasksBuilderFactory:

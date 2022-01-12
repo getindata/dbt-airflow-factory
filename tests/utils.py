@@ -6,7 +6,7 @@ from datetime import datetime
 import airflow
 from airflow import DAG
 
-from dbt_airflow_manifest_parser.builder_factory import DbtAirflowTasksBuilderFactory
+from dbt_airflow_factory.builder_factory import DbtAirflowTasksBuilderFactory
 
 
 def manifest_file_with_models(nodes_with_dependencies):

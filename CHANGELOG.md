@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+### Changed
+- Rename project from `dbt-airflow-manifest-parser` to `dbt-airflow-factory`.
+
 ## [0.17.0] - 2022-01-11
 
 ### Changed

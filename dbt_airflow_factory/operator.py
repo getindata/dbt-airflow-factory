@@ -4,8 +4,8 @@ from typing import List, Optional
 import airflow
 from airflow.operators.dummy import DummyOperator
 
-from dbt_airflow_manifest_parser.dbt_parameters import DbtExecutionEnvironmentParameters
-from dbt_airflow_manifest_parser.k8s_parameters import KubernetesExecutionParameters
+from dbt_airflow_factory.dbt_parameters import DbtExecutionEnvironmentParameters
+from dbt_airflow_factory.k8s_parameters import KubernetesExecutionParameters
 
 if airflow.__version__.startswith("1."):
     from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
