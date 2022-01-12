@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import airflow
 from kubernetes.client import models as k8s
@@ -24,8 +24,8 @@ class KubernetesExecutionParameters:
         envs: Optional[Dict[str, str]] = None,
         secrets: Optional[List[Secret]] = None,
         is_delete_operator_pod: bool = True,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         self.namespace = namespace
         self.image = image
         self.image_pull_policy = image_pull_policy
@@ -39,13 +39,13 @@ class KubernetesExecutionParameters:
         self.secrets = secrets
         self.is_delete_operator_pod = is_delete_operator_pod
 
-    def get_resources(self):
+    def get_resources(self):  # type: ignore
         if airflow.__version__.startswith("1."):
             return {
-                "limit_memory": self.limit["memory"],
-                "limit_cpu": self.limit["cpu"],
-                "request_memory": self.requests["memory"],
-                "request_cpu": self.requests["cpu"],
+                "limit_memory": self.limit["memory"] if self.limit else None,
+                "limit_cpu": self.limit["cpu"] if self.limit else None,
+                "request_memory": self.requests["memory"] if self.requests else None,
+                "request_cpu": self.requests["cpu"] if self.requests else None,
             }
         else:
             from kubernetes.client import models as k8s

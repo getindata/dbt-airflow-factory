@@ -1,20 +1,20 @@
-from typing import Dict, List, Optional
+from typing import Dict, Iterable, List, Optional
 
 from airflow.models.baseoperator import BaseOperator
 
 
 class ModelExecutionTask:
-    def __init__(
+    def __init__(  # type: ignore
         self,
         run_airflow_task: BaseOperator,
         test_airflow_task: Optional[BaseOperator],
         task_group=None,
-    ):
+    ) -> None:
         self.run_airflow_task = run_airflow_task
         self.test_airflow_task = test_airflow_task
         self.task_group = task_group
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             repr(self.task_group)
             if self.task_group
@@ -24,10 +24,10 @@ class ModelExecutionTask:
             )
         )
 
-    def get_start_task(self):
+    def get_start_task(self):  # type: ignore
         return self.task_group or self.run_airflow_task
 
-    def get_end_task(self):
+    def get_end_task(self):  # type: ignore
         return self.task_group or self.test_airflow_task or self.run_airflow_task
 
 
@@ -37,15 +37,15 @@ class ModelExecutionTasks:
         tasks: Dict[str, ModelExecutionTask],
         starting_task_names: List[str],
         ending_task_names: List[str],
-    ):
+    ) -> None:
         self._tasks = tasks
         self._starting_task_names = starting_task_names
         self._ending_task_names = ending_task_names
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"ModelExecutionTasks(\n {self._tasks} \n)"
 
-    def get_task(self, node_name) -> ModelExecutionTask:
+    def get_task(self, node_name: str) -> ModelExecutionTask:
         return self._tasks[node_name]
 
     def length(self) -> int:
@@ -57,7 +57,7 @@ class ModelExecutionTasks:
     def get_ending_tasks(self) -> List[ModelExecutionTask]:
         return self._extract_by_keys(self._ending_task_names)
 
-    def _extract_by_keys(self, keys) -> List[ModelExecutionTask]:
+    def _extract_by_keys(self, keys: Iterable[str]) -> List[ModelExecutionTask]:
         tasks = []
         for key in keys:
             tasks.append(self._tasks[key])

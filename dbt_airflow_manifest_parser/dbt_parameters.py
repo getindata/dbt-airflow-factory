@@ -1,5 +1,5 @@
 import sys
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 import yaml
 
@@ -11,8 +11,8 @@ class DbtExecutionEnvironmentParameters:
         project_dir_path: str = "/dbt",
         profile_dir_path: str = "/root/.dbt",
         vars: Optional[Dict[str, str]] = None,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         self.target = target
         self.project_dir_path = project_dir_path
         self.profile_dir_path = profile_dir_path

@@ -1,4 +1,5 @@
 import abc
+from typing import List, Optional
 
 import airflow
 from airflow.operators.dummy import DummyOperator
@@ -18,7 +19,9 @@ from airflow.models.baseoperator import BaseOperator
 
 class DbtRunOperatorBuilder(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def create(self, name: str, command: str, model: str = None) -> BaseOperator:
+    def create(
+        self, name: str, command: str, model: Optional[str] = None
+    ) -> BaseOperator:
         raise NotImplementedError
 
 
@@ -31,10 +34,12 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
         self.dbt_execution_env_parameters = dbt_execution_env_parameters
         self.kubernetes_execution_parameters = kubernetes_execution_parameters
 
-    def create(self, name: str, command: str, model: str = None) -> BaseOperator:
+    def create(
+        self, name: str, command: str, model: Optional[str] = None
+    ) -> BaseOperator:
         return self._create(self._prepare_arguments(command, model), name)
 
-    def _prepare_arguments(self, command: str, model: str):
+    def _prepare_arguments(self, command: str, model: Optional[str]) -> List[str]:
         args = (
             f"set -e; "
             f"dbt --no-write-json {command} "
@@ -49,7 +54,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
         )
         return [args]
 
-    def _create(self, args, name):
+    def _create(self, args: Optional[List[str]], name: str) -> KubernetesPodOperator:
         return KubernetesPodOperator(
             namespace=self.kubernetes_execution_parameters.namespace,
             image=self.kubernetes_execution_parameters.image,
@@ -65,7 +70,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             resources=self.kubernetes_execution_parameters.get_resources(),
             env_vars=self.kubernetes_execution_parameters.env_vars,
             secrets=self.kubernetes_execution_parameters.secrets,
-            is_delete_operator_pod=self.kubernetes_execution_parameters.is_delete_operator_pod,
+            is_delete_operator_pod=self.kubernetes_execution_parameters.is_delete_operator_pod,  # noqa: E501
             hostnetwork=False,
         )
 

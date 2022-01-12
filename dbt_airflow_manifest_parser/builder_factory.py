@@ -1,3 +1,5 @@
+from typing import Any, List
+
 import airflow
 
 from dbt_airflow_manifest_parser.builder import DbtAirflowTasksBuilder
@@ -28,12 +30,12 @@ class DbtAirflowTasksBuilderFactory:
             KubernetesPodOperatorBuilder(dbt_execution_env_params, kubernetes_params)
         )
 
-    def _create_dbt_config(self):
+    def _create_dbt_config(self) -> DbtExecutionEnvironmentParameters:
         return DbtExecutionEnvironmentParameters(
             **read_config(self.dag_path, self.env, self.dbt_config_file_name)
         )
 
-    def _create_k8s_config(self):
+    def _create_k8s_config(self) -> KubernetesExecutionParameters:
         config = read_config(self.dag_path, self.env, self.k8s_config_file_name)
         config["image"] = self._prepare_image(config["image"])
         config["secrets"] = self._prepare_secrets(config)
@@ -41,14 +43,14 @@ class DbtAirflowTasksBuilderFactory:
         return KubernetesExecutionParameters(**config)
 
     @staticmethod
-    def _prepare_image(config):
+    def _prepare_image(config: dict) -> str:
         return config["repository"] + ":" + str(config["tag"])
 
-    def _prepare_secrets(self, config):
+    def _prepare_secrets(self, config: dict) -> List[Any]:
         return [self._prepare_secret(secret) for secret in config["secrets"]]
 
     @staticmethod
-    def _prepare_secret(secret_dict):
+    def _prepare_secret(secret_dict: dict):  # type: ignore
         if airflow.__version__.startswith("1."):
             from airflow.contrib.kubernetes.secret import Secret
 

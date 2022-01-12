@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Dict
+from typing import Any, ContextManager, Dict, Tuple
 
 import airflow
 from airflow.models.baseoperator import BaseOperator
@@ -59,7 +59,9 @@ class DbtAirflowTasksBuilder:
         return node["config"]["materialized"] == "ephemeral"
 
     @staticmethod
-    def _create_task_group_for_model(model_name: str, use_task_group: bool):
+    def _create_task_group_for_model(
+        model_name: str, use_task_group: bool
+    ) -> Tuple[Any, ContextManager]:
         import contextlib
 
         is_first_version = airflow.__version__.startswith("1.")
@@ -71,7 +73,9 @@ class DbtAirflowTasksBuilder:
         task_group_ctx = task_group or contextlib.nullcontext()
         return task_group, task_group_ctx
 
-    def _create_task_for_model(self, model_name: str, use_task_group: bool):
+    def _create_task_for_model(
+        self, model_name: str, use_task_group: bool
+    ) -> ModelExecutionTask:
         (task_group, task_group_ctx) = self._create_task_group_for_model(
             model_name, use_task_group
         )

@@ -2,6 +2,7 @@ import os
 
 import airflow
 from airflow import DAG
+from airflow.models import BaseOperator
 
 if airflow.__version__.startswith("1."):
     from airflow.operators.dummy_operator import DummyOperator
@@ -17,7 +18,7 @@ from dbt_airflow_manifest_parser.config_utils import read_config
 class AirflowDagFactory:
     def __init__(
         self,
-        dag_path,
+        dag_path: str,
         env: str,
         dbt_config_file_name: str = "dbt.yml",
         k8s_config_file_name: str = "k8s.yml",
@@ -36,7 +37,7 @@ class AirflowDagFactory:
             self.create_tasks(config)
         return dag
 
-    def create_tasks(self, config):
+    def create_tasks(self, config: dict) -> None:
         start = self._create_starting_task(config)
         end = DummyOperator(task_id="end")
         tasks = self._builder.parse_manifest_into_tasks(
@@ -47,7 +48,7 @@ class AirflowDagFactory:
         for ending_task in tasks.get_ending_tasks():
             ending_task.test_airflow_task >> end
 
-    def _create_starting_task(self, config):
+    def _create_starting_task(self, config: dict) -> BaseOperator:
         if config.get("seed_task", True):
             return self._builder.create_seed_task()
         else:
