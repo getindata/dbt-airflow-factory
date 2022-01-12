@@ -45,6 +45,10 @@ in your ``dbt.yml`` and ``k8s.yml`` files, as long as they are inside quotation 
 .. code-block:: yaml
 
  target: "{{ var.value.env }}"
+ some_other_field: "{{ ds_nodash }}"
+
+Analogously, you can use ``"{{ var.value.VARIABLE_NAME }}"`` in ``airflow.yml``, but only the Airflow variable getter.
+Any other Airflow template variables will not work in ``airflow.yml``.
 
 
 Creation of the directory with data-pipelines-cli

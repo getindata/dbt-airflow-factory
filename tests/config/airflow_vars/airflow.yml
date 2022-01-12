@@ -1,0 +1,12 @@
+dags_path: "{{ var.value.dags_path }}"
+
+default_args:
+  owner: "{{ var.value.dags_owner }}"
+  email:
+    - "{{ var.value.email_owner }}"
+  depends_on_past: False
+  start_date: 2021-10-20T00:00:00
+  email_on_failure: False
+  email_on_retry: False
+  retries: 0
+  retry_delay: 5m
