@@ -1,3 +1,5 @@
+"""Factories creating Airflow Operators running DBT tasks."""
+
 import abc
 from typing import List, Optional
 
@@ -18,14 +20,46 @@ from airflow.models.baseoperator import BaseOperator
 
 
 class DbtRunOperatorBuilder(metaclass=abc.ABCMeta):
+    """
+    Base class of a factory creating Airflow
+    :class:`airflow.models.baseoperator.BaseOperator` running a single DBT task.
+    """
+
     @abc.abstractmethod
     def create(
         self, name: str, command: str, model: Optional[str] = None
     ) -> BaseOperator:
+        """
+        Create Airflow Operator running a single DBT task.
+
+        :param name: task name.
+        :type name: str
+        :param command: DBT command to run.
+        :type command: str
+        :param model: models to include.
+        :type model: Optional[str]
+        :return: Airflow Operator running a single DBT task.
+        :rtype: BaseOperator
+        """
         raise NotImplementedError
 
 
 class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
+    """
+    Builder of Kubernetes Pod Operator running a single DBT task.
+
+    :param dbt_execution_env_parameters: POD representing DBT operator config file.
+    :type dbt_execution_env_parameters: DbtExecutionEnvironmentParameters
+    :param kubernetes_execution_parameters:
+        POD representing Kubernetes operator config file.
+    :type kubernetes_execution_parameters: KubernetesExecutionParameters
+    """
+
+    dbt_execution_env_parameters: DbtExecutionEnvironmentParameters
+    """POD representing DBT operator config file."""
+    kubernetes_execution_parameters: KubernetesExecutionParameters
+    """POD representing Kubernetes operator config file."""
+
     def __init__(
         self,
         dbt_execution_env_parameters: DbtExecutionEnvironmentParameters,
@@ -76,4 +110,8 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
 
 
 class EphemeralOperator(DummyOperator):
+    """
+    :class:`DummyOperator` representing ephemeral DBT model.
+    """
+
     ui_color = "#F3E4F7"

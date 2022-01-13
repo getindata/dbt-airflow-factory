@@ -1,3 +1,5 @@
+"""Factory creating Airflow tasks."""
+
 from typing import Any, List
 
 import airflow
@@ -10,6 +12,32 @@ from dbt_airflow_factory.operator import KubernetesPodOperatorBuilder
 
 
 class DbtAirflowTasksBuilderFactory:
+    """
+    Factory creating Airflow tasks.
+
+    :param dag_path: path to ``manifest.json`` file.
+    :type dag_path: str
+    :param env: name of the environment.
+    :type env: str
+    :param dbt_config_file_name: name of the DBT config file.
+        If not specified, default value is ``dbt.yml``.
+    :type dbt_config_file_name: str
+    :param k8s_config_file_name: name of the Kubernetes config file.
+        If not specified, default value is ``k8s.yml``.
+    :type k8s_config_file_name: str
+    """
+
+    base_config_name: str
+    """Name of the ``base`` environment (default: ``base``)."""
+    dag_path: str
+    """path to ``manifest.json`` file."""
+    env: str
+    """name of the environment."""
+    dbt_config_file_name: str
+    """name of the DBT config file (default: ``dbt.yml``)."""
+    k8s_config_file_name: str
+    """name of the Kubernetes config file (default: ``k8s.yml``)."""
+
     def __init__(
         self,
         dag_path: str,
@@ -24,6 +52,12 @@ class DbtAirflowTasksBuilderFactory:
         self.k8s_config_file_name = k8s_config_file_name
 
     def create(self) -> DbtAirflowTasksBuilder:
+        """
+        Create :class:`.DbtAirflowTasksBuilder` to use.
+
+        :return: Instance of :class:`.DbtAirflowTasksBuilder`.
+        :rtype: DbtAirflowTasksBuilder
+        """
         dbt_execution_env_params = self._create_dbt_config()
         kubernetes_params = self._create_k8s_config()
         return DbtAirflowTasksBuilder(

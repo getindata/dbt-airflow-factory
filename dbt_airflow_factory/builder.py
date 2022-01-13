@@ -1,3 +1,5 @@
+"""Class parsing ``manifest.json`` into Airflow tasks."""
+
 import json
 import logging
 from typing import Any, ContextManager, Dict, Tuple
@@ -13,6 +15,13 @@ from dbt_airflow_factory.tasks import ModelExecutionTask, ModelExecutionTasks
 
 
 class DbtAirflowTasksBuilder:
+    """
+    Parses ``manifest.json`` into Airflow tasks.
+
+    :param operator_builder: DBT node operator.
+    :type operator_builder: DbtRunOperatorBuilder
+    """
+
     def __init__(self, operator_builder: DbtRunOperatorBuilder):
         self.operator_builder = operator_builder
 
@@ -133,7 +142,23 @@ class DbtAirflowTasksBuilder:
     def parse_manifest_into_tasks(
         self, manifest_path: str, use_task_group: bool = True
     ) -> ModelExecutionTasks:
+        """
+        Parse ``manifest.json`` into tasks.
+
+        :param manifest_path: Path to ``manifest.json``.
+        :type manifest_path: str
+        :param use_task_group: Whether to use TaskGroup (does not work in Airflow 1).
+        :type use_task_group: bool
+        :return: Dictionary of tasks created from ``manifest.json`` parsing.
+        :rtype: ModelExecutionTasks
+        """
         return self._make_dbt_tasks(manifest_path, use_task_group)
 
     def create_seed_task(self) -> BaseOperator:
+        """
+        Create ``dbt_seed`` task.
+
+        :return: Operator for ``dbt_seed`` task.
+        :rtype: BaseOperator
+        """
         return self.operator_builder.create("dbt_seed", "seed")

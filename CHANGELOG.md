@@ -1,4 +1,9 @@
+# Changelog
+
 ## [Unreleased]
+
+### Added
+- ReadTheDocs documentation in `docs` directory.
 
 ### Changed
 - Rename project from `dbt-airflow-manifest-parser` to `dbt-airflow-factory`.

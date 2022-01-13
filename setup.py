@@ -19,9 +19,11 @@ EXTRA_REQUIRE = {
         "apache-airflow[kubernetes]==2.2.0",
     ],
     "docs": [
-        "sphinx==3.4.2",
-        "recommonmark==0.7.1",
-        "sphinx_rtd_theme==0.5.2",
+        "sphinx==4.3.1",
+        "sphinx-rtd-theme==1.0.0",
+        "sphinx-click>=3.0,<3.1",
+        "myst-parser>=0.16, <0.17",
+        "docutils>=0.17,<0.18",
     ],
 }
 
