@@ -27,10 +27,10 @@ def test_configuration():
         assert run_task.tolerations[0]["operator"] == "Equal"
         assert run_task.tolerations[0]["value"] == "data-processing"
         assert run_task.tolerations[0]["effect"] == "NoSchedule"
-        assert run_task.k8s_resources[0].limit_memory == "2048M"
-        assert run_task.k8s_resources[0].limit_cpu == "2"
-        assert run_task.k8s_resources[0].request_memory == "1024M"
-        assert run_task.k8s_resources[0].request_cpu == "1"
+        assert run_task.resources[0].limit_memory == "2048M"
+        assert run_task.resources[0].limit_cpu == "2"
+        assert run_task.resources[0].request_memory == "1024M"
+        assert run_task.resources[0].request_cpu == "1"
     else:
         assert run_task.node_selector == {"group": "data-processing"}
         assert run_task.tolerations[0].key == "group"
