@@ -3,7 +3,6 @@
 from typing import Any, Dict, List, Optional
 
 import airflow
-from kubernetes.client import models as k8s
 
 if airflow.__version__.startswith("1."):
     from airflow.contrib.kubernetes.secret import Secret
@@ -64,14 +63,15 @@ class KubernetesExecutionParameters:
         self.node_selectors = node_selectors
         self.tolerations = tolerations
         self.labels = labels
-        self.limit = limit
-        self.requests = requests
+        self._limit = limit
+        self._requests = requests
         self.annotations = annotations
-        self.env_vars = [k8s.V1EnvVar(k, v) for k, v in envs.items()] if envs else None
+        self._env_vars = envs
         self.secrets = secrets
         self.is_delete_operator_pod = is_delete_operator_pod
 
-    def get_resources(self):  # type: ignore
+    @property
+    def resources(self):  # type: ignore
         """
         Return dict containing resources requests and limits.
 
@@ -87,12 +87,37 @@ class KubernetesExecutionParameters:
         """
         if airflow.__version__.startswith("1."):
             return {
-                "limit_memory": self.limit["memory"] if self.limit else None,
-                "limit_cpu": self.limit["cpu"] if self.limit else None,
-                "request_memory": self.requests["memory"] if self.requests else None,
-                "request_cpu": self.requests["cpu"] if self.requests else None,
+                "limit_memory": self._limit["memory"] if self._limit else None,
+                "limit_cpu": self._limit["cpu"] if self._limit else None,
+                "request_memory": self._requests["memory"] if self._requests else None,
+                "request_cpu": self._requests["cpu"] if self._requests else None,
             }
         else:
             from kubernetes.client import models as k8s
 
-            return k8s.V1ResourceRequirements(limits=self.limit, requests=self.requests)
+            return k8s.V1ResourceRequirements(
+                limits=self._limit, requests=self._requests
+            )
+
+    @property
+    def env_vars(self):  # type: ignore
+        """
+        Return dict containing environment variables to set in Kubernetes.
+
+        For Airflow 1, the function returns a dictionary.
+
+        Beginning with Airflow 2, :class:`KubernetesPodOperator` expects
+        a list of ``V1EnvVar`` instances instead. Hence, for Airflow 2, the
+        function returns a ``List[k8s.V1EnvVar]``.
+
+        :return: Dictionary or list containing environment variables.
+        """
+        if self._env_vars is None:
+            return None
+
+        if airflow.__version__.startswith("1."):
+            return self._env_vars
+        else:
+            from kubernetes.client import models as k8s
+
+            return [k8s.V1EnvVar(k, v) for k, v in self._env_vars.items()]
