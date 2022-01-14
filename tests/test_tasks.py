@@ -1,6 +1,6 @@
 from os import path
 
-from dbt_airflow_manifest_parser.builder_factory import DbtAirflowTasksBuilderFactory
+from dbt_airflow_factory.builder_factory import DbtAirflowTasksBuilderFactory
 
 from .utils import (
     IS_FIRST_AIRFLOW_VERSION,

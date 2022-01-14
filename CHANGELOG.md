@@ -1,4 +1,12 @@
+# Changelog
+
 ## [Unreleased]
+
+### Added
+- ReadTheDocs documentation in `docs` directory.
+
+### Changed
+- Rename project from `dbt-airflow-manifest-parser` to `dbt-airflow-factory`.
 
 ## [0.17.0] - 2022-01-11
 
@@ -56,7 +64,7 @@
 
 ## [0.2.0] - 2021-10-25
 
--   Initial implementation of `dbt_airflow_manifest_parser` library. 
+-   Initial implementation of `dbt_airflow_manifest_parser` library.
 
 [Unreleased]: https://github.com/getindata/dbt-airflow-manifest-parser/compare/0.17.0...HEAD
 
