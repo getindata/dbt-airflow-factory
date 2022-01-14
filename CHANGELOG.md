@@ -11,6 +11,7 @@
 ### Fixed
 - `KubernetesExecutionParameters.env_vars` works in Airflow 1 too. Airflow 1 is expecting a real dictionary of
   environment variables instead of a list of `k8s.V1EnvVar` objects.
+- Fix `DummyOperator` import in `operator.py` to work in Airflow 1.
 
 ## [0.17.0] - 2022-01-11
 
