@@ -4,6 +4,7 @@
 
 ### Added
 - ReadTheDocs documentation in `docs` directory.
+- `{{ var.value.VARIABLE_NAME }}` gets replaced with Airflow variables when parsing `airflow.yml` file.
 
 ### Changed
 - Rename project from `dbt-airflow-manifest-parser` to `dbt-airflow-factory`.

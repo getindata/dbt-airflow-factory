@@ -49,7 +49,11 @@ You can use [Airflow template variables][airflow-vars] in your `dbt.yml` and `k8
 quotation marks:
 ```yaml
 target: "{{ var.value.env }}"
+some_other_field: "{{ ds_nodash }}"
 ```
+
+Analogously, you can use `"{{ var.value.VARIABLE_NAME }}"` in `airflow.yml`, but only the Airflow variable getter.
+Any other Airflow template variables will not work in `airflow.yml`.
 
 ### Creation of the directory with data-pipelines-cli
 
