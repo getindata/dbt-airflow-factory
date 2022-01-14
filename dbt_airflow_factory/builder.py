@@ -1,6 +1,8 @@
+"""Class parsing ``manifest.json`` into Airflow tasks."""
+
 import json
 import logging
-from typing import Dict
+from typing import Any, ContextManager, Dict, Tuple
 
 import airflow
 from airflow.models.baseoperator import BaseOperator
@@ -8,14 +10,18 @@ from airflow.models.baseoperator import BaseOperator
 if not airflow.__version__.startswith("1."):
     from airflow.utils.task_group import TaskGroup
 
-from dbt_airflow_manifest_parser.operator import (
-    DbtRunOperatorBuilder,
-    EphemeralOperator,
-)
-from dbt_airflow_manifest_parser.tasks import ModelExecutionTask, ModelExecutionTasks
+from dbt_airflow_factory.operator import DbtRunOperatorBuilder, EphemeralOperator
+from dbt_airflow_factory.tasks import ModelExecutionTask, ModelExecutionTasks
 
 
 class DbtAirflowTasksBuilder:
+    """
+    Parses ``manifest.json`` into Airflow tasks.
+
+    :param operator_builder: DBT node operator.
+    :type operator_builder: DbtRunOperatorBuilder
+    """
+
     def __init__(self, operator_builder: DbtRunOperatorBuilder):
         self.operator_builder = operator_builder
 
@@ -59,7 +65,9 @@ class DbtAirflowTasksBuilder:
         return node["config"]["materialized"] == "ephemeral"
 
     @staticmethod
-    def _create_task_group_for_model(model_name: str, use_task_group: bool):
+    def _create_task_group_for_model(
+        model_name: str, use_task_group: bool
+    ) -> Tuple[Any, ContextManager]:
         import contextlib
 
         is_first_version = airflow.__version__.startswith("1.")
@@ -71,7 +79,9 @@ class DbtAirflowTasksBuilder:
         task_group_ctx = task_group or contextlib.nullcontext()
         return task_group, task_group_ctx
 
-    def _create_task_for_model(self, model_name: str, use_task_group: bool):
+    def _create_task_for_model(
+        self, model_name: str, use_task_group: bool
+    ) -> ModelExecutionTask:
         (task_group, task_group_ctx) = self._create_task_group_for_model(
             model_name, use_task_group
         )
@@ -132,7 +142,23 @@ class DbtAirflowTasksBuilder:
     def parse_manifest_into_tasks(
         self, manifest_path: str, use_task_group: bool = True
     ) -> ModelExecutionTasks:
+        """
+        Parse ``manifest.json`` into tasks.
+
+        :param manifest_path: Path to ``manifest.json``.
+        :type manifest_path: str
+        :param use_task_group: Whether to use TaskGroup (does not work in Airflow 1).
+        :type use_task_group: bool
+        :return: Dictionary of tasks created from ``manifest.json`` parsing.
+        :rtype: ModelExecutionTasks
+        """
         return self._make_dbt_tasks(manifest_path, use_task_group)
 
     def create_seed_task(self) -> BaseOperator:
+        """
+        Create ``dbt_seed`` task.
+
+        :return: Operator for ``dbt_seed`` task.
+        :rtype: BaseOperator
+        """
         return self.operator_builder.create("dbt_seed", "seed")

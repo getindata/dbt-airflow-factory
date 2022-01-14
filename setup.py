@@ -1,4 +1,4 @@
-"""kedro_airflow_k8s module."""
+"""dbt_airflow_factory module."""
 
 from setuptools import find_packages, setup
 
@@ -19,15 +19,17 @@ EXTRA_REQUIRE = {
         "apache-airflow[kubernetes]==2.2.0",
     ],
     "docs": [
-        "sphinx==3.4.2",
-        "recommonmark==0.7.1",
-        "sphinx_rtd_theme==0.5.2",
+        "sphinx==4.3.1",
+        "sphinx-rtd-theme==1.0.0",
+        "sphinx-click>=3.0,<3.1",
+        "myst-parser>=0.16, <0.17",
+        "docutils>=0.17,<0.18",
     ],
 }
 
 setup(
-    name="dbt-airflow-manifest-parser",
-    version="0.17.0",
+    name="dbt-airflow-factory",
+    version="0.18.0",
     description="Library to convert DBT manifest metadata to Airflow tasks",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -41,7 +43,7 @@ setup(
     keywords="dbt airflow manifest parser python",
     author=u"Piotr Pekala",
     author_email="piotr.pekala@getindata.com",
-    url="https://github.com/getindata/dbt-airflow-manifest-parser/",
+    url="https://github.com/getindata/dbt-airflow-factory/",
     packages=find_packages(exclude=["ez_setup", "examples", "tests", "docs"]),
     include_package_data=True,
     zip_safe=False,

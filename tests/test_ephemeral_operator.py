@@ -1,7 +1,7 @@
 from os import path
 
-from dbt_airflow_manifest_parser.airflow_dag_factory import AirflowDagFactory
-from dbt_airflow_manifest_parser.operator import EphemeralOperator
+from dbt_airflow_factory.airflow_dag_factory import AirflowDagFactory
+from dbt_airflow_factory.operator import EphemeralOperator
 from tests.utils import task_group_prefix_builder, test_dag
 
 
