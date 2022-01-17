@@ -23,7 +23,7 @@ EXTRA_REQUIRE = {
         "sphinx-rtd-theme==1.0.0",
         "sphinx-click>=3.0,<3.1",
         "myst-parser>=0.16, <0.17",
-        "docutils>=0.17,<0.18",
+        "docutils<0.17",
     ],
 }
 
