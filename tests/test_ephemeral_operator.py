@@ -19,7 +19,7 @@ def test_ephemeral_dag_factory():
     dag = factory.create()
 
     # then
-    assert len(dag.tasks) == 15
+    assert len(dag.tasks) == 16
 
     task_group_names = [
         el
@@ -39,6 +39,7 @@ def test_ephemeral_dag_factory():
             "model8",
             "model9",
             "model10",
+            "model11",
         ]
     ]
     assert set(dag.task_ids) == set(
@@ -101,4 +102,12 @@ def test_ephemeral_tasks():
     assert (
         "model10__ephemeral"
         in tasks.get_task("model.dbt_test.model9").run_airflow_task.downstream_task_ids
+    )
+    assert (
+        "model11__ephemeral"
+        in tasks.get_task("model.dbt_test.model10").run_airflow_task.downstream_task_ids
+    )
+    assert (
+        "model10__ephemeral"
+        in tasks.get_task("model.dbt_test.model11").run_airflow_task.upstream_task_ids
     )

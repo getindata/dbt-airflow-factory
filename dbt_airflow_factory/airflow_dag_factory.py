@@ -85,9 +85,9 @@ class AirflowDagFactory:
             self._manifest_file_path(config), config.get("use_task_group") or False
         )
         for starting_task in tasks.get_starting_tasks():
-            start >> starting_task.run_airflow_task
+            start >> starting_task.get_start_task()
         for ending_task in tasks.get_ending_tasks():
-            ending_task.test_airflow_task >> end
+            ending_task.get_end_task() >> end
 
     def _create_starting_task(self, config: dict) -> BaseOperator:
         if config.get("seed_task", True):

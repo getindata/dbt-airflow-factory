@@ -2,7 +2,9 @@
   "nodes": {
     "model.dbt_test.model1": {
       "depends_on": {
-        "nodes": ["source.dbt_test.source1"]
+        "nodes": [
+          "source.dbt_test.source1"
+        ]
       },
       "config": {
         "materialized": "table"
@@ -95,6 +97,16 @@
         "nodes": [
           "model.dbt_test.model3",
           "model.dbt_test.model9"
+        ]
+      },
+      "config": {
+        "materialized": "ephemeral"
+      }
+    },
+    "model.dbt_test.model11": {
+      "depends_on": {
+        "nodes": [
+          "model.dbt_test.model10"
         ]
       },
       "config": {
