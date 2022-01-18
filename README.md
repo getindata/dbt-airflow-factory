@@ -1,6 +1,17 @@
 # DBT Airflow Factory
 
+[![Python Version](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue.svg)](https://github.com/getindata/dbt-airflow-factory)
+[![PyPI Version](https://badge.fury.io/py/dbt-airflow-factory.svg)](https://pypi.org/project/dbt-airflow-factory/)
+[![Downloads](https://pepy.tech/badge/dbt-airflow-factory)](https://pepy.tech/project/dbt-airflow-factory)
+[![Maintainability](https://api.codeclimate.com/v1/badges/47fd3570c858b6c166ad/maintainability)](https://codeclimate.com/github/getindata/dbt-airflow-factory/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/47fd3570c858b6c166ad/test_coverage)](https://codeclimate.com/github/getindata/dbt-airflow-factory/test_coverage)
+[![Documentation Status](https://readthedocs.org/projects/dbt-airflow-factory/badge/?version=latest)](https://dbt-airflow-factory.readthedocs.io/en/latest/?badge=latest)
+
 Library to convert DBT manifest metadata to Airflow tasks
+
+## Documentation
+
+Read the full documentation at [https://dbt-airflow-factory.readthedocs.io/](https://dbt-airflow-factory.readthedocs.io/en/latest/index.html)
 
 ## Installation
 

@@ -106,7 +106,7 @@ def _jinja_replace_airflow_vars(file_path: Union[str, os.PathLike[str]]) -> str:
             return Variable.get(item)
 
     file_path = pathlib.Path(file_path)
-    jinja_loader = FileSystemLoader(file_path.parent)
+    jinja_loader = FileSystemLoader(str(file_path.parent))
     jinja_env = NativeEnvironment(loader=jinja_loader)
 
     return jinja_env.get_template(file_path.name).render(

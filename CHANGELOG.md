@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.18.1] - 2022-01-18
+
+### Fixed
+
+-   Jinja's `FileSystemLoader` gets `str` instead of `pathlib.Path` to fix types incompatibility for `Jinja < 2.11.0`.
+-   Use `get_start_task()` and `get_end_task()` in `AirflowDagFactory.create_tasks(config)` to prevent ephemeral ending tasks from throwing.
+
 ## [0.18.0] - 2022-01-14
 
 ### Added
@@ -77,7 +84,9 @@
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library.
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.18.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.18.1...HEAD
+
+[0.18.1]: https://github.com/getindata/dbt-airflow-factory/compare/0.18.0...0.18.1
 
 [0.18.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.17.0...0.18.0
 
