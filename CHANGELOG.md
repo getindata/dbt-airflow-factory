@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Jinja's `FileSystemLoader` gets `str` instead of `pathlib.Path` to fix types incompatibility for `Jinja < 2.11.0`.
+
 ## [0.18.0] - 2022-01-14
 
 ### Added
