@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Fixed
+- Jinja's `FileSystemLoader` gets `str` instead of `pathlib.Path` to fix types incompatibility for `Jinja < 2.11.0`.
 - Use `get_start_task()` and `get_end_task()` in `AirflowDagFactory.create_tasks(config)` to prevent ephemeral ending tasks from throwing.
 
 ## [0.18.0] - 2022-01-14
