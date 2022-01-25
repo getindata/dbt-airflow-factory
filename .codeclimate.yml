@@ -4,7 +4,7 @@ checks:
   argument-count:
     enabled: true
     config:
-      threshold: 4
+      threshold: 6
   complex-logic:
     enabled: true
     config:
