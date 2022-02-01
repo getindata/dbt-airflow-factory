@@ -22,6 +22,9 @@ class DbtAirflowTasksBuilderFactory:
     :param dbt_config_file_name: name of the DBT config file.
         If not specified, default value is ``dbt.yml``.
     :type dbt_config_file_name: str
+    :param execution_env_config_file_name: name of the execution environment config file.
+        If not specified, default value is ``execution_env.yml``.
+    :type execution_env_config_file_name: str
     :param k8s_config_file_name: name of the Kubernetes config file.
         If not specified, default value is ``k8s.yml``.
     :type k8s_config_file_name: str

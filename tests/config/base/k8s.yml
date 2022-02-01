@@ -1,8 +1,4 @@
 
-image:
-  repository: 123.gcr/dbt-platform-poc
-  tag: 123
-
 image_pull_policy: IfNotPresent
 namespace: apache-airflow
 
