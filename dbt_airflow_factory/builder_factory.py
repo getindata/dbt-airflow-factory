@@ -35,6 +35,8 @@ class DbtAirflowTasksBuilderFactory:
     """name of the environment."""
     dbt_config_file_name: str
     """name of the DBT config file (default: ``dbt.yml``)."""
+    execution_env_config_file_name: str
+    """name of the execution env config file (default: ``k8s.yml``)."""
     k8s_config_file_name: str
     """name of the Kubernetes config file (default: ``k8s.yml``)."""
 
@@ -43,12 +45,14 @@ class DbtAirflowTasksBuilderFactory:
         dag_path: str,
         env: str,
         dbt_config_file_name: str = "dbt.yml",
+        execution_env_config_file_name: str = "execution_env.yml",
         k8s_config_file_name: str = "k8s.yml",
     ):
         self.base_config_name = "base"
         self.dag_path = dag_path
         self.env = env
         self.dbt_config_file_name = dbt_config_file_name
+        self.execution_env_config_file_name = execution_env_config_file_name
         self.k8s_config_file_name = k8s_config_file_name
 
     def create(self) -> DbtAirflowTasksBuilder:
@@ -71,6 +75,9 @@ class DbtAirflowTasksBuilderFactory:
 
     def _create_k8s_config(self) -> KubernetesExecutionParameters:
         config = read_config(self.dag_path, self.env, self.k8s_config_file_name)
+        config.update(
+            read_config(self.dag_path, self.env, self.execution_env_config_file_name)
+        )
         config["image"] = self._prepare_image(config["image"])
         config["secrets"] = self._prepare_secrets(config)
         config.update(config.pop("resources"))
