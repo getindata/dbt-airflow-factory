@@ -11,9 +11,7 @@ def _get_ephemeral_name(model_name: str) -> str:
 
 def test_ephemeral_dag_factory():
     # given
-    factory = AirflowDagFactory(
-        path.dirname(path.abspath(__file__)), "ephemeral_operator"
-    )
+    factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "ephemeral_operator")
 
     # when
     dag = factory.create()
@@ -42,9 +40,7 @@ def test_ephemeral_dag_factory():
             "model11",
         ]
     ]
-    assert set(dag.task_ids) == set(
-        ["dbt_seed", "end"] + task_group_names + ephemeral_task_names
-    )
+    assert set(dag.task_ids) == set(["dbt_seed", "end"] + task_group_names + ephemeral_task_names)
 
     for ephemeral_task_name in ephemeral_task_names:
         assert isinstance(dag.task_dict[ephemeral_task_name], EphemeralOperator)
@@ -52,9 +48,7 @@ def test_ephemeral_dag_factory():
 
 def test_ephemeral_tasks():
     with test_dag():
-        factory = AirflowDagFactory(
-            path.dirname(path.abspath(__file__)), "ephemeral_operator"
-        )
+        factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "ephemeral_operator")
         tasks = factory._builder.parse_manifest_into_tasks(
             factory._manifest_file_path(factory.read_config())
         )

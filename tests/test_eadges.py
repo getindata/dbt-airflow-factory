@@ -23,9 +23,7 @@ def test_starting_tasks():
         tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path)
 
     # then
-    starting_tasks_names = [
-        task.run_airflow_task.task_id for task in tasks.get_starting_tasks()
-    ]
+    starting_tasks_names = [task.run_airflow_task.task_id for task in tasks.get_starting_tasks()]
     assert task_group_prefix_builder("model1", "run") in starting_tasks_names
     assert task_group_prefix_builder("model2", "run") in starting_tasks_names
     assert task_group_prefix_builder("model5", "run") in starting_tasks_names
@@ -48,8 +46,6 @@ def test_ending_tasks():
         tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path)
 
     # then
-    ending_tasks_names = [
-        task.test_airflow_task.task_id for task in tasks.get_ending_tasks()
-    ]
+    ending_tasks_names = [task.test_airflow_task.task_id for task in tasks.get_ending_tasks()]
     assert task_group_prefix_builder("model4", "test") in ending_tasks_names
     assert task_group_prefix_builder("model5", "test") in ending_tasks_names

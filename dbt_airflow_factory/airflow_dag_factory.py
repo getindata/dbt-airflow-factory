@@ -29,6 +29,9 @@ class AirflowDagFactory:
     :param dbt_config_file_name: name of the DBT config file.
         If not specified, default value is ``dbt.yml``.
     :type dbt_config_file_name: str
+    :param execution_env_config_file_name: name of the execution env config file.
+        If not specified, default value is ``execution_env.yml``.
+    :type execution_env_config_file_name: str
     :param k8s_config_file_name: name of the Kubernetes config file.
         If not specified, default value is ``k8s.yml``.
     :type k8s_config_file_name: str
@@ -50,11 +53,16 @@ class AirflowDagFactory:
         dag_path: str,
         env: str,
         dbt_config_file_name: str = "dbt.yml",
+        execution_env_config_file_name: str = "execution_env.yml",
         k8s_config_file_name: str = "k8s.yml",
         airflow_config_file_name: str = "airflow.yml",
     ):
         self._builder = DbtAirflowTasksBuilderFactory(
-            dag_path, env, dbt_config_file_name, k8s_config_file_name
+            dag_path,
+            env,
+            dbt_config_file_name,
+            execution_env_config_file_name,
+            k8s_config_file_name,
         ).create()
         self.dag_path = dag_path
         self.env = env
@@ -111,7 +119,5 @@ class AirflowDagFactory:
             self.dag_path, self.env, self.airflow_config_file_name, replace_jinja=True
         )
         if "retry_delay" in config["default_args"]:
-            config["default_args"]["retry_delay"] = parse(
-                config["default_args"]["retry_delay"]
-            )
+            config["default_args"]["retry_delay"] = parse(config["default_args"]["retry_delay"])
         return config

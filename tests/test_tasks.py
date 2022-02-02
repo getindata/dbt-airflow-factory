@@ -65,9 +65,7 @@ def test_test_task():
 def test_dbt_vars():
     # given
     manifest_path = manifest_file_with_models({"model.dbt_test.dim_users": []})
-    factory = DbtAirflowTasksBuilderFactory(
-        path.dirname(path.abspath(__file__)), "vars"
-    )
+    factory = DbtAirflowTasksBuilderFactory(path.dirname(path.abspath(__file__)), "vars")
 
     # when
     with test_dag():
