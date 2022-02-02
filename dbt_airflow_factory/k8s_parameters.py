@@ -95,9 +95,7 @@ class KubernetesExecutionParameters:
         else:
             from kubernetes.client import models as k8s
 
-            return k8s.V1ResourceRequirements(
-                limits=self._limit, requests=self._requests
-            )
+            return k8s.V1ResourceRequirements(limits=self._limit, requests=self._requests)
 
     @property
     def env_vars(self):  # type: ignore

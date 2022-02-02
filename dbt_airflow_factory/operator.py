@@ -27,9 +27,7 @@ class DbtRunOperatorBuilder(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def create(
-        self, name: str, command: str, model: Optional[str] = None
-    ) -> BaseOperator:
+    def create(self, name: str, command: str, model: Optional[str] = None) -> BaseOperator:
         """
         Create Airflow Operator running a single DBT task.
 
@@ -69,9 +67,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
         self.dbt_execution_env_parameters = dbt_execution_env_parameters
         self.kubernetes_execution_parameters = kubernetes_execution_parameters
 
-    def create(
-        self, name: str, command: str, model: Optional[str] = None
-    ) -> BaseOperator:
+    def create(self, name: str, command: str, model: Optional[str] = None) -> BaseOperator:
         return self._create(self._prepare_arguments(command, model), name)
 
     def _prepare_arguments(self, command: str, model: Optional[str]) -> List[str]:

@@ -1,0 +1,6 @@
+
+image:
+  repository: 123.gcr/dbt-platform-poc
+  tag: 123
+
+type: k8s

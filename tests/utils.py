@@ -23,9 +23,7 @@ def manifest_file_with_models(nodes_with_dependencies):
 
 
 def builder_factory():
-    return DbtAirflowTasksBuilderFactory(
-        os.path.dirname(os.path.abspath(__file__)), "dev"
-    )
+    return DbtAirflowTasksBuilderFactory(os.path.dirname(os.path.abspath(__file__)), "dev")
 
 
 def test_dag():
