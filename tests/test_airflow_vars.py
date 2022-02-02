@@ -14,18 +14,14 @@ def test_airflow_vars_parsing(variable_mock):
         "email_owner": "dags.owner@example.com",
     }
 
-    variable_mock.configure_mock(
-        **{"get_variable_from_secrets": lambda key: vars_dict.get(key)}
-    )
+    variable_mock.configure_mock(**{"get_variable_from_secrets": lambda key: vars_dict.get(key)})
 
     # given
     factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "airflow_vars")
 
     # when
     if IS_FIRST_AIRFLOW_VERSION:
-        with mock.patch(
-            "airflow.models.variable.get_variable", lambda key: vars_dict.get(key)
-        ):
+        with mock.patch("airflow.models.variable.get_variable", lambda key: vars_dict.get(key)):
             config = factory.read_config()
     else:
         config = factory.read_config()

@@ -80,9 +80,7 @@ def test_no_task_group():
 
     # when
     with test_dag():
-        tasks = (
-            builder_factory().create().parse_manifest_into_tasks(manifest_path, False)
-        )
+        tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path, False)
 
     # then
     assert (
@@ -90,13 +88,11 @@ def test_no_task_group():
         in tasks.get_task("model.dbt_test.model1").run_airflow_task.downstream_task_ids
     )
     assert (
-        "model1_run"
-        in tasks.get_task("model.dbt_test.model1").test_airflow_task.upstream_task_ids
+        "model1_run" in tasks.get_task("model.dbt_test.model1").test_airflow_task.upstream_task_ids
     )
 
     assert (
-        "model1_test"
-        in tasks.get_task("model.dbt_test.model2").run_airflow_task.upstream_task_ids
+        "model1_test" in tasks.get_task("model.dbt_test.model2").run_airflow_task.upstream_task_ids
     )
     assert (
         "model2_run"
@@ -104,8 +100,7 @@ def test_no_task_group():
     )
 
     assert (
-        "model1_test"
-        in tasks.get_task("model.dbt_test.model3").run_airflow_task.upstream_task_ids
+        "model1_test" in tasks.get_task("model.dbt_test.model3").run_airflow_task.upstream_task_ids
     )
     assert (
         "model3_run"
@@ -113,12 +108,10 @@ def test_no_task_group():
     )
 
     assert (
-        "model2_test"
-        in tasks.get_task("model.dbt_test.model4").run_airflow_task.upstream_task_ids
+        "model2_test" in tasks.get_task("model.dbt_test.model4").run_airflow_task.upstream_task_ids
     )
     assert (
-        "model3_test"
-        in tasks.get_task("model.dbt_test.model4").run_airflow_task.upstream_task_ids
+        "model3_test" in tasks.get_task("model.dbt_test.model4").run_airflow_task.upstream_task_ids
     )
     assert (
         "model4_run"

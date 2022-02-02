@@ -43,6 +43,4 @@ class DbtExecutionEnvironmentParameters:
         :return: String representation of dictionary of **dbt** variables.
         :rtype: str
         """
-        return yaml.dump(
-            self._vars, default_flow_style=True, width=sys.maxsize
-        ).rstrip()
+        return yaml.dump(self._vars, default_flow_style=True, width=sys.maxsize).rstrip()

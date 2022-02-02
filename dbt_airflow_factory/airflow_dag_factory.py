@@ -119,7 +119,5 @@ class AirflowDagFactory:
             self.dag_path, self.env, self.airflow_config_file_name, replace_jinja=True
         )
         if "retry_delay" in config["default_args"]:
-            config["default_args"]["retry_delay"] = parse(
-                config["default_args"]["retry_delay"]
-            )
+            config["default_args"]["retry_delay"] = parse(config["default_args"]["retry_delay"])
         return config

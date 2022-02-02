@@ -78,9 +78,7 @@ class DbtAirflowTasksBuilderFactory:
 
     def _create_k8s_config(self) -> KubernetesExecutionParameters:
         config = read_config(self.dag_path, self.env, self.k8s_config_file_name)
-        config.update(
-            read_config(self.dag_path, self.env, self.execution_env_config_file_name)
-        )
+        config.update(read_config(self.dag_path, self.env, self.execution_env_config_file_name))
         config["image"] = self._prepare_image(config["image"])
         config["secrets"] = self._prepare_secrets(config)
         config.update(config.pop("resources"))
