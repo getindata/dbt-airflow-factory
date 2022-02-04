@@ -32,9 +32,6 @@ class AirflowDagFactory:
     :param execution_env_config_file_name: name of the execution env config file.
         If not specified, default value is ``execution_env.yml``.
     :type execution_env_config_file_name: str
-    :param k8s_config_file_name: name of the Kubernetes config file.
-        If not specified, default value is ``k8s.yml``.
-    :type k8s_config_file_name: str
     :param airflow_config_file_name: name of the Airflow config file.
         If not specified, default value is ``airflow.yml``.
     :type airflow_config_file_name: str
@@ -54,7 +51,6 @@ class AirflowDagFactory:
         env: str,
         dbt_config_file_name: str = "dbt.yml",
         execution_env_config_file_name: str = "execution_env.yml",
-        k8s_config_file_name: str = "k8s.yml",
         airflow_config_file_name: str = "airflow.yml",
     ):
         self._builder = DbtAirflowTasksBuilderFactory(
@@ -62,7 +58,6 @@ class AirflowDagFactory:
             env,
             dbt_config_file_name,
             execution_env_config_file_name,
-            k8s_config_file_name,
         ).create()
         self.dag_path = dag_path
         self.env = env
