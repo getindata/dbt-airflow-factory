@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Run tests with more than one dependency in a different node.
+
 ## [0.19.0] - 2022-02-02
 
 ## [0.18.1] - 2022-01-18
