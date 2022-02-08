@@ -12,6 +12,6 @@ class EcsExecutionParameters:
     def __init__(
         self,
         image: str,
-        **kwargs: Any,
+        **_kwargs: Any,
     ) -> None:
         self.image = image
