@@ -1,20 +1,13 @@
 """Factories creating Airflow Operators running DBT tasks."""
 
 import abc
-from typing import List, Optional
+from typing import Optional
 
 import airflow
 
-from dbt_airflow_factory.dbt_parameters import DbtExecutionEnvironmentParameters
-from dbt_airflow_factory.k8s.k8s_parameters import KubernetesExecutionParameters
-
 if airflow.__version__.startswith("1."):
-    from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
     from airflow.operators.dummy_operator import DummyOperator
 else:
-    from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
-        KubernetesPodOperator,
-    )
     from airflow.operators.dummy import DummyOperator
 
 from airflow.models.baseoperator import BaseOperator
