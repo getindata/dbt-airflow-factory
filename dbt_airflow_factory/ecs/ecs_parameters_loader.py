@@ -8,4 +8,4 @@ class EcsExecutionParametersLoader:
     def create_config(
         dag_path: str, env: str, execution_env_config_file_name: str
     ) -> EcsExecutionParameters:
-        return None
+        raise NotImplementedError

@@ -25,4 +25,4 @@ class EcsPodOperatorBuilder(DbtRunOperatorBuilder):
         self.ecs_execution_parameters = ecs_execution_parameters
 
     def create(self, name: str, command: str, model: Optional[str] = None) -> BaseOperator:
-        return None  # TODO
+        raise NotImplementedError  # TODO

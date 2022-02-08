@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.20.1] - 2022-02-08
+
 ## [0.20.0] - 2022-02-08
 
 ### Added
@@ -92,7 +94,9 @@
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library.
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.20.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.20.1...HEAD
+
+[0.20.1]: https://github.com/getindata/dbt-airflow-factory/compare/0.20.0...0.20.1
 
 [0.20.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.19.0...0.20.0
 

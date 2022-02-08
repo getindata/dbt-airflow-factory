@@ -6,6 +6,15 @@ dbt\_airflow\_factory package
    :undoc-members:
    :show-inheritance:
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 1
+
+   dbt_airflow_factory.ecs
+   dbt_airflow_factory.k8s
+
 Submodules
 ----------
 
@@ -45,14 +54,6 @@ dbt\_airflow\_factory.dbt\_parameters module
 --------------------------------------------
 
 .. automodule:: dbt_airflow_factory.dbt_parameters
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dbt\_airflow\_factory.k8s\_parameters module
---------------------------------------------
-
-.. automodule:: dbt_airflow_factory.k8s_parameters
    :members:
    :undoc-members:
    :show-inheritance:
