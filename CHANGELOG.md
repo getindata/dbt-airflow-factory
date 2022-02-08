@@ -2,8 +2,11 @@
 
 ## [Unreleased]
 
+## [0.20.0] - 2022-02-08
+
 ### Added
-- Run tests with more than one dependency in a different node.
+
+-   Run tests with more than one dependency in a different node.
 
 ## [0.19.0] - 2022-02-02
 
@@ -89,7 +92,9 @@
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library.
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.19.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.20.0...HEAD
+
+[0.20.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.19.0...0.20.0
 
 [0.19.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.18.1...0.19.0
 
