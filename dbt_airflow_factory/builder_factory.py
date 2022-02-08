@@ -1,14 +1,15 @@
 """Factory creating Airflow tasks."""
 
-from typing import Any, List
-
-import airflow
-
 from dbt_airflow_factory.builder import DbtAirflowTasksBuilder
 from dbt_airflow_factory.config_utils import read_config
 from dbt_airflow_factory.dbt_parameters import DbtExecutionEnvironmentParameters
-from dbt_airflow_factory.k8s_parameters import KubernetesExecutionParameters
-from dbt_airflow_factory.operator import KubernetesPodOperatorBuilder
+from dbt_airflow_factory.ecs.ecs_operator import EcsPodOperatorBuilder
+from dbt_airflow_factory.ecs.ecs_parameters_loader import EcsExecutionParametersLoader
+from dbt_airflow_factory.k8s.k8s_operator import KubernetesPodOperatorBuilder
+from dbt_airflow_factory.k8s.k8s_parameters_loader import (
+    KubernetesExecutionParametersLoader,
+)
+from dbt_airflow_factory.operator import DbtRunOperatorBuilder
 
 
 class DbtAirflowTasksBuilderFactory:
@@ -25,9 +26,6 @@ class DbtAirflowTasksBuilderFactory:
     :param execution_env_config_file_name: name of the execution environment config file.
         If not specified, default value is ``execution_env.yml``.
     :type execution_env_config_file_name: str
-    :param k8s_config_file_name: name of the Kubernetes config file.
-        If not specified, default value is ``k8s.yml``.
-    :type k8s_config_file_name: str
     """
 
     base_config_name: str
@@ -39,9 +37,7 @@ class DbtAirflowTasksBuilderFactory:
     dbt_config_file_name: str
     """name of the DBT config file (default: ``dbt.yml``)."""
     execution_env_config_file_name: str
-    """name of the execution env config file (default: ``k8s.yml``)."""
-    k8s_config_file_name: str
-    """name of the Kubernetes config file (default: ``k8s.yml``)."""
+    """name of the execution env config file (default: ``execution_env.yml``)."""
 
     def __init__(
         self,
@@ -49,14 +45,12 @@ class DbtAirflowTasksBuilderFactory:
         env: str,
         dbt_config_file_name: str = "dbt.yml",
         execution_env_config_file_name: str = "execution_env.yml",
-        k8s_config_file_name: str = "k8s.yml",
     ):
         self.base_config_name = "base"
         self.dag_path = dag_path
         self.env = env
         self.dbt_config_file_name = dbt_config_file_name
         self.execution_env_config_file_name = execution_env_config_file_name
-        self.k8s_config_file_name = k8s_config_file_name
 
     def create(self) -> DbtAirflowTasksBuilder:
         """
@@ -65,39 +59,34 @@ class DbtAirflowTasksBuilderFactory:
         :return: Instance of :class:`.DbtAirflowTasksBuilder`.
         :rtype: DbtAirflowTasksBuilder
         """
-        dbt_execution_env_params = self._create_dbt_config()
-        kubernetes_params = self._create_k8s_config()
-        return DbtAirflowTasksBuilder(
-            KubernetesPodOperatorBuilder(dbt_execution_env_params, kubernetes_params)
-        )
+        dbt_params = self._create_dbt_config()
+        execution_env_type = self._read_execution_env_type()
+        return DbtAirflowTasksBuilder(self._create_operator_builder(execution_env_type, dbt_params))
+
+    def _create_operator_builder(
+        self, type: str, dbt_params: DbtExecutionEnvironmentParameters
+    ) -> DbtRunOperatorBuilder:
+        if type == "k8s":
+            return KubernetesPodOperatorBuilder(
+                dbt_params,
+                KubernetesExecutionParametersLoader.create_config(
+                    self.dag_path, self.env, self.execution_env_config_file_name
+                ),
+            )
+        elif type == "ecs":
+            return EcsPodOperatorBuilder(
+                dbt_params,
+                EcsExecutionParametersLoader.create_config(
+                    self.dag_path, self.env, self.execution_env_config_file_name
+                ),
+            )
+        else:
+            raise TypeError(f"Unsupported env type {type}")
 
     def _create_dbt_config(self) -> DbtExecutionEnvironmentParameters:
         return DbtExecutionEnvironmentParameters(
             **read_config(self.dag_path, self.env, self.dbt_config_file_name)
         )
 
-    def _create_k8s_config(self) -> KubernetesExecutionParameters:
-        config = read_config(self.dag_path, self.env, self.k8s_config_file_name)
-        config.update(read_config(self.dag_path, self.env, self.execution_env_config_file_name))
-        config["image"] = self._prepare_image(config["image"])
-        config["secrets"] = self._prepare_secrets(config)
-        config.update(config.pop("resources"))
-        return KubernetesExecutionParameters(**config)
-
-    @staticmethod
-    def _prepare_image(config: dict) -> str:
-        return config["repository"] + ":" + str(config["tag"])
-
-    def _prepare_secrets(self, config: dict) -> List[Any]:
-        return [self._prepare_secret(secret) for secret in config["secrets"]]
-
-    @staticmethod
-    def _prepare_secret(secret_dict: dict):  # type: ignore
-        if airflow.__version__.startswith("1."):
-            from airflow.contrib.kubernetes.secret import Secret
-
-            return Secret(**secret_dict)
-        else:
-            from airflow.kubernetes.secret import Secret
-
-            return Secret(**secret_dict)
+    def _read_execution_env_type(self) -> str:
+        return read_config(self.dag_path, self.env, self.execution_env_config_file_name)["type"]
