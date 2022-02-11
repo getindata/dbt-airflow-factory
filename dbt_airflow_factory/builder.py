@@ -64,6 +64,7 @@ class DbtAirflowTasksBuilder:
             self._build_task_name(model_name, command, is_in_task_group),
             command,
             model_name,
+            additional_dbt_args=["--indirect-selection=cautious"],
         )
 
     def _make_dbt_multiple_deps_test_task(

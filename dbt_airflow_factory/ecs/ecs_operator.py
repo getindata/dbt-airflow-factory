@@ -1,6 +1,6 @@
 """Factories creating Airflow Operators running DBT tasks."""
 
-from typing import Optional
+from typing import List, Optional
 
 from airflow.models.baseoperator import BaseOperator
 
@@ -24,5 +24,11 @@ class EcsPodOperatorBuilder(DbtRunOperatorBuilder):
         self.dbt_execution_env_parameters = dbt_execution_env_parameters
         self.ecs_execution_parameters = ecs_execution_parameters
 
-    def create(self, name: str, command: str, model: Optional[str] = None) -> BaseOperator:
+    def create(
+        self,
+        name: str,
+        command: str,
+        model: Optional[str] = None,
+        additional_dbt_args: Optional[List[str]] = None,
+    ) -> BaseOperator:
         raise NotImplementedError  # TODO

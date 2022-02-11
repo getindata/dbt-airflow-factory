@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+This version brings compatibility with `dbt 1.0`.
+
 ## [0.20.1] - 2022-02-08
 
 ## [0.20.0] - 2022-02-08
