@@ -38,7 +38,7 @@ def test_run_task():
     run_task = tasks.get_task("model.dbt_test.dim_users").run_airflow_task
     assert run_task.cmds == ["bash", "-c"]
     assert "set -e; dbt --no-write-json run " in run_task.arguments[0]
-    assert "--models dim_users" in run_task.arguments[0]
+    assert "--select dim_users" in run_task.arguments[0]
     assert '--vars "{}"' in run_task.arguments[0]
     assert run_task.name == "dim-users-run" if IS_FIRST_AIRFLOW_VERSION else "run"
     assert run_task.task_id == task_group_prefix_builder("dim_users", "run")
@@ -56,7 +56,7 @@ def test_test_task():
     test_task = tasks.get_task("model.dbt_test.dim_users").test_airflow_task
     assert test_task.cmds == ["bash", "-c"]
     assert "set -e; dbt --no-write-json test " in test_task.arguments[0]
-    assert "--models dim_users" in test_task.arguments[0]
+    assert "--select dim_users" in test_task.arguments[0]
     assert '--vars "{}"' in test_task.arguments[0]
     assert test_task.name == "dim-users-test" if IS_FIRST_AIRFLOW_VERSION else "test"
     assert test_task.task_id == task_group_prefix_builder("dim_users", "test")
