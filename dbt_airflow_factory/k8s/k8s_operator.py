@@ -42,10 +42,18 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
         self.dbt_execution_env_parameters = dbt_execution_env_parameters
         self.kubernetes_execution_parameters = kubernetes_execution_parameters
 
-    def create(self, name: str, command: str, model: Optional[str] = None) -> BaseOperator:
-        return self._create(self._prepare_arguments(command, model), name)
+    def create(
+        self,
+        name: str,
+        command: str,
+        model: Optional[str] = None,
+        additional_dbt_args: Optional[List[str]] = None,
+    ) -> BaseOperator:
+        return self._create(self._prepare_arguments(command, model, additional_dbt_args), name)
 
-    def _prepare_arguments(self, command: str, model: Optional[str]) -> List[str]:
+    def _prepare_arguments(
+        self, command: str, model: Optional[str], additional_dbt_args: Optional[List[str]]
+    ) -> List[str]:
         args = [
             "set -e;",
             f"dbt --no-write-json {command}",
@@ -55,7 +63,9 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             f"--profiles-dir {self.dbt_execution_env_parameters.profile_dir_path}",
         ]
         if model:
-            args += [f"--models {model}"]
+            args += [f"--select {model}"]
+        if additional_dbt_args:
+            args += additional_dbt_args
         return [" ".join(args)]
 
     def _create(self, args: Optional[List[str]], name: str) -> KubernetesPodOperator:

@@ -228,7 +228,7 @@ def test_complex_test_dependencies():
     )
 
     def extract_model_arguments(args: str) -> List[str]:
-        return list(filter(lambda s: not s.startswith("-"), args.split("--models ")[1].split()))
+        return list(filter(lambda s: not s.startswith("-"), args.split("--select ")[1].split()))
 
     assert (
         "model2_model3_test"

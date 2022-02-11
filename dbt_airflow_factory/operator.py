@@ -1,7 +1,7 @@
 """Factories creating Airflow Operators running DBT tasks."""
 
 import abc
-from typing import Optional
+from typing import List, Optional
 
 import airflow
 
@@ -20,7 +20,13 @@ class DbtRunOperatorBuilder(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def create(self, name: str, command: str, model: Optional[str] = None) -> BaseOperator:
+    def create(
+        self,
+        name: str,
+        command: str,
+        model: Optional[str] = None,
+        additional_dbt_args: Optional[List[str]] = None,
+    ) -> BaseOperator:
         """
         Create Airflow Operator running a single DBT task.
 
@@ -30,6 +36,8 @@ class DbtRunOperatorBuilder(metaclass=abc.ABCMeta):
         :type command: str
         :param model: models to include.
         :type model: Optional[str]
+        :param additional_dbt_args: Additional arguments to pass to dbt.
+        :type additional_dbt_args: Optional[List[str]]
         :return: Airflow Operator running a single DBT task.
         :rtype: BaseOperator
         """
