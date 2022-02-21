@@ -86,8 +86,8 @@ class AirflowDagFactory:
         end = DummyOperator(task_id="end")
         tasks = self._builder.parse_manifest_into_tasks(
             self._manifest_file_path(config),
-            config.get("use_task_group") or False,
-            config.get("show_ephemeral_models") or True,
+            config.get("use_task_group", False),
+            config.get("show_ephemeral_models", True),
         )
         for starting_task in tasks.get_starting_tasks():
             start >> starting_task.get_start_task()
