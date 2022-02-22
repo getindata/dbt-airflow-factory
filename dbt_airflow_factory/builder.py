@@ -23,6 +23,132 @@ class NodeType(Enum):
     EPHEMERAL = 3
 
 
+class DbtAirflowGraph:
+    graph: nx.DiGraph
+
+    def __init__(self) -> None:
+        self.graph = nx.DiGraph()
+
+    def parse_manifest_into_graph(self, manifest: dict) -> None:
+        self._create_nodes_from_manifest(manifest["nodes"])
+        self._create_edges_from_dependencies()
+
+    def get_graph_sources(self) -> List[str]:
+        return [
+            node_name
+            for node_name in self.graph.nodes()
+            if len(list(self.graph.predecessors(node_name))) == 0
+        ]
+
+    def get_graph_sinks(self) -> List[str]:
+        return [
+            node_name
+            for node_name in self.graph.nodes()
+            if len(list(self.graph.successors(node_name))) == 0
+        ]
+
+    def remove_ephemeral_nodes_from_graph(self) -> None:
+        ephemeral_nodes = [
+            node_name
+            for node_name, node in self.graph.nodes(data=True)
+            if node["node_type"] == NodeType.EPHEMERAL
+        ]
+        for node_name in ephemeral_nodes:
+            self.graph.add_edges_from(
+                itertools.product(
+                    list(self.graph.predecessors(node_name)), list(self.graph.successors(node_name))
+                )
+            )
+            self.graph.remove_node(node_name)
+
+    def contract_test_nodes(self) -> None:
+        tests_with_more_deps = self._get_test_with_multiple_deps_names_by_deps()
+        for depends_on_tuple, test_node_names in tests_with_more_deps.items():
+            self._contract_test_nodes_same_deps(depends_on_tuple, test_node_names)
+
+    def _add_graph_node(
+        self, node_name: str, manifest_node: Dict[str, Any], node_type: NodeType
+    ) -> None:
+        self.graph.add_node(
+            node_name,
+            select=manifest_node["name"],
+            depends_on=self._get_model_dependencies_from_manifest_node(manifest_node),
+            node_type=node_type,
+        )
+
+    def _add_graph_node_for_model_run_task(
+        self, node_name: str, manifest_node: Dict[str, Any]
+    ) -> None:
+        self._add_graph_node(
+            node_name,
+            manifest_node,
+            NodeType.EPHEMERAL
+            if DbtAirflowTasksBuilder.is_ephemeral_task(manifest_node)
+            else NodeType.RUN_TEST,
+        )
+
+    def _add_graph_node_for_multiple_deps_test(
+        self, node_name: str, manifest_node: Dict[str, Any]
+    ) -> None:
+        self._add_graph_node(node_name, manifest_node, NodeType.MULTIPLE_DEPS_TEST)
+
+    def _create_nodes_from_manifest(self, manifest_nodes: Dict[str, Any]) -> None:
+        for node_name, manifest_node in manifest_nodes.items():
+            if DbtAirflowTasksBuilder.is_model_run_task(node_name):
+                logging.info("Creating tasks for: " + node_name)
+                self._add_graph_node_for_model_run_task(node_name, manifest_node)
+            elif (
+                DbtAirflowTasksBuilder.is_test_task(node_name)
+                and len(self._get_model_dependencies_from_manifest_node(manifest_node)) > 1
+            ):
+                logging.info("Creating tasks for: " + node_name)
+                self._add_graph_node_for_multiple_deps_test(node_name, manifest_node)
+
+    def _create_edges_from_dependencies(self) -> None:
+        for graph_node_name, graph_node in self.graph.nodes(data=True):
+            for dependency in graph_node["depends_on"]:
+                self.graph.add_edge(dependency, graph_node_name)
+
+    def _get_test_with_multiple_deps_names_by_deps(self) -> Dict[Tuple[str, ...], List[str]]:
+        tests_with_more_deps: Dict[Tuple[str, ...], List[str]] = {}
+
+        for node_name, node in self.graph.nodes(data=True):
+            if node["node_type"] == NodeType.MULTIPLE_DEPS_TEST:
+                model_dependencies = node["depends_on"]
+                model_dependencies.sort()
+                if tuple(model_dependencies) not in tests_with_more_deps:
+                    tests_with_more_deps[tuple(model_dependencies)] = []
+                tests_with_more_deps[tuple(model_dependencies)].append(node_name)
+
+        return tests_with_more_deps
+
+    def _contract_test_nodes_same_deps(
+        self, depends_on_tuple: Tuple[str, ...], test_node_names: List[str]
+    ) -> None:
+        test_names = [self.graph.nodes[test_node]["select"] for test_node in test_node_names]
+
+        first_test_node = test_node_names[0]
+        for test_node in test_node_names[1:]:
+            nx.contracted_nodes(
+                self.graph, first_test_node, test_node, self_loops=False, copy=False  # in-memory
+            )
+
+        self.graph.nodes[first_test_node]["select"] = " ".join(test_names)
+        nx.relabel_nodes(
+            self.graph,
+            {first_test_node: self._build_multiple_deps_test_name(depends_on_tuple)},
+            copy=False,
+        )
+
+    @staticmethod
+    def _get_model_dependencies_from_manifest_node(node: Dict[str, Any]) -> List[str]:
+        return list(filter(DbtAirflowTasksBuilder.is_model_run_task, node["depends_on"]["nodes"]))
+
+    @staticmethod
+    def _build_multiple_deps_test_name(dependencies: tuple) -> str:
+        return "_".join(map(lambda node_name: node_name.split(".")[-1], dependencies)) + "_test"
+
+
 class DbtAirflowTasksBuilder:
     """
     Parses ``manifest.json`` into Airflow tasks.
@@ -69,23 +195,19 @@ class DbtAirflowTasksBuilder:
         return command if is_in_task_group else f"{model_name}_{command}"
 
     @staticmethod
-    def _build_multiple_deps_test_name(dependencies: tuple) -> str:
-        return "_".join(map(lambda node_name: node_name.split(".")[-1], dependencies)) + "_test"
-
-    @staticmethod
     def _is_task_type(node_name: str, task_type: str) -> bool:
         return node_name.split(".")[0] == task_type
 
     @staticmethod
-    def _is_model_run_task(node_name: str) -> bool:
+    def is_model_run_task(node_name: str) -> bool:
         return DbtAirflowTasksBuilder._is_task_type(node_name, "model")
 
     @staticmethod
-    def _is_test_task(node_name: str) -> bool:
+    def is_test_task(node_name: str) -> bool:
         return DbtAirflowTasksBuilder._is_task_type(node_name, "test")
 
     @staticmethod
-    def _is_ephemeral_task(node: dict) -> bool:
+    def is_ephemeral_task(node: dict) -> bool:
         return node["config"]["materialized"] == "ephemeral"
 
     @staticmethod
@@ -119,129 +241,46 @@ class DbtAirflowTasksBuilder:
             run_task >> test_task
         return ModelExecutionTask(run_task, test_task, task_group)
 
-    def _get_model_dependencies_from_manifest_node(self, node: Dict[str, Any]) -> List[str]:
-        return list(filter(self._is_model_run_task, node["depends_on"]["nodes"]))
-
-    def _add_graph_node(
-        self, graph: nx.DiGraph, node_name: str, node: Dict[str, Any], node_type: NodeType
-    ) -> None:
-        graph.add_node(
-            node_name,
-            select=node["name"],
-            depends_on=self._get_model_dependencies_from_manifest_node(node),
-            node_type=node_type,
+    def _create_task_from_graph_node(
+        self, node_name: str, node: Dict[str, Any], use_task_group: bool
+    ) -> ModelExecutionTask:
+        return (
+            ModelExecutionTask(
+                self._make_dbt_multiple_deps_test_task(node["select"], node_name), None
+            )
+            if node["node_type"] == NodeType.MULTIPLE_DEPS_TEST
+            else self._create_task_for_model(
+                node["select"], node["node_type"] == NodeType.EPHEMERAL, use_task_group
+            )
         )
 
-    def _parse_manifest_into_graph(self, manifest: dict) -> nx.DiGraph:
-        res_graph = nx.DiGraph()
-
-        for node_name, manifest_node in manifest["nodes"].items():
-            if self._is_model_run_task(node_name):
-                logging.info("Creating tasks for: " + node_name)
-                self._add_graph_node(
-                    res_graph,
-                    node_name,
-                    manifest_node,
-                    NodeType.EPHEMERAL
-                    if self._is_ephemeral_task(manifest_node)
-                    else NodeType.RUN_TEST,
-                )
-            elif (
-                self._is_test_task(node_name)
-                and len(self._get_model_dependencies_from_manifest_node(manifest_node)) > 1
-            ):
-                logging.info("Creating tasks for: " + node_name)
-                self._add_graph_node(
-                    res_graph, node_name, manifest_node, NodeType.MULTIPLE_DEPS_TEST
-                )
-
-        for graph_node_name, graph_node in res_graph.nodes(data=True):
-            for dependency in graph_node["depends_on"]:
-                res_graph.add_edge(dependency, graph_node_name)
-
-        return res_graph
-
-    @staticmethod
-    def _remove_ephemeral_nodes_from_graph(graph: nx.DiGraph) -> None:
-        ephemeral_nodes = [
-            node_name
-            for node_name, node in graph.nodes(data=True)
-            if node["node_type"] == NodeType.EPHEMERAL
-        ]
-        for node_name in ephemeral_nodes:
-            graph.add_edges_from(
-                itertools.product(
-                    list(graph.predecessors(node_name)), list(graph.successors(node_name))
-                )
-            )
-            graph.remove_node(node_name)
-
-    def _contract_test_nodes(self, graph: nx.DiGraph) -> None:
-        tests_with_more_deps: Dict[Tuple[str, ...], List[str]] = {}
-
-        for node_name, node in graph.nodes(data=True):
-            if node["node_type"] == NodeType.MULTIPLE_DEPS_TEST:
-                model_dependencies = node["depends_on"]
-                model_dependencies.sort()
-                if tuple(model_dependencies) not in tests_with_more_deps:
-                    tests_with_more_deps[tuple(model_dependencies)] = []
-                tests_with_more_deps[tuple(model_dependencies)].append(node_name)
-
-        for depends_on_tuple, test_node_names in tests_with_more_deps.items():
-            test_names = [graph.nodes[test_node]["select"] for test_node in test_node_names]
-
-            first_test_node = test_node_names[0]
-            for test_node in test_node_names[1:]:
-                nx.contracted_nodes(
-                    graph, first_test_node, test_node, self_loops=False, copy=False  # in-memory
-                )
-
-            graph.nodes[first_test_node]["select"] = " ".join(test_names)
-            nx.relabel_nodes(
-                graph,
-                {first_test_node: self._build_multiple_deps_test_name(depends_on_tuple)},
-                copy=False,
-            )
-
     def _create_tasks_from_graph(
-        self, graph: nx.DiGraph, use_task_group: bool
+        self, dbt_airflow_graph: DbtAirflowGraph, use_task_group: bool
     ) -> ModelExecutionTasks:
-        starting_tasks = []
-        ending_tasks = []
-        result_tasks = {}
-
-        for node_name, node in graph.nodes(data=True):
-            if len(list(graph.predecessors(node_name))) == 0:
-                starting_tasks.append(node_name)
-            if len(list(graph.successors(node_name))) == 0:
-                ending_tasks.append(node_name)
-
-            if node["node_type"] == NodeType.MULTIPLE_DEPS_TEST:
-                result_tasks[node_name] = ModelExecutionTask(
-                    self._make_dbt_multiple_deps_test_task(node["select"], node_name), None
-                )
-            else:  # NodeType.RUN_TEST, NodeType.EPHEMERAL
-                result_tasks[node_name] = self._create_task_for_model(
-                    node["select"], node["node_type"] == NodeType.EPHEMERAL, use_task_group
-                )
-
-        for node, neighbour in graph.edges():
+        result_tasks = {
+            node_name: self._create_task_from_graph_node(node_name, node, use_task_group)
+            for node_name, node in dbt_airflow_graph.graph.nodes(data=True)
+        }
+        for node, neighbour in dbt_airflow_graph.graph.edges():
             # noinspection PyStatementEffect
             result_tasks[node].get_end_task() >> result_tasks[neighbour].get_start_task()
 
-        return ModelExecutionTasks(result_tasks, list(starting_tasks), list(ending_tasks))
+        return ModelExecutionTasks(
+            result_tasks, dbt_airflow_graph.get_graph_sources(), dbt_airflow_graph.get_graph_sinks()
+        )
 
     def _make_dbt_tasks(
         self, manifest_path: str, use_task_group: bool, show_ephemeral_models: bool
     ) -> ModelExecutionTasks:
         manifest = self._load_dbt_manifest(manifest_path)
 
-        graph = self._parse_manifest_into_graph(manifest)
+        dbt_airflow_graph = DbtAirflowGraph()
+        dbt_airflow_graph.parse_manifest_into_graph(manifest)
         if not show_ephemeral_models:
-            self._remove_ephemeral_nodes_from_graph(graph)
-        self._contract_test_nodes(graph)
+            dbt_airflow_graph.remove_ephemeral_nodes_from_graph()
+        dbt_airflow_graph.contract_test_nodes()
 
-        tasks_with_context = self._create_tasks_from_graph(graph, use_task_group)
+        tasks_with_context = self._create_tasks_from_graph(dbt_airflow_graph, use_task_group)
         logging.info(f"Created {str(tasks_with_context.length())} tasks groups")
         return tasks_with_context
 
