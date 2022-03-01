@@ -1,0 +1,2 @@
+manifest_file_name: ../tests/manifest_ephemeral.json
+show_ephemeral_models: False

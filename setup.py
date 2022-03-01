@@ -6,7 +6,7 @@ with open("README.md") as f:
     README = f.read()
 
 # Runtime Requirements.
-INSTALL_REQUIRES = ["pytimeparse==1.1.8"]
+INSTALL_REQUIRES = ["pytimeparse==1.1.8", "networkx==2.6.3"]
 
 # Dev Requirements
 EXTRA_REQUIRE = {

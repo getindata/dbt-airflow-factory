@@ -1,6 +1,7 @@
 {
   "nodes": {
     "model.dbt_test.model1": {
+      "name": "model1",
       "depends_on": {
         "nodes": [
           "source.dbt_test.source1"
@@ -11,6 +12,7 @@
       }
     },
     "model.dbt_test.model2": {
+      "name": "model2",
       "depends_on": {
         "nodes": [
           "model.dbt_test.model1"
@@ -21,6 +23,7 @@
       }
     },
     "model.dbt_test.model3": {
+      "name": "model3",
       "depends_on": {
         "nodes": [
           "model.dbt_test.model2",
@@ -32,6 +35,7 @@
       }
     },
     "model.dbt_test.model4": {
+      "name": "model4",
       "depends_on": {
         "nodes": [
           "model.dbt_test.model10"
@@ -42,6 +46,7 @@
       }
     },
     "model.dbt_test.model5": {
+      "name": "model5",
       "depends_on": {
         "nodes": [
           "source.dbt_test.source2"
@@ -52,6 +57,7 @@
       }
     },
     "model.dbt_test.model6": {
+      "name": "model6",
       "depends_on": {
         "nodes": [
           "source.dbt_test.source3"
@@ -62,6 +68,7 @@
       }
     },
     "model.dbt_test.model7": {
+      "name": "model7",
       "depends_on": {
         "nodes": [
           "model.dbt_test.model6"
@@ -72,6 +79,7 @@
       }
     },
     "model.dbt_test.model8": {
+      "name": "model8",
       "depends_on": {
         "nodes": [
           "model.dbt_test.model6"
@@ -82,6 +90,7 @@
       }
     },
     "model.dbt_test.model9": {
+      "name": "model9",
       "depends_on": {
         "nodes": [
           "model.dbt_test.model7",
@@ -93,6 +102,7 @@
       }
     },
     "model.dbt_test.model10": {
+      "name": "model10",
       "depends_on": {
         "nodes": [
           "model.dbt_test.model3",
@@ -104,6 +114,7 @@
       }
     },
     "model.dbt_test.model11": {
+      "name": "model11",
       "depends_on": {
         "nodes": [
           "model.dbt_test.model10"
