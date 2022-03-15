@@ -80,7 +80,7 @@ def test_no_task_group():
 
     # when
     with test_dag():
-        tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path, False)
+        tasks = builder_factory(False).create().parse_manifest_into_tasks(manifest_path)
 
     # then
     assert (

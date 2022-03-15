@@ -73,9 +73,7 @@ def test_no_ephemeral_dag_factory():
 def test_ephemeral_tasks():
     with test_dag():
         factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "ephemeral_operator")
-        tasks = factory._builder.parse_manifest_into_tasks(
-            factory._manifest_file_path(factory.read_config())
-        )
+        tasks = factory._builder.parse_manifest_into_tasks(factory._manifest_file_path())
 
     # then
     assert (
@@ -134,9 +132,7 @@ def test_ephemeral_tasks():
 def test_no_ephemeral_tasks():
     with test_dag():
         factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "no_ephemeral_operator")
-        tasks = factory._builder.parse_manifest_into_tasks(
-            factory._manifest_file_path(factory.read_config()), show_ephemeral_models=False
-        )
+        tasks = factory._builder.parse_manifest_into_tasks(factory._manifest_file_path())
 
     # then
     assert (
