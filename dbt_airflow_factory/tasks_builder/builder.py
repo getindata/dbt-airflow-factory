@@ -146,13 +146,17 @@ class DbtAirflowTasksBuilder:
 
     def _make_dbt_tasks(self, manifest_path: str) -> ModelExecutionTasks:
         manifest = self._load_dbt_manifest(manifest_path)
-
-        dbt_airflow_graph = DbtAirflowGraph()
-        dbt_airflow_graph.parse_manifest_into_graph(manifest)
-        if not self.airflow_config.show_ephemeral_models:
-            dbt_airflow_graph.remove_ephemeral_nodes_from_graph()
-        dbt_airflow_graph.contract_test_nodes()
-
+        dbt_airflow_graph = self._create_tasks_graph(manifest)
         tasks_with_context = self._create_tasks_from_graph(dbt_airflow_graph)
         logging.info(f"Created {str(tasks_with_context.length())} tasks groups")
         return tasks_with_context
+
+    def _create_tasks_graph(self, manifest: dict) -> DbtAirflowGraph:
+        dbt_airflow_graph = DbtAirflowGraph()
+        dbt_airflow_graph.parse_manifest_into_graph(manifest)
+        if self.airflow_config.enable_dags_dependencies:
+            dbt_airflow_graph.add_external_dependencies(manifest)
+        if not self.airflow_config.show_ephemeral_models:
+            dbt_airflow_graph.remove_ephemeral_nodes_from_graph()
+        dbt_airflow_graph.contract_test_nodes()
+        return dbt_airflow_graph

@@ -22,6 +22,9 @@ class DbtAirflowGraph:
         self._create_nodes_from_manifest(manifest["nodes"])
         self._create_edges_from_dependencies()
 
+    def add_external_dependencies(self, manifest: dict):
+        pass #todo
+
     def get_graph_sources(self) -> List[str]:
         return [
             node_name
