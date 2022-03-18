@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Failure notifications via slack
+
 ### Added
 
 - Ephemeral nodes can be hidden from DAG by setting `show_ephemeral_models: False` in project's `airflow.yml`.
