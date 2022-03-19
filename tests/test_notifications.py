@@ -1,6 +1,8 @@
 from os import path
 from unittest.mock import MagicMock, patch
 
+import airflow
+
 if airflow.__version__.startswith("1."):
     from airflow.contrib.operators.slack_webhook_operator import SlackWebhookOperator
 else:
