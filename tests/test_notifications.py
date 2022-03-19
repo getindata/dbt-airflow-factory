@@ -1,7 +1,10 @@
 from os import path
 from unittest.mock import MagicMock, patch
 
-from airflow.contrib.operators.slack_webhook_operator import SlackWebhookOperator
+if airflow.__version__.startswith("1."):
+    from airflow.contrib.operators.slack_webhook_operator import SlackWebhookOperator
+else:
+    from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 
 from dbt_airflow_factory.airflow_dag_factory import AirflowDagFactory
 from dbt_airflow_factory.notifications.handler import NotificationHandlersFactory
