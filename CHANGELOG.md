@@ -2,11 +2,13 @@
 
 ## [Unreleased]
 
-- Failure notifications via slack
+## [0.22.0] - 2022-03-21
+
+-   Failure notifications via slack
 
 ### Added
 
-- Ephemeral nodes can be hidden from DAG by setting `show_ephemeral_models: False` in project's `airflow.yml`.
+-   Ephemeral nodes can be hidden from DAG by setting `show_ephemeral_models: False` in project's `airflow.yml`.
 
 ## [0.21.0] - 2022-02-11
 
@@ -104,7 +106,9 @@ This version brings compatibility with `dbt 1.0`.
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library.
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.21.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.22.0...HEAD
+
+[0.22.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.21.0...0.22.0
 
 [0.21.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.20.1...0.21.0
 
