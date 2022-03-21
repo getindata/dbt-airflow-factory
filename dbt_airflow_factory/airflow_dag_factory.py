@@ -16,6 +16,7 @@ from pytimeparse import parse
 from dbt_airflow_factory.builder import DbtAirflowTasksBuilder
 from dbt_airflow_factory.builder_factory import DbtAirflowTasksBuilderFactory
 from dbt_airflow_factory.config_utils import read_config
+from dbt_airflow_factory.notifications.handler import NotificationHandlersFactory
 
 
 class AirflowDagFactory:
@@ -59,6 +60,7 @@ class AirflowDagFactory:
             dbt_config_file_name,
             execution_env_config_file_name,
         ).create()
+        self._notifications_handlers_builder = NotificationHandlersFactory()
         self.dag_path = dag_path
         self.env = env
         self.airflow_config_file_name = airflow_config_file_name
@@ -85,7 +87,9 @@ class AirflowDagFactory:
         start = self._create_starting_task(config)
         end = DummyOperator(task_id="end")
         tasks = self._builder.parse_manifest_into_tasks(
-            self._manifest_file_path(config), config.get("use_task_group") or False
+            self._manifest_file_path(config),
+            config.get("use_task_group", False),
+            config.get("show_ephemeral_models", True),
         )
         for starting_task in tasks.get_starting_tasks():
             start >> starting_task.get_start_task()
@@ -115,4 +119,10 @@ class AirflowDagFactory:
         )
         if "retry_delay" in config["default_args"]:
             config["default_args"]["retry_delay"] = parse(config["default_args"]["retry_delay"])
+        if "failure_handlers" in config:
+            config["default_args"][
+                "on_failure_callback"
+            ] = self._notifications_handlers_builder.create_failure_handler(
+                config["failure_handlers"]
+            )
         return config

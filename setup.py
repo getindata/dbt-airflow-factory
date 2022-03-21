@@ -6,7 +6,7 @@ with open("README.md") as f:
     README = f.read()
 
 # Runtime Requirements.
-INSTALL_REQUIRES = ["pytimeparse==1.1.8"]
+INSTALL_REQUIRES = ["pytimeparse==1.1.8", "networkx==2.6.3"]
 
 # Dev Requirements
 EXTRA_REQUIRE = {
@@ -16,7 +16,7 @@ EXTRA_REQUIRE = {
         "tox==3.21.1",
         "pre-commit==2.9.3",
         "pandas==1.2.5",
-        "apache-airflow[kubernetes]==2.2.0",
+        "apache-airflow[kubernetes,slack]==2.2.0",
     ],
     "docs": [
         "sphinx==4.3.1",
@@ -29,7 +29,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="dbt-airflow-factory",
-    version="0.21.0",
+    version="0.22.0",
     description="Library to convert DBT manifest metadata to Airflow tasks",
     long_description=README,
     long_description_content_type="text/markdown",
