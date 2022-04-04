@@ -54,11 +54,11 @@ class AirflowDagFactory:
         execution_env_config_file_name: str = "execution_env.yml",
         airflow_config_file_name: str = "airflow.yml",
     ):
+        self._notifications_handlers_builder = NotificationHandlersFactory()
         self.airflow_config = self._read_config(dag_path, env, airflow_config_file_name)
         self._builder = DbtAirflowTasksBuilderFactory(
             dag_path, env, self.airflow_config, dbt_config_file_name, execution_env_config_file_name
         ).create()
-        self._notifications_handlers_builder = NotificationHandlersFactory()
         self.dag_path = dag_path
 
     def create(self) -> DAG:
@@ -98,8 +98,7 @@ class AirflowDagFactory:
             file_dir, self.airflow_config.get("manifest_file_name", "manifest.json")
         )
 
-    @staticmethod
-    def _read_config(dag_path: str, env: str, airflow_config_file_name: str) -> dict:
+    def _read_config(self, dag_path: str, env: str, airflow_config_file_name: str) -> dict:
         """
         Read ``airflow.yml`` from ``config`` directory into a dictionary.
 

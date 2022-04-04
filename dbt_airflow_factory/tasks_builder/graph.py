@@ -18,12 +18,12 @@ class DbtAirflowGraph:
     def __init__(self) -> None:
         self.graph = nx.DiGraph()
 
-    def parse_manifest_into_graph(self, manifest: dict) -> None:
-        self._create_nodes_from_manifest(manifest["nodes"])
+    def add_execution_tasks(self, manifest: dict) -> None:
+        self._create_execution_nodes_from_manifest(manifest["nodes"])
         self._create_edges_from_dependencies()
 
     def add_external_dependencies(self, manifest: dict):
-        pass #todo
+        self._create_source_sensor_nodes(manifest)
 
     def get_graph_sources(self) -> List[str]:
         return [
@@ -58,7 +58,7 @@ class DbtAirflowGraph:
         for depends_on_tuple, test_node_names in tests_with_more_deps.items():
             self._contract_test_nodes_same_deps(depends_on_tuple, test_node_names)
 
-    def _add_graph_node(
+    def _add_execution_graph_node(
         self, node_name: str, manifest_node: Dict[str, Any], node_type: NodeType
     ) -> None:
         self.graph.add_node(
@@ -68,10 +68,20 @@ class DbtAirflowGraph:
             node_type=node_type,
         )
 
+    def _add_sensor_source_node(
+            self, node_name: str, manifest_node: Dict[str, Any]
+    ) -> None:
+        self.graph.add_node(
+            node_name,
+            select=manifest_node["name"],
+            dag=manifest_node["source_meta"]["dag"],
+            node_type=NodeType.SOURCE_SENSOR,
+        )
+
     def _add_graph_node_for_model_run_task(
         self, node_name: str, manifest_node: Dict[str, Any]
     ) -> None:
-        self._add_graph_node(
+        self._add_execution_graph_node(
             node_name,
             manifest_node,
             NodeType.EPHEMERAL if is_ephemeral_task(manifest_node) else NodeType.RUN_TEST,
@@ -80,9 +90,9 @@ class DbtAirflowGraph:
     def _add_graph_node_for_multiple_deps_test(
         self, node_name: str, manifest_node: Dict[str, Any]
     ) -> None:
-        self._add_graph_node(node_name, manifest_node, NodeType.MULTIPLE_DEPS_TEST)
+        self._add_execution_graph_node(node_name, manifest_node, NodeType.MULTIPLE_DEPS_TEST)
 
-    def _create_nodes_from_manifest(self, manifest_nodes: Dict[str, Any]) -> None:
+    def _create_execution_nodes_from_manifest(self, manifest_nodes: Dict[str, Any]) -> None:
         for node_name, manifest_node in manifest_nodes.items():
             if is_model_run_task(node_name):
                 logging.info("Creating tasks for: " + node_name)
@@ -93,6 +103,13 @@ class DbtAirflowGraph:
             ):
                 logging.info("Creating tasks for: " + node_name)
                 self._add_graph_node_for_multiple_deps_test(node_name, manifest_node)
+
+    def _create_source_sensor_nodes(self, manifest: Dict[str, Any]) -> None:
+        manifest_child_map = manifest["child_map"]
+        for source_name, manifest_source in manifest["sources"].items():
+            if "dag" in manifest_source["source_meta"] and source_name in manifest_child_map:
+                logging.info("Creating source sensor for: " + source_name)
+                self._add_sensor_source_node(source_name, manifest_source)
 
     def _create_edges_from_dependencies(self) -> None:
         for graph_node_name, graph_node in self.graph.nodes(data=True):

@@ -5,6 +5,7 @@ from typing import Any, ContextManager, Dict, Tuple
 
 import airflow
 from airflow.models.baseoperator import BaseOperator
+from airflow.sensors.external_task_sensor import ExternalTaskSensor
 
 from dbt_airflow_factory.tasks_builder.node_type import NodeType
 from dbt_airflow_factory.tasks_builder.parameters import TasksBuildingParameters
@@ -119,17 +120,18 @@ class DbtAirflowTasksBuilder:
     def _create_task_from_graph_node(
         self, node_name: str, node: Dict[str, Any]
     ) -> ModelExecutionTask:
-        return (
-            ModelExecutionTask(
+        if node["node_type"] == NodeType.MULTIPLE_DEPS_TEST:
+            return ModelExecutionTask(
                 self._make_dbt_multiple_deps_test_task(node["select"], node_name), None
             )
-            if node["node_type"] == NodeType.MULTIPLE_DEPS_TEST
-            else self._create_task_for_model(
-                node["select"],
-                node["node_type"] == NodeType.EPHEMERAL,
-                self.airflow_config.use_task_group,
+        elif node["node_type"] == NodeType.SOURCE_SENSOR:
+            return self._create_dag_sensor(node)
+        else:
+            return self._create_task_for_model(
+                    node["select"],
+                    node["node_type"] == NodeType.EPHEMERAL,
+                    self.airflow_config.use_task_group,
             )
-        )
 
     def _create_tasks_from_graph(self, dbt_airflow_graph: DbtAirflowGraph) -> ModelExecutionTasks:
         result_tasks = {
@@ -139,7 +141,6 @@ class DbtAirflowTasksBuilder:
         for node, neighbour in dbt_airflow_graph.graph.edges():
             # noinspection PyStatementEffect
             result_tasks[node].get_end_task() >> result_tasks[neighbour].get_start_task()
-
         return ModelExecutionTasks(
             result_tasks, dbt_airflow_graph.get_graph_sources(), dbt_airflow_graph.get_graph_sinks()
         )
@@ -153,10 +154,24 @@ class DbtAirflowTasksBuilder:
 
     def _create_tasks_graph(self, manifest: dict) -> DbtAirflowGraph:
         dbt_airflow_graph = DbtAirflowGraph()
-        dbt_airflow_graph.parse_manifest_into_graph(manifest)
         if self.airflow_config.enable_dags_dependencies:
             dbt_airflow_graph.add_external_dependencies(manifest)
+        dbt_airflow_graph.add_execution_tasks(manifest)
         if not self.airflow_config.show_ephemeral_models:
             dbt_airflow_graph.remove_ephemeral_nodes_from_graph()
         dbt_airflow_graph.contract_test_nodes()
         return dbt_airflow_graph
+
+    def _create_dag_sensor(self, node: Dict[str, Any]) -> ModelExecutionTask:
+        #todo move parameters to configuration
+        return ModelExecutionTask(
+            ExternalTaskSensor(
+                task_id="sensor_" + node["select"],
+                external_dag_id=node["dag"],
+                external_task_id=node["select"],
+                timeout=600,
+                allowed_states=['success'],
+                failed_states=['failed', 'skipped'],
+                mode="reschedule",
+            )
+        )
