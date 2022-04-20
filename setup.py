@@ -17,6 +17,7 @@ EXTRA_REQUIRE = {
         "pre-commit==2.9.3",
         "pandas==1.2.5",
         "apache-airflow[kubernetes,slack]==2.2.0",
+        "click<=8.0.2",
     ],
     "docs": [
         "sphinx==4.3.1",
