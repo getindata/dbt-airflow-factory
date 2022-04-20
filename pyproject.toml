@@ -1,3 +1,2 @@
 [tool.black]
-required-version = '22.3.0'
 line-length = 100

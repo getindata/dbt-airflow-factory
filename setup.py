@@ -42,7 +42,7 @@ setup(
         "Programming Language :: Python :: 3.8",
     ],
     keywords="dbt airflow manifest parser python",
-    author=u"Piotr Pekala",
+    author="Piotr Pekala",
     author_email="piotr.pekala@getindata.com",
     url="https://github.com/getindata/dbt-airflow-factory/",
     packages=find_packages(exclude=["ez_setup", "examples", "tests", "docs"]),
