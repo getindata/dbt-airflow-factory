@@ -17,10 +17,7 @@ def manifest_file_with_models(nodes_with_dependencies: dict, extra_metadata: dic
             "config": {"materialized": "view"},
             "name": node_name.split(".")[-1],
         }
-    content = {
-        "nodes": content_nodes,
-        "child_map": {}
-    }
+    content = {"nodes": content_nodes, "child_map": {}}
     if extra_metadata:
         content.update(extra_metadata)
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
@@ -30,8 +27,12 @@ def manifest_file_with_models(nodes_with_dependencies: dict, extra_metadata: dic
 
 def builder_factory(use_task_group=True, enable_project_dependencies=False):
     return DbtAirflowTasksBuilderFactory(
-        os.path.dirname(os.path.abspath(__file__)), "dev",
-        {"enable_project_dependencies": enable_project_dependencies, "use_task_group": use_task_group}
+        os.path.dirname(os.path.abspath(__file__)),
+        "dev",
+        {
+            "enable_project_dependencies": enable_project_dependencies,
+            "use_task_group": use_task_group,
+        },
     )
 
 

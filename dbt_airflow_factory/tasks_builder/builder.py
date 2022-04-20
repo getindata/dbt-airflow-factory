@@ -128,9 +128,9 @@ class DbtAirflowTasksBuilder:
             return self._create_dag_sensor(node)
         else:
             return self._create_task_for_model(
-                    node["select"],
-                    node["node_type"] == NodeType.EPHEMERAL,
-                    self.airflow_config.use_task_group,
+                node["select"],
+                node["node_type"] == NodeType.EPHEMERAL,
+                self.airflow_config.use_task_group,
             )
 
     def _create_tasks_from_graph(self, dbt_airflow_graph: DbtAirflowGraph) -> ModelExecutionTasks:
@@ -157,22 +157,24 @@ class DbtAirflowTasksBuilder:
         dbt_airflow_graph.add_execution_tasks(manifest)
         if self.airflow_config.enable_dags_dependencies:
             dbt_airflow_graph.add_external_dependencies(manifest)
-        dbt_airflow_graph.create_edges_from_dependencies(self.airflow_config.enable_dags_dependencies)
+        dbt_airflow_graph.create_edges_from_dependencies(
+            self.airflow_config.enable_dags_dependencies
+        )
         if not self.airflow_config.show_ephemeral_models:
             dbt_airflow_graph.remove_ephemeral_nodes_from_graph()
         dbt_airflow_graph.contract_test_nodes()
         return dbt_airflow_graph
 
     def _create_dag_sensor(self, node: Dict[str, Any]) -> ModelExecutionTask:
-        #todo move parameters to configuration
+        # todo move parameters to configuration
         return ModelExecutionTask(
             ExternalTaskSensor(
                 task_id="sensor_" + node["select"],
                 external_dag_id=node["dag"],
                 external_task_id=node["select"],
                 timeout=600,
-                allowed_states=['success'],
-                failed_states=['failed', 'skipped'],
+                allowed_states=["success"],
+                failed_states=["failed", "skipped"],
                 mode="reschedule",
             )
         )

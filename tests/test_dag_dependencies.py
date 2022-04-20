@@ -1,5 +1,3 @@
-from typing import List
-
 from .utils import (
     builder_factory,
     manifest_file_with_models,
@@ -19,12 +17,11 @@ extra_metadata_data = {
             "schema": "presentation",
             "name": "some_final_model",
             "unique_id": "source.upstream_pipeline_sources.upstream_pipeline.some_final_model",
-            "source_meta": {
-                "dag": "dbt-tpch-test"
-            }
+            "source_meta": {"dag": "dbt-tpch-test"},
         }
-    }
+    },
 }
+
 
 def test_dag_sensor():
     # given
@@ -34,15 +31,21 @@ def test_dag_sensor():
                 "source.upstream_pipeline_sources.upstream_pipeline.some_final_model"
             ]
         },
-        extra_metadata_data
+        extra_metadata_data,
     )
 
     # when
     with test_dag():
-        tasks = builder_factory(enable_project_dependencies=True).create().parse_manifest_into_tasks(manifest_path)
+        tasks = (
+            builder_factory(enable_project_dependencies=True)
+            .create()
+            .parse_manifest_into_tasks(manifest_path)
+        )
 
     # then
-    sensor_task = tasks.get_task("source.upstream_pipeline_sources.upstream_pipeline.some_final_model")
+    sensor_task = tasks.get_task(
+        "source.upstream_pipeline_sources.upstream_pipeline.some_final_model"
+    )
     assert tasks.length() == 2
     assert sensor_task is not None
     assert sensor_task.execution_airflow_task is not None
@@ -58,14 +61,25 @@ def test_dag_sensor_dependency():
                 "source.upstream_pipeline_sources.upstream_pipeline.some_final_model"
             ]
         },
-        extra_metadata_data
+        extra_metadata_data,
     )
 
     # when
     with test_dag():
-        tasks = builder_factory(enable_project_dependencies=True).create().parse_manifest_into_tasks(manifest_path)
+        tasks = (
+            builder_factory(enable_project_dependencies=True)
+            .create()
+            .parse_manifest_into_tasks(manifest_path)
+        )
 
-    print("dupa:" + str(tasks.get_task("source.upstream_pipeline_sources.upstream_pipeline.some_final_model").execution_airflow_task.downstream_task_ids))
+    print(
+        "dupa:"
+        + str(
+            tasks.get_task(
+                "source.upstream_pipeline_sources.upstream_pipeline.some_final_model"
+            ).execution_airflow_task.downstream_task_ids
+        )
+    )
     # then
     assert (
         "sensor_some_final_model"
@@ -73,5 +87,7 @@ def test_dag_sensor_dependency():
     )
     assert (
         task_group_prefix_builder("dependent_model", "run")
-        in tasks.get_task("source.upstream_pipeline_sources.upstream_pipeline.some_final_model").execution_airflow_task.downstream_task_ids
+        in tasks.get_task(
+            "source.upstream_pipeline_sources.upstream_pipeline.some_final_model"
+        ).execution_airflow_task.downstream_task_ids
     )

@@ -92,7 +92,8 @@ def test_no_task_group():
     )
 
     assert (
-        "model1_test" in tasks.get_task("model.dbt_test.model2").execution_airflow_task.upstream_task_ids
+        "model1_test"
+        in tasks.get_task("model.dbt_test.model2").execution_airflow_task.upstream_task_ids
     )
     assert (
         "model2_run"
@@ -100,7 +101,8 @@ def test_no_task_group():
     )
 
     assert (
-        "model1_test" in tasks.get_task("model.dbt_test.model3").execution_airflow_task.upstream_task_ids
+        "model1_test"
+        in tasks.get_task("model.dbt_test.model3").execution_airflow_task.upstream_task_ids
     )
     assert (
         "model3_run"
@@ -108,10 +110,12 @@ def test_no_task_group():
     )
 
     assert (
-        "model2_test" in tasks.get_task("model.dbt_test.model4").execution_airflow_task.upstream_task_ids
+        "model2_test"
+        in tasks.get_task("model.dbt_test.model4").execution_airflow_task.upstream_task_ids
     )
     assert (
-        "model3_test" in tasks.get_task("model.dbt_test.model4").execution_airflow_task.upstream_task_ids
+        "model3_test"
+        in tasks.get_task("model.dbt_test.model4").execution_airflow_task.upstream_task_ids
     )
     assert (
         "model4_run"

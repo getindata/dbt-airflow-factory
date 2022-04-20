@@ -8,8 +8,8 @@ from dbt_airflow_factory.tasks_builder.node_type import NodeType
 from dbt_airflow_factory.tasks_builder.utils import (
     is_ephemeral_task,
     is_model_run_task,
+    is_source_sensor_task,
     is_test_task,
-    is_source_sensor_task
 )
 
 
@@ -25,13 +25,13 @@ class DbtAirflowGraph:
                 logging.info("Creating tasks for: " + node_name)
                 self._add_graph_node_for_model_run_task(node_name, manifest_node)
             elif (
-                    is_test_task(node_name)
-                    and len(self._get_model_dependencies_from_manifest_node(manifest_node)) > 1
+                is_test_task(node_name)
+                and len(self._get_model_dependencies_from_manifest_node(manifest_node)) > 1
             ):
                 logging.info("Creating tasks for: " + node_name)
                 self._add_graph_node_for_multiple_deps_test(node_name, manifest_node)
 
-    def add_external_dependencies(self, manifest: dict):
+    def add_external_dependencies(self, manifest: dict) -> None:
         manifest_child_map = manifest["child_map"]
         for source_name, manifest_source in manifest["sources"].items():
             if "dag" in manifest_source["source_meta"] and source_name in manifest_child_map:
@@ -40,10 +40,9 @@ class DbtAirflowGraph:
 
     def create_edges_from_dependencies(self, include_sensors: bool = False) -> None:
         for graph_node_name, graph_node in self.graph.nodes(data=True):
-            if "depends_on" in graph_node:
-                for dependency in graph_node["depends_on"]:
-                    if not is_source_sensor_task(dependency) or include_sensors:
-                        self.graph.add_edge(dependency, graph_node_name)
+            for dependency in graph_node.get("depends_on", []):
+                if not is_source_sensor_task(dependency) or include_sensors:
+                    self.graph.add_edge(dependency, graph_node_name)
 
     def get_graph_sources(self) -> List[str]:
         return [
@@ -88,9 +87,7 @@ class DbtAirflowGraph:
             node_type=node_type,
         )
 
-    def _add_sensor_source_node(
-            self, node_name: str, manifest_node: Dict[str, Any]
-    ) -> None:
+    def _add_sensor_source_node(self, node_name: str, manifest_node: Dict[str, Any]) -> None:
         self.graph.add_node(
             node_name,
             select=manifest_node["name"],
