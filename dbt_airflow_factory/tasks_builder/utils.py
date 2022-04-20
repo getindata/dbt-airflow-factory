@@ -6,6 +6,10 @@ def is_model_run_task(node_name: str) -> bool:
     return is_task_type(node_name, "model")
 
 
+def is_source_sensor_task(node_name: str) -> bool:
+    return is_task_type(node_name, "source")
+
+
 def is_test_task(node_name: str) -> bool:
     return is_task_type(node_name, "test")
 

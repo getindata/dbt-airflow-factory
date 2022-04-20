@@ -154,9 +154,10 @@ class DbtAirflowTasksBuilder:
 
     def _create_tasks_graph(self, manifest: dict) -> DbtAirflowGraph:
         dbt_airflow_graph = DbtAirflowGraph()
+        dbt_airflow_graph.add_execution_tasks(manifest)
         if self.airflow_config.enable_dags_dependencies:
             dbt_airflow_graph.add_external_dependencies(manifest)
-        dbt_airflow_graph.add_execution_tasks(manifest)
+        dbt_airflow_graph.create_edges_from_dependencies(self.airflow_config.enable_dags_dependencies)
         if not self.airflow_config.show_ephemeral_models:
             dbt_airflow_graph.remove_ephemeral_nodes_from_graph()
         dbt_airflow_graph.contract_test_nodes()

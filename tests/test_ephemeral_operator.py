@@ -78,7 +78,7 @@ def test_ephemeral_tasks():
     # then
     assert (
         task_group_prefix_builder("model1", "test")
-        in tasks.get_task("model.dbt_test.model1").run_airflow_task.downstream_task_ids
+        in tasks.get_task("model.dbt_test.model1").execution_airflow_task.downstream_task_ids
     )
     assert (
         task_group_prefix_builder("model1", "run")
@@ -87,7 +87,7 @@ def test_ephemeral_tasks():
 
     assert (
         task_group_prefix_builder("model1", "test")
-        in tasks.get_task("model.dbt_test.model2").run_airflow_task.upstream_task_ids
+        in tasks.get_task("model.dbt_test.model2").execution_airflow_task.upstream_task_ids
     )
     assert (
         "model2__ephemeral"
@@ -96,36 +96,36 @@ def test_ephemeral_tasks():
 
     assert (
         "model2__ephemeral"
-        in tasks.get_task("model.dbt_test.model3").run_airflow_task.upstream_task_ids
+        in tasks.get_task("model.dbt_test.model3").execution_airflow_task.upstream_task_ids
     )
     assert (
         "model3__ephemeral"
-        in tasks.get_task("model.dbt_test.model5").run_airflow_task.downstream_task_ids
+        in tasks.get_task("model.dbt_test.model5").execution_airflow_task.downstream_task_ids
     )
 
     assert (
         "model3__ephemeral"
-        in tasks.get_task("model.dbt_test.model10").run_airflow_task.upstream_task_ids
+        in tasks.get_task("model.dbt_test.model10").execution_airflow_task.upstream_task_ids
     )
     assert (
         "model9__ephemeral"
-        in tasks.get_task("model.dbt_test.model10").run_airflow_task.upstream_task_ids
+        in tasks.get_task("model.dbt_test.model10").execution_airflow_task.upstream_task_ids
     )
     assert (
         "model10__ephemeral"
-        in tasks.get_task("model.dbt_test.model3").run_airflow_task.downstream_task_ids
+        in tasks.get_task("model.dbt_test.model3").execution_airflow_task.downstream_task_ids
     )
     assert (
         "model10__ephemeral"
-        in tasks.get_task("model.dbt_test.model9").run_airflow_task.downstream_task_ids
+        in tasks.get_task("model.dbt_test.model9").execution_airflow_task.downstream_task_ids
     )
     assert (
         "model11__ephemeral"
-        in tasks.get_task("model.dbt_test.model10").run_airflow_task.downstream_task_ids
+        in tasks.get_task("model.dbt_test.model10").execution_airflow_task.downstream_task_ids
     )
     assert (
         "model10__ephemeral"
-        in tasks.get_task("model.dbt_test.model11").run_airflow_task.upstream_task_ids
+        in tasks.get_task("model.dbt_test.model11").execution_airflow_task.upstream_task_ids
     )
 
 
@@ -137,7 +137,7 @@ def test_no_ephemeral_tasks():
     # then
     assert (
         task_group_prefix_builder("model1", "test")
-        in tasks.get_task("model.dbt_test.model1").run_airflow_task.downstream_task_ids
+        in tasks.get_task("model.dbt_test.model1").execution_airflow_task.downstream_task_ids
     )
     assert (
         task_group_prefix_builder("model1", "run")
@@ -146,7 +146,7 @@ def test_no_ephemeral_tasks():
 
     assert (
         task_group_prefix_builder("model1", "test")
-        in tasks.get_task("model.dbt_test.model4").run_airflow_task.upstream_task_ids
+        in tasks.get_task("model.dbt_test.model4").execution_airflow_task.upstream_task_ids
     )
     assert (
         task_group_prefix_builder("model4", "run")
@@ -155,7 +155,7 @@ def test_no_ephemeral_tasks():
 
     assert (
         task_group_prefix_builder("model6", "test")
-        in tasks.get_task("model.dbt_test.model4").run_airflow_task.upstream_task_ids
+        in tasks.get_task("model.dbt_test.model4").execution_airflow_task.upstream_task_ids
     )
     assert (
         task_group_prefix_builder("model4", "run")

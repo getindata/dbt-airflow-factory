@@ -9,6 +9,7 @@ from dbt_airflow_factory.tasks_builder.utils import (
     is_ephemeral_task,
     is_model_run_task,
     is_test_task,
+    is_source_sensor_task
 )
 
 
@@ -19,11 +20,30 @@ class DbtAirflowGraph:
         self.graph = nx.DiGraph()
 
     def add_execution_tasks(self, manifest: dict) -> None:
-        self._create_execution_nodes_from_manifest(manifest["nodes"])
-        self._create_edges_from_dependencies()
+        for node_name, manifest_node in manifest["nodes"].items():
+            if is_model_run_task(node_name):
+                logging.info("Creating tasks for: " + node_name)
+                self._add_graph_node_for_model_run_task(node_name, manifest_node)
+            elif (
+                    is_test_task(node_name)
+                    and len(self._get_model_dependencies_from_manifest_node(manifest_node)) > 1
+            ):
+                logging.info("Creating tasks for: " + node_name)
+                self._add_graph_node_for_multiple_deps_test(node_name, manifest_node)
 
     def add_external_dependencies(self, manifest: dict):
-        self._create_source_sensor_nodes(manifest)
+        manifest_child_map = manifest["child_map"]
+        for source_name, manifest_source in manifest["sources"].items():
+            if "dag" in manifest_source["source_meta"] and source_name in manifest_child_map:
+                logging.info("Creating source sensor for: " + source_name)
+                self._add_sensor_source_node(source_name, manifest_source)
+
+    def create_edges_from_dependencies(self, include_sensors: bool = False) -> None:
+        for graph_node_name, graph_node in self.graph.nodes(data=True):
+            if "depends_on" in graph_node:
+                for dependency in graph_node["depends_on"]:
+                    if not is_source_sensor_task(dependency) or include_sensors:
+                        self.graph.add_edge(dependency, graph_node_name)
 
     def get_graph_sources(self) -> List[str]:
         return [
@@ -92,30 +112,6 @@ class DbtAirflowGraph:
     ) -> None:
         self._add_execution_graph_node(node_name, manifest_node, NodeType.MULTIPLE_DEPS_TEST)
 
-    def _create_execution_nodes_from_manifest(self, manifest_nodes: Dict[str, Any]) -> None:
-        for node_name, manifest_node in manifest_nodes.items():
-            if is_model_run_task(node_name):
-                logging.info("Creating tasks for: " + node_name)
-                self._add_graph_node_for_model_run_task(node_name, manifest_node)
-            elif (
-                is_test_task(node_name)
-                and len(self._get_model_dependencies_from_manifest_node(manifest_node)) > 1
-            ):
-                logging.info("Creating tasks for: " + node_name)
-                self._add_graph_node_for_multiple_deps_test(node_name, manifest_node)
-
-    def _create_source_sensor_nodes(self, manifest: Dict[str, Any]) -> None:
-        manifest_child_map = manifest["child_map"]
-        for source_name, manifest_source in manifest["sources"].items():
-            if "dag" in manifest_source["source_meta"] and source_name in manifest_child_map:
-                logging.info("Creating source sensor for: " + source_name)
-                self._add_sensor_source_node(source_name, manifest_source)
-
-    def _create_edges_from_dependencies(self) -> None:
-        for graph_node_name, graph_node in self.graph.nodes(data=True):
-            for dependency in graph_node["depends_on"]:
-                self.graph.add_edge(dependency, graph_node_name)
-
     def _get_test_with_multiple_deps_names_by_deps(self) -> Dict[Tuple[str, ...], List[str]]:
         tests_with_more_deps: Dict[Tuple[str, ...], List[str]] = {}
 
@@ -149,7 +145,11 @@ class DbtAirflowGraph:
 
     @staticmethod
     def _get_model_dependencies_from_manifest_node(node: Dict[str, Any]) -> List[str]:
-        return list(filter(is_model_run_task, node["depends_on"]["nodes"]))
+        return list(filter(DbtAirflowGraph._is_valid_dependency, node["depends_on"]["nodes"]))
+
+    @staticmethod
+    def _is_valid_dependency(node_name: str) -> bool:
+        return is_model_run_task(node_name) or is_source_sensor_task(node_name)
 
     @staticmethod
     def _build_multiple_deps_test_name(dependencies: tuple) -> str:

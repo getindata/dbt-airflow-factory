@@ -9,7 +9,7 @@ from airflow import DAG
 from dbt_airflow_factory.builder_factory import DbtAirflowTasksBuilderFactory
 
 
-def manifest_file_with_models(nodes_with_dependencies):
+def manifest_file_with_models(nodes_with_dependencies: dict, extra_metadata: dict = None):
     content_nodes = {}
     for node_name in nodes_with_dependencies.keys():
         content_nodes[node_name] = {
@@ -17,15 +17,21 @@ def manifest_file_with_models(nodes_with_dependencies):
             "config": {"materialized": "view"},
             "name": node_name.split(".")[-1],
         }
-    content = {"nodes": content_nodes}
+    content = {
+        "nodes": content_nodes,
+        "child_map": {}
+    }
+    if extra_metadata:
+        content.update(extra_metadata)
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         tmp.write(str.encode(json.dumps(content)))
         return tmp.name
 
 
-def builder_factory(use_task_group=True):
+def builder_factory(use_task_group=True, enable_project_dependencies=False):
     return DbtAirflowTasksBuilderFactory(
-        os.path.dirname(os.path.abspath(__file__)), "dev", {"use_task_group": use_task_group}
+        os.path.dirname(os.path.abspath(__file__)), "dev",
+        {"enable_project_dependencies": enable_project_dependencies, "use_task_group": use_task_group}
     )
 
 
@@ -36,7 +42,7 @@ def test_dag():
 IS_FIRST_AIRFLOW_VERSION = airflow.__version__.startswith("1.")
 
 
-def task_group_prefix_builder(task_model_id: str, task_command: str):
+def task_group_prefix_builder(task_model_id: str, task_command: str) -> str:
     return (
         f"{task_model_id}_{task_command}"
         if IS_FIRST_AIRFLOW_VERSION
