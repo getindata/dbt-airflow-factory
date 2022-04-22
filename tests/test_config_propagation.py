@@ -17,7 +17,7 @@ def test_configuration():
         tasks = builder_factory().create().parse_manifest_into_tasks(manifest_path)
 
     # then
-    run_task = tasks.get_task("model.dbt_test.dim_users").run_airflow_task
+    run_task = tasks.get_task("model.dbt_test.dim_users").execution_airflow_task
     assert run_task.namespace == "apache-airflow"
     assert run_task.image == "123.gcr/dbt-platform-poc:123"
 

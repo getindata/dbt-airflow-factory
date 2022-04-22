@@ -1,6 +1,5 @@
 """Factory creating Airflow tasks."""
 
-from dbt_airflow_factory.builder import DbtAirflowTasksBuilder
 from dbt_airflow_factory.config_utils import read_config
 from dbt_airflow_factory.dbt_parameters import DbtExecutionEnvironmentParameters
 from dbt_airflow_factory.ecs.ecs_operator import EcsPodOperatorBuilder
@@ -10,6 +9,8 @@ from dbt_airflow_factory.k8s.k8s_parameters_loader import (
     KubernetesExecutionParametersLoader,
 )
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder
+from dbt_airflow_factory.tasks_builder.builder import DbtAirflowTasksBuilder
+from dbt_airflow_factory.tasks_builder.parameters import TasksBuildingParameters
 
 
 class DbtAirflowTasksBuilderFactory:
@@ -43,12 +44,14 @@ class DbtAirflowTasksBuilderFactory:
         self,
         dag_path: str,
         env: str,
+        airflow_config: dict,
         dbt_config_file_name: str = "dbt.yml",
         execution_env_config_file_name: str = "execution_env.yml",
     ):
         self.base_config_name = "base"
         self.dag_path = dag_path
         self.env = env
+        self.airflow_config = airflow_config
         self.dbt_config_file_name = dbt_config_file_name
         self.execution_env_config_file_name = execution_env_config_file_name
 
@@ -61,7 +64,17 @@ class DbtAirflowTasksBuilderFactory:
         """
         dbt_params = self._create_dbt_config()
         execution_env_type = self._read_execution_env_type()
-        return DbtAirflowTasksBuilder(self._create_operator_builder(execution_env_type, dbt_params))
+        tasks_airflow_config = self._create_tasks_airflow_config()
+        return DbtAirflowTasksBuilder(
+            tasks_airflow_config, self._create_operator_builder(execution_env_type, dbt_params)
+        )
+
+    def _create_tasks_airflow_config(self) -> TasksBuildingParameters:
+        return TasksBuildingParameters(
+            self.airflow_config.get("use_task_group", False),
+            self.airflow_config.get("show_ephemeral_models", True),
+            self.airflow_config.get("enable_project_dependencies", False),
+        )
 
     def _create_operator_builder(
         self, type: str, dbt_params: DbtExecutionEnvironmentParameters

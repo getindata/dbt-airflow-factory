@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+-   Dependencies between project in Airflow
+
 ## [0.23.0] - 2022-03-22
 
 ## [0.22.0] - 2022-03-21

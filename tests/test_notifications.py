@@ -29,7 +29,7 @@ def test_notification_send(mock_operator_init, mock_get_connection):
     # given
     notifications_config = AirflowDagFactory(
         path.dirname(path.abspath(__file__)), "notifications"
-    ).read_config()["failure_handlers"]
+    ).airflow_config["failure_handlers"]
     factory = NotificationHandlersFactory()
     context = create_context()
     mock_get_connection.return_value = create_connection()

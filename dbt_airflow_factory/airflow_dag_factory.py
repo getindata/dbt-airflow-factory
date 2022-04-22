@@ -13,10 +13,10 @@ else:
 
 from pytimeparse import parse
 
-from dbt_airflow_factory.builder import DbtAirflowTasksBuilder
 from dbt_airflow_factory.builder_factory import DbtAirflowTasksBuilderFactory
 from dbt_airflow_factory.config_utils import read_config
 from dbt_airflow_factory.notifications.handler import NotificationHandlersFactory
+from dbt_airflow_factory.tasks_builder.builder import DbtAirflowTasksBuilder
 
 
 class AirflowDagFactory:
@@ -54,16 +54,12 @@ class AirflowDagFactory:
         execution_env_config_file_name: str = "execution_env.yml",
         airflow_config_file_name: str = "airflow.yml",
     ):
-        self._builder = DbtAirflowTasksBuilderFactory(
-            dag_path,
-            env,
-            dbt_config_file_name,
-            execution_env_config_file_name,
-        ).create()
         self._notifications_handlers_builder = NotificationHandlersFactory()
+        self.airflow_config = self._read_config(dag_path, env, airflow_config_file_name)
+        self._builder = DbtAirflowTasksBuilderFactory(
+            dag_path, env, self.airflow_config, dbt_config_file_name, execution_env_config_file_name
+        ).create()
         self.dag_path = dag_path
-        self.env = env
-        self.airflow_config_file_name = airflow_config_file_name
 
     def create(self) -> DAG:
         """
@@ -72,41 +68,37 @@ class AirflowDagFactory:
         :return: Generated DAG.
         :rtype: airflow.models.dag.DAG
         """
-        config = self.read_config()
-        with DAG(default_args=config["default_args"], **config["dag"]) as dag:
-            self.create_tasks(config)
+        with DAG(
+            default_args=self.airflow_config["default_args"], **self.airflow_config["dag"]
+        ) as dag:
+            self.create_tasks()
         return dag
 
-    def create_tasks(self, config: dict) -> None:
+    def create_tasks(self) -> None:
         """
         Parse ``manifest.json`` and create tasks based on the data contained there.
-
-        :param config: Dictionary representing ``airflow.yml``.
-        :type config: dict
         """
-        start = self._create_starting_task(config)
+        start = self._create_starting_task()
         end = DummyOperator(task_id="end")
-        tasks = self._builder.parse_manifest_into_tasks(
-            self._manifest_file_path(config),
-            config.get("use_task_group", False),
-            config.get("show_ephemeral_models", True),
-        )
+        tasks = self._builder.parse_manifest_into_tasks(self._manifest_file_path())
         for starting_task in tasks.get_starting_tasks():
             start >> starting_task.get_start_task()
         for ending_task in tasks.get_ending_tasks():
             ending_task.get_end_task() >> end
 
-    def _create_starting_task(self, config: dict) -> BaseOperator:
-        if config.get("seed_task", True):
+    def _create_starting_task(self) -> BaseOperator:
+        if self.airflow_config.get("seed_task", True):
             return self._builder.create_seed_task()
         else:
             return DummyOperator(task_id="start")
 
-    def _manifest_file_path(self, config: dict) -> str:
-        file_dir = config.get("manifest_dir_path", self.dag_path)
-        return os.path.join(file_dir, config.get("manifest_file_name", "manifest.json"))
+    def _manifest_file_path(self) -> str:
+        file_dir = self.airflow_config.get("manifest_dir_path", self.dag_path)
+        return os.path.join(
+            file_dir, self.airflow_config.get("manifest_file_name", "manifest.json")
+        )
 
-    def read_config(self) -> dict:
+    def _read_config(self, dag_path: str, env: str, airflow_config_file_name: str) -> dict:
         """
         Read ``airflow.yml`` from ``config`` directory into a dictionary.
 
@@ -114,9 +106,7 @@ class AirflowDagFactory:
         :rtype: dict
         :raises KeyError: No ``default_args`` key in ``airflow.yml``.
         """
-        config = read_config(
-            self.dag_path, self.env, self.airflow_config_file_name, replace_jinja=True
-        )
+        config = read_config(dag_path, env, airflow_config_file_name, replace_jinja=True)
         if "retry_delay" in config["default_args"]:
             config["default_args"]["retry_delay"] = parse(config["default_args"]["retry_delay"])
         if "failure_handlers" in config:

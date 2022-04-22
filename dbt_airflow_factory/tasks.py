@@ -9,8 +9,8 @@ class ModelExecutionTask:
     """
     Wrapper around tasks corresponding to a single DBT model.
 
-    :param run_airflow_task: Operator running DBT's ``run`` task.
-    :type run_airflow_task: BaseOperator
+    :param execution_airflow_task: Operator running DBT's ``run`` task.
+    :type execution_airflow_task: BaseOperator
     :param test_airflow_task: Operator running DBT's ``test`` task (optional).
     :type test_airflow_task: BaseOperator
     :param task_group: TaskGroup consisting of ``run`` and ``test`` tasks
@@ -19,11 +19,11 @@ class ModelExecutionTask:
 
     def __init__(  # type: ignore
         self,
-        run_airflow_task: BaseOperator,
-        test_airflow_task: Optional[BaseOperator],
+        execution_airflow_task: BaseOperator,
+        test_airflow_task: Optional[BaseOperator] = None,
         task_group=None,
     ) -> None:
-        self.run_airflow_task = run_airflow_task
+        self.execution_airflow_task = execution_airflow_task
         self.test_airflow_task = test_airflow_task
         self.task_group = task_group
 
@@ -32,7 +32,7 @@ class ModelExecutionTask:
             repr(self.task_group)
             if self.task_group
             else repr(
-                [self.run_airflow_task]
+                [self.execution_airflow_task]
                 + ([self.test_airflow_task] if self.test_airflow_task else [])
             )
         )
@@ -43,7 +43,7 @@ class ModelExecutionTask:
 
         It is either a whole TaskGroup or ``run`` task.
         """
-        return self.task_group or self.run_airflow_task
+        return self.task_group or self.execution_airflow_task
 
     def get_end_task(self):  # type: ignore
         """
@@ -52,7 +52,7 @@ class ModelExecutionTask:
         It is either a whole TaskGroup, ``test`` task, or ``run`` task, depending
         on version of Airflow and existence of ``test`` task.
         """
-        return self.task_group or self.test_airflow_task or self.run_airflow_task
+        return self.task_group or self.test_airflow_task or self.execution_airflow_task
 
 
 class ModelExecutionTasks:
