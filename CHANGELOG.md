@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.24.0] - 2022-04-22
+
 -   Dependencies between project in Airflow
 
 ## [0.23.0] - 2022-03-22
@@ -110,7 +112,9 @@ This version brings compatibility with `dbt 1.0`.
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library.
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.23.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.24.0...HEAD
+
+[0.24.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.23.0...0.24.0
 
 [0.23.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.22.0...0.23.0
 
