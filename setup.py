@@ -29,7 +29,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="dbt-airflow-factory",
-    version="0.23.0",
+    version="0.24.0",
     description="Library to convert DBT manifest metadata to Airflow tasks",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -41,7 +41,7 @@ setup(
         "Programming Language :: Python :: 3.8",
     ],
     keywords="dbt airflow manifest parser python",
-    author=u"Piotr Pekala",
+    author="Piotr Pekala",
     author_email="piotr.pekala@getindata.com",
     url="https://github.com/getindata/dbt-airflow-factory/",
     packages=find_packages(exclude=["ez_setup", "examples", "tests", "docs"]),
