@@ -171,8 +171,9 @@ class DbtAirflowTasksBuilder:
             ExternalTaskSensor(
                 task_id="sensor_" + node["select"],
                 external_dag_id=node["dag"],
-                external_task_id=node["select"],
-                timeout=600,
+                external_task_id=node["select"]
+                + (".test" if self.airflow_config.use_task_group else "_test"),
+                timeout=24 * 60 * 60,
                 allowed_states=["success"],
                 failed_states=["failed", "skipped"],
                 mode="reschedule",
