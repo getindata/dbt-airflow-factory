@@ -10,7 +10,7 @@ extra_metadata_data = {
         "source.upstream_pipeline_sources.upstream_pipeline.some_final_model": [
             "model.dbt_test.dependent_model"
         ],
-        "source.upstream_pipeline_sources.upstream_pipeline.unused": []
+        "source.upstream_pipeline_sources.upstream_pipeline.unused": [],
     },
     "sources": {
         "source.upstream_pipeline_sources.upstream_pipeline.some_final_model": {
@@ -26,7 +26,7 @@ extra_metadata_data = {
             "name": "unused",
             "unique_id": "source.upstream_pipeline_sources.upstream_pipeline.unused",
             "source_meta": {"dag": "dbt-tpch-test"},
-        }
+        },
     },
 }
 
