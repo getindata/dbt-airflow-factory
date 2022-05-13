@@ -66,7 +66,7 @@ def test_dag_sensor_dependency():
     manifest_path = manifest_file_with_models(
         {
             "model.dbt_test.dependent_model": [
-                "source.upNstream_pipeline_sources.upstream_pipeline.some_final_model"
+                "source.upstream_pipeline_sources.upstream_pipeline.some_final_model"
             ]
         },
         extra_metadata_data,
