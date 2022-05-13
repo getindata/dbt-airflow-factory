@@ -9,7 +9,8 @@ extra_metadata_data = {
     "child_map": {
         "source.upstream_pipeline_sources.upstream_pipeline.some_final_model": [
             "model.dbt_test.dependent_model"
-        ]
+        ],
+        "source.upstream_pipeline_sources.upstream_pipeline.unused": []
     },
     "sources": {
         "source.upstream_pipeline_sources.upstream_pipeline.some_final_model": {
@@ -17,6 +18,13 @@ extra_metadata_data = {
             "schema": "presentation",
             "name": "some_final_model",
             "unique_id": "source.upstream_pipeline_sources.upstream_pipeline.some_final_model",
+            "source_meta": {"dag": "dbt-tpch-test"},
+        },
+        "source.upstream_pipeline_sources.upstream_pipeline.unused": {
+            "database": "gid-dataops-labs",
+            "schema": "presentation",
+            "name": "unused",
+            "unique_id": "source.upstream_pipeline_sources.upstream_pipeline.unused",
             "source_meta": {"dag": "dbt-tpch-test"},
         }
     },
@@ -58,7 +66,7 @@ def test_dag_sensor_dependency():
     manifest_path = manifest_file_with_models(
         {
             "model.dbt_test.dependent_model": [
-                "source.upstream_pipeline_sources.upstream_pipeline.some_final_model"
+                "source.upNstream_pipeline_sources.upstream_pipeline.some_final_model"
             ]
         },
         extra_metadata_data,
@@ -72,14 +80,6 @@ def test_dag_sensor_dependency():
             .parse_manifest_into_tasks(manifest_path)
         )
 
-    print(
-        "dupa:"
-        + str(
-            tasks.get_task(
-                "source.upstream_pipeline_sources.upstream_pipeline.some_final_model"
-            ).execution_airflow_task.downstream_task_ids
-        )
-    )
     # then
     assert (
         "sensor_some_final_model"
