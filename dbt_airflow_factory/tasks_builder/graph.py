@@ -34,7 +34,7 @@ class DbtAirflowGraph:
     def add_external_dependencies(self, manifest: dict) -> None:
         manifest_child_map = manifest["child_map"]
         for source_name, manifest_source in manifest["sources"].items():
-            if "dag" in manifest_source["source_meta"] and source_name in manifest_child_map:
+            if "dag" in manifest_source["source_meta"] and len(manifest_child_map[source_name]) > 0:
                 logging.info("Creating source sensor for: " + source_name)
                 self._add_sensor_source_node(source_name, manifest_source)
 
