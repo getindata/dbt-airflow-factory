@@ -45,7 +45,7 @@ def test_configuration():
         Secret("env", "test", "snowflake-access-user-key", None),
         Secret("volume", "/var", "snowflake-access-user-key", None),
     ]
-    assert run_task.config_file == '/usr/local/airflow/dags/kube_config.yaml'
+    assert run_task.config_file == "/usr/local/airflow/dags/kube_config.yaml"
     assert run_task.is_delete_operator_pod
     assert "--project-dir /dbt" in run_task.arguments[0]
     assert "--profiles-dir /root/.dbt" in run_task.arguments[0]
