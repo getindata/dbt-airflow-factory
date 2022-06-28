@@ -55,7 +55,7 @@ class KubernetesExecutionParameters:
         envs: Optional[Dict[str, str]] = None,
         secrets: Optional[List[Secret]] = None,
         is_delete_operator_pod: bool = True,
-        config_file: Optional[str] = None,
+        config_file: str = "~/.kube/config",
         **kwargs: Any,
     ) -> None:
         self.namespace = namespace
