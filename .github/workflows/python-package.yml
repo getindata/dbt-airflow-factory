@@ -40,7 +40,7 @@ jobs:
       - name: Report coverage
         uses: paambaati/codeclimate-action@v2.7.5
         env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CODE_CLIMATE }}
+          CC_TEST_REPORTER_ID: 2f513a15560b9848db21cca75606745b5283b68b5935e8c481c25eb0090a2a36
         with:
           coverageCommand: coverage xml
           debug: true
