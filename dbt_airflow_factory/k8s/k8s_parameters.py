@@ -55,6 +55,7 @@ class KubernetesExecutionParameters:
         envs: Optional[Dict[str, str]] = None,
         secrets: Optional[List[Secret]] = None,
         is_delete_operator_pod: bool = True,
+        config_file: str = "~/.kube/config",
         **kwargs: Any,
     ) -> None:
         self.namespace = namespace
@@ -69,6 +70,7 @@ class KubernetesExecutionParameters:
         self._env_vars = envs
         self.secrets = secrets
         self.is_delete_operator_pod = is_delete_operator_pod
+        self.config_file = config_file
 
     @property
     def resources(self):  # type: ignore
