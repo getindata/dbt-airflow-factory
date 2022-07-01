@@ -86,4 +86,5 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             secrets=self.kubernetes_execution_parameters.secrets,
             is_delete_operator_pod=self.kubernetes_execution_parameters.is_delete_operator_pod,  # noqa: E501
             hostnetwork=False,
+            config_file=self.kubernetes_execution_parameters.config_file,
         )

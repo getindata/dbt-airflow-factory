@@ -36,3 +36,5 @@ resources:
   requests:
     memory: 1024M
     cpu: '1'
+
+config_file: '/usr/local/airflow/dags/kube_config.yaml'
