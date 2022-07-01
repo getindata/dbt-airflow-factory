@@ -150,4 +150,4 @@ class DbtAirflowGraph:
 
     @staticmethod
     def _build_multiple_deps_test_name(dependencies: tuple) -> str:
-        return "_".join(map(lambda node_name: node_name.split(".")[-1], dependencies)) + "_test"
+        return "_".join((node_name.split(".")[-1] for node_name in dependencies)) + "_test"
