@@ -25,8 +25,8 @@ class DbtAirflowGraph:
                 logging.info("Creating tasks for: " + node_name)
                 self._add_graph_node_for_model_run_task(node_name, manifest_node)
             elif (
-                    is_test_task(node_name)
-                    and len(self._get_model_dependencies_from_manifest_node(manifest_node)) > 1
+                is_test_task(node_name)
+                and len(self._get_model_dependencies_from_manifest_node(manifest_node)) > 1
             ):
                 logging.info("Creating tasks for: " + node_name)
                 self._add_graph_node_for_multiple_deps_test(node_name, manifest_node)
@@ -78,14 +78,14 @@ class DbtAirflowGraph:
             self._contract_test_nodes_same_deps(depends_on_tuple, test_node_names)
 
     def _add_execution_graph_node(
-            self, node_name: str, manifest_node: Dict[str, Any], node_type: NodeType
+        self, node_name: str, manifest_node: Dict[str, Any], node_type: NodeType
     ) -> None:
         self.graph.add_node(
             node_name,
             select=manifest_node["name"],
             depends_on=self._get_model_dependencies_from_manifest_node(manifest_node),
             node_type=node_type,
-            target_schema=manifest_node["schema"]
+            target_schema=manifest_node["schema"],
         )
 
     def _add_sensor_source_node(self, node_name: str, manifest_node: Dict[str, Any]) -> None:
@@ -97,7 +97,7 @@ class DbtAirflowGraph:
         )
 
     def _add_graph_node_for_model_run_task(
-            self, node_name: str, manifest_node: Dict[str, Any]
+        self, node_name: str, manifest_node: Dict[str, Any]
     ) -> None:
         self._add_execution_graph_node(
             node_name,
@@ -106,7 +106,7 @@ class DbtAirflowGraph:
         )
 
     def _add_graph_node_for_multiple_deps_test(
-            self, node_name: str, manifest_node: Dict[str, Any]
+        self, node_name: str, manifest_node: Dict[str, Any]
     ) -> None:
         self._add_execution_graph_node(node_name, manifest_node, NodeType.MULTIPLE_DEPS_TEST)
 
@@ -124,7 +124,7 @@ class DbtAirflowGraph:
         return tests_with_more_deps
 
     def _contract_test_nodes_same_deps(
-            self, depends_on_tuple: Tuple[str, ...], test_node_names: List[str]
+        self, depends_on_tuple: Tuple[str, ...], test_node_names: List[str]
     ) -> None:
         test_names = [self.graph.nodes[test_node]["select"] for test_node in test_node_names]
 

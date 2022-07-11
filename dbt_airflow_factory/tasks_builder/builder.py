@@ -2,7 +2,7 @@
 import json
 import logging
 from dataclasses import dataclass
-from typing import Any, ContextManager, Dict, Tuple, NoReturn
+from typing import Any, ContextManager, Dict, NoReturn, Tuple
 
 import airflow
 from airflow.models.baseoperator import BaseOperator
@@ -27,18 +27,25 @@ class ResultTaskData:
 
 
 class TaskConnectionMapper:
-
     @staticmethod
-    def map_connections(result_tasks: Dict[str, ResultTaskData], dbt_airflow_graph: DbtAirflowGraph) -> NoReturn:
-        raise NotImplementedError("Connection mapper object has to implement map_connections method")
+    def map_connections(
+        result_tasks: Dict[str, ResultTaskData], dbt_airflow_graph: DbtAirflowGraph
+    ) -> NoReturn:
+        raise NotImplementedError(
+            "Connection mapper object has to implement map_connections method"
+        )
 
 
 class DefaultConnectionMapper:
-
-    def map_connections(self, result_tasks: Dict[str, ResultTaskData], dbt_airflow_graph: DbtAirflowGraph) -> NoReturn:
+    def map_connections(
+        self, result_tasks: Dict[str, ResultTaskData], dbt_airflow_graph: DbtAirflowGraph
+    ) -> NoReturn:
 
         for node, neighbour in dbt_airflow_graph.graph.edges():
-            result_tasks[node].nodes_data.get_end_task() >> result_tasks[neighbour].nodes_data.get_start_task()
+            (
+                result_tasks[node].nodes_data.get_end_task()
+                >> result_tasks[neighbour].nodes_data.get_start_task()
+            )
 
 
 class DbtAirflowTasksBuilder:
@@ -50,8 +57,10 @@ class DbtAirflowTasksBuilder:
     """
 
     def __init__(
-            self, airflow_config: TasksBuildingParameters, operator_builder: DbtRunOperatorBuilder,
-            task_connection_mapper: TaskConnectionMapper = DefaultConnectionMapper()
+        self,
+        airflow_config: TasksBuildingParameters,
+        operator_builder: DbtRunOperatorBuilder,
+        task_connection_mapper: TaskConnectionMapper = DefaultConnectionMapper(),
     ):
         self.operator_builder = operator_builder
         self.airflow_config = airflow_config
@@ -94,7 +103,7 @@ class DbtAirflowTasksBuilder:
         )
 
     def _make_dbt_multiple_deps_test_task(
-            self, test_names: str, dependency_tuple_str: str
+        self, test_names: str, dependency_tuple_str: str
     ) -> BaseOperator:
         command = "test"
         return self.operator_builder.create(dependency_tuple_str, command, test_names)
@@ -113,7 +122,7 @@ class DbtAirflowTasksBuilder:
 
     @staticmethod
     def _create_task_group_for_model(
-            model_name: str, use_task_group: bool
+        model_name: str, use_task_group: bool
     ) -> Tuple[Any, ContextManager]:
         import contextlib
 
@@ -125,10 +134,10 @@ class DbtAirflowTasksBuilder:
         return task_group, task_group_ctx
 
     def _create_task_for_model(
-            self,
-            model_name: str,
-            is_ephemeral_task: bool,
-            use_task_group: bool,
+        self,
+        model_name: str,
+        is_ephemeral_task: bool,
+        use_task_group: bool,
     ) -> ModelExecutionTask:
         if is_ephemeral_task:
             return ModelExecutionTask(EphemeralOperator(task_id=f"{model_name}__ephemeral"), None)
@@ -143,7 +152,7 @@ class DbtAirflowTasksBuilder:
         return ModelExecutionTask(run_task, test_task, task_group)
 
     def _create_task_from_graph_node(
-            self, node_name: str, node: Dict[str, Any]
+        self, node_name: str, node: Dict[str, Any]
     ) -> ModelExecutionTask:
         if node["node_type"] == NodeType.MULTIPLE_DEPS_TEST:
             return ModelExecutionTask(
@@ -156,14 +165,14 @@ class DbtAirflowTasksBuilder:
                 node["select"],
                 node["node_type"] == NodeType.EPHEMERAL,
                 self.airflow_config.use_task_group,
-                )
+            )
 
     def _create_tasks_from_graph(self, dbt_airflow_graph: DbtAirflowGraph) -> ModelExecutionTasks:
         result_tasks = {
             node_name: ResultTaskData(
                 nodes_data=self._create_task_from_graph_node(node_name, node),
                 schema=node["target_schema"],
-                model_name=node["select"]
+                model_name=node["select"],
             )
             for node_name, node in dbt_airflow_graph.graph.nodes(data=True)
         }
@@ -174,7 +183,8 @@ class DbtAirflowTasksBuilder:
 
         return ModelExecutionTasks(
             {node_name: data.nodes_data for node_name, data in result_tasks.items()},
-            dbt_airflow_graph.get_graph_sources(), dbt_airflow_graph.get_graph_sinks()
+            dbt_airflow_graph.get_graph_sources(),
+            dbt_airflow_graph.get_graph_sinks(),
         )
 
     def _make_dbt_tasks(self, manifest_path: str) -> ModelExecutionTasks:
@@ -204,7 +214,7 @@ class DbtAirflowTasksBuilder:
                 task_id="sensor_" + node["select"],
                 external_dag_id=node["dag"],
                 external_task_id=node["select"]
-                                 + (".test" if self.airflow_config.use_task_group else "_test"),
+                + (".test" if self.airflow_config.use_task_group else "_test"),
                 timeout=24 * 60 * 60,
                 allowed_states=["success"],
                 failed_states=["failed", "skipped"],
