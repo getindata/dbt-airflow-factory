@@ -85,6 +85,7 @@ class DbtAirflowGraph:
             select=manifest_node["name"],
             depends_on=self._get_model_dependencies_from_manifest_node(manifest_node),
             node_type=node_type,
+            target_schema=manifest_node["schema"],
         )
 
     def _add_sensor_source_node(self, node_name: str, manifest_node: Dict[str, Any]) -> None:

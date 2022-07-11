@@ -1,7 +1,8 @@
 """Class parsing ``manifest.json`` into Airflow tasks."""
 import json
 import logging
-from typing import Any, ContextManager, Dict, Tuple
+from dataclasses import dataclass
+from typing import Any, ContextManager, Dict, NoReturn, Tuple
 
 import airflow
 from airflow.models.baseoperator import BaseOperator
@@ -18,6 +19,35 @@ from dbt_airflow_factory.tasks import ModelExecutionTask, ModelExecutionTasks
 from dbt_airflow_factory.tasks_builder.graph import DbtAirflowGraph
 
 
+@dataclass
+class ResultTaskData:
+    nodes_data: ModelExecutionTask
+    schema: str
+    model_name: str
+
+
+class TaskConnectionMapper:
+    @staticmethod
+    def map_connections(
+        result_tasks: Dict[str, ResultTaskData], dbt_airflow_graph: DbtAirflowGraph
+    ) -> NoReturn:
+        raise NotImplementedError(
+            "Connection mapper object has to implement map_connections method"
+        )
+
+
+class DefaultConnectionMapper:
+    def map_connections(
+        self, result_tasks: Dict[str, ResultTaskData], dbt_airflow_graph: DbtAirflowGraph
+    ) -> NoReturn:
+
+        for node, neighbour in dbt_airflow_graph.graph.edges():
+            (
+                result_tasks[node].nodes_data.get_end_task()
+                >> result_tasks[neighbour].nodes_data.get_start_task()
+            )
+
+
 class DbtAirflowTasksBuilder:
     """
     Parses ``manifest.json`` into Airflow tasks.
@@ -27,10 +57,14 @@ class DbtAirflowTasksBuilder:
     """
 
     def __init__(
-        self, airflow_config: TasksBuildingParameters, operator_builder: DbtRunOperatorBuilder
+        self,
+        airflow_config: TasksBuildingParameters,
+        operator_builder: DbtRunOperatorBuilder,
+        task_connection_mapper: TaskConnectionMapper = DefaultConnectionMapper(),
     ):
         self.operator_builder = operator_builder
         self.airflow_config = airflow_config
+        self.task_connection_mapper = task_connection_mapper
 
     def parse_manifest_into_tasks(self, manifest_path: str) -> ModelExecutionTasks:
         """
@@ -135,14 +169,22 @@ class DbtAirflowTasksBuilder:
 
     def _create_tasks_from_graph(self, dbt_airflow_graph: DbtAirflowGraph) -> ModelExecutionTasks:
         result_tasks = {
-            node_name: self._create_task_from_graph_node(node_name, node)
+            node_name: ResultTaskData(
+                nodes_data=self._create_task_from_graph_node(node_name, node),
+                schema=node["target_schema"],
+                model_name=node["select"],
+            )
             for node_name, node in dbt_airflow_graph.graph.nodes(data=True)
         }
-        for node, neighbour in dbt_airflow_graph.graph.edges():
-            # noinspection PyStatementEffect
-            result_tasks[node].get_end_task() >> result_tasks[neighbour].get_start_task()
+
+        self.task_connection_mapper.map_connections(
+            result_tasks=result_tasks, dbt_airflow_graph=dbt_airflow_graph
+        )
+
         return ModelExecutionTasks(
-            result_tasks, dbt_airflow_graph.get_graph_sources(), dbt_airflow_graph.get_graph_sinks()
+            {node_name: data.nodes_data for node_name, data in result_tasks.items()},
+            dbt_airflow_graph.get_graph_sources(),
+            dbt_airflow_graph.get_graph_sinks(),
         )
 
     def _make_dbt_tasks(self, manifest_path: str) -> ModelExecutionTasks:
