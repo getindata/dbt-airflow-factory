@@ -56,6 +56,11 @@ airflow.yml file
      -
      - False
      - When True it creates sensors for all sources that have dag name in metadata. The sources wait for selected Dags to finish.
+   * - save_points
+     - list of string
+     -
+     - empty list
+     - List of schemas between which the gateway should be created.
 
 dbt.yml file
 ~~~~~~~~~~~~~~~~~~~~~~~

@@ -5,6 +5,7 @@ from typing import Any, ContextManager, Dict, Tuple
 
 import airflow
 from airflow.models.baseoperator import BaseOperator
+from airflow.operators.dummy import DummyOperator
 from airflow.sensors.external_task_sensor import ExternalTaskSensor
 
 from dbt_airflow_factory.tasks_builder.node_type import NodeType
@@ -15,24 +16,33 @@ if not airflow.__version__.startswith("1."):
 
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder, EphemeralOperator
 from dbt_airflow_factory.tasks import ModelExecutionTask, ModelExecutionTasks
-from dbt_airflow_factory.tasks_builder.graph import DbtAirflowGraph
+from dbt_airflow_factory.tasks_builder.graph import (
+    DbtAirflowGraph,
+    TaskGraphConfiguration,
+)
 
 
 class DbtAirflowTasksBuilder:
     """
     Parses ``manifest.json`` into Airflow tasks.
 
+    :param airflow_config: DBT node operator.
+    :type airflow_config: TasksBuildingParameters
     :param operator_builder: DBT node operator.
     :type operator_builder: DbtRunOperatorBuilder
+    :param gateway_config: DBT node operator.
+    :type gateway_config: TaskGraphConfiguration
     """
 
     def __init__(
         self,
         airflow_config: TasksBuildingParameters,
         operator_builder: DbtRunOperatorBuilder,
+        gateway_config: TaskGraphConfiguration,
     ):
         self.operator_builder = operator_builder
         self.airflow_config = airflow_config
+        self.gateway_config = gateway_config
 
     def parse_manifest_into_tasks(self, manifest_path: str) -> ModelExecutionTasks:
         """
@@ -128,6 +138,8 @@ class DbtAirflowTasksBuilder:
             )
         elif node["node_type"] == NodeType.SOURCE_SENSOR:
             return self._create_dag_sensor(node)
+        elif node["node_type"] == NodeType.MOCK_GATEWAY:
+            return self._create_dummy_task(node)
         else:
             return self._create_task_for_model(
                 node["select"],
@@ -157,7 +169,8 @@ class DbtAirflowTasksBuilder:
         return tasks_with_context
 
     def _create_tasks_graph(self, manifest: dict) -> DbtAirflowGraph:
-        dbt_airflow_graph = DbtAirflowGraph()
+
+        dbt_airflow_graph = DbtAirflowGraph(self.gateway_config)
         dbt_airflow_graph.add_execution_tasks(manifest)
         if self.airflow_config.enable_dags_dependencies:
             dbt_airflow_graph.add_external_dependencies(manifest)
@@ -183,3 +196,7 @@ class DbtAirflowTasksBuilder:
                 mode="reschedule",
             )
         )
+
+    @staticmethod
+    def _create_dummy_task(node: Dict[str, Any]) -> ModelExecutionTask:
+        return ModelExecutionTask(DummyOperator(task_id=node["select"]))

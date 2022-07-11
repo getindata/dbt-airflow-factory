@@ -110,3 +110,28 @@ When options are properly filled in, the ingestion tasks should appear before th
 .. image:: images/ingestions_tasks.png
    :width: 600
 
+Task Gateway
++++++++++++++++++++
+To prevent data inconsistency dbt-airflow-factory supports creating gateway between airflow dbt tasks representing specific
+schemas. It might be useful when dividing ETL pipelines into 3 main components (or more):
+
+- raw
+- staging
+- presentation
+
+Where presentation layer represents the data used by external clients like BI tools, analysts or other processes.
+Creating gateway between the staging and presentation may help with keeping data tested and reliable in presentation
+layer where BI tools or other analytics may be connected. Below examples show such a gateway in dag.
+
+
+.. image:: images/gateway.png
+   :width: 600
+   :align: center
+
+To create such a gateway all you need is adding config in `airflow.yml` file
+
+.. code-block:: yaml
+
+ save_points:
+   - stg
+   - presentation
