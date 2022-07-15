@@ -20,7 +20,6 @@ def test_configuration():
     run_task = tasks.get_task("model.dbt_test.dim_users").execution_airflow_task
     assert run_task.namespace == "apache-airflow"
     assert run_task.image == "123.gcr/dbt-platform-poc:123"
-
     if IS_FIRST_AIRFLOW_VERSION:
         assert run_task.node_selectors == {"group": "data-processing"}
         assert run_task.tolerations[0]["key"] == "group"
@@ -51,17 +50,37 @@ def test_configuration():
         "value": "second",
         "value_from": None,
     }
-    assert run_task.env_vars[2].to_dict() == {
-        "name": "DATAHUB_GMS_URL",
-        "value": "http://test_url:8080",
-        "value_from": None,
-    }
     assert run_task.secrets == [
         Secret("env", "test", "snowflake-access-user-key", None),
         Secret("volume", "/var", "snowflake-access-user-key", None),
     ]
+    assert (
+        run_task.arguments[0]
+        == 'set -e; dbt --no-write-json run --target dev --vars "{}" --project-dir /dbt --profiles-dir /root/.dbt --select dim_users'  # noqa: E501
+    )
     assert run_task.config_file == "/usr/local/airflow/dags/kube_config.yaml"
     assert run_task.is_delete_operator_pod
     assert "--project-dir /dbt" in run_task.arguments[0]
     assert "--profiles-dir /root/.dbt" in run_task.arguments[0]
     assert "--target dev" in run_task.arguments[0]
+
+
+def test_configuration_with_qa_config():
+    # given
+    manifest_path = manifest_file_with_models({"model.dbt_test.dim_users": []})
+
+    # when
+    with test_dag():
+        tasks = builder_factory(env="qa").create().parse_manifest_into_tasks(manifest_path)
+
+    # then
+    run_task = tasks.get_task("model.dbt_test.dim_users").execution_airflow_task
+    assert (
+        run_task.arguments[0]
+        == './cmd_executor.sh dbt --no-write-json run --target qa --vars "{}" --project-dir /dbt --profiles-dir /root/.dbt --select dim_users'  # noqa: E501
+    )
+    assert run_task.env_vars[2].to_dict() == {
+        "name": "DATAHUB_GMS_URL",
+        "value": "http://test_url:8080",
+        "value_from": None,
+    }

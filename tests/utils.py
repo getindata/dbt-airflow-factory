@@ -25,10 +25,10 @@ def manifest_file_with_models(nodes_with_dependencies: dict, extra_metadata: dic
         return tmp.name
 
 
-def builder_factory(use_task_group=True, enable_project_dependencies=False):
+def builder_factory(use_task_group=True, enable_project_dependencies=False, env="dev"):
     return DbtAirflowTasksBuilderFactory(
         os.path.dirname(os.path.abspath(__file__)),
-        "dev",
+        env,
         {
             "enable_project_dependencies": enable_project_dependencies,
             "use_task_group": use_task_group,
