@@ -27,7 +27,9 @@ class DbtAirflowTasksBuilder:
     """
 
     def __init__(
-        self, airflow_config: TasksBuildingParameters, operator_builder: DbtRunOperatorBuilder
+        self,
+        airflow_config: TasksBuildingParameters,
+        operator_builder: DbtRunOperatorBuilder,
     ):
         self.operator_builder = operator_builder
         self.airflow_config = airflow_config
@@ -140,9 +142,11 @@ class DbtAirflowTasksBuilder:
         }
         for node, neighbour in dbt_airflow_graph.graph.edges():
             # noinspection PyStatementEffect
-            result_tasks[node].get_end_task() >> result_tasks[neighbour].get_start_task()
+            (result_tasks[node].get_end_task() >> result_tasks[neighbour].get_start_task())
         return ModelExecutionTasks(
-            result_tasks, dbt_airflow_graph.get_graph_sources(), dbt_airflow_graph.get_graph_sinks()
+            result_tasks,
+            dbt_airflow_graph.get_graph_sources(),
+            dbt_airflow_graph.get_graph_sinks(),
         )
 
     def _make_dbt_tasks(self, manifest_path: str) -> ModelExecutionTasks:

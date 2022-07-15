@@ -66,7 +66,8 @@ class DbtAirflowTasksBuilderFactory:
         execution_env_type = self._read_execution_env_type()
         tasks_airflow_config = self._create_tasks_airflow_config()
         return DbtAirflowTasksBuilder(
-            tasks_airflow_config, self._create_operator_builder(execution_env_type, dbt_params)
+            tasks_airflow_config,
+            self._create_operator_builder(execution_env_type, dbt_params),
         )
 
     def _create_tasks_airflow_config(self) -> TasksBuildingParameters:

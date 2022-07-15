@@ -52,10 +52,15 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
         return self._create(self._prepare_arguments(command, model, additional_dbt_args), name)
 
     def _prepare_arguments(
-        self, command: str, model: Optional[str], additional_dbt_args: Optional[List[str]]
+        self,
+        command: str,
+        model: Optional[str],
+        additional_dbt_args: Optional[List[str]],
     ) -> List[str]:
         args = [
-            "./cmd_executor.sh" if self.kubernetes_execution_parameters.execution_script else "set -e;",
+            "./cmd_executor.sh"
+            if self.kubernetes_execution_parameters.execution_script
+            else "set -e;",
             f"dbt --no-write-json {command}",
             f"--target {self.dbt_execution_env_parameters.target}",
             f'--vars "{self.dbt_execution_env_parameters.vars}"',
