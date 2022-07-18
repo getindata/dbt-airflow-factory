@@ -37,7 +37,7 @@ def test_run_task():
     # then
     run_task = tasks.get_task("model.dbt_test.dim_users").execution_airflow_task
     assert run_task.cmds == ["bash", "-c"]
-    assert "set -e; dbt --no-write-json run " in run_task.arguments[0]
+    assert "run " in run_task.arguments[0]
     assert "--select dim_users" in run_task.arguments[0]
     assert '--vars "{}"' in run_task.arguments[0]
     assert run_task.name == "dim-users-run" if IS_FIRST_AIRFLOW_VERSION else "run"
@@ -55,7 +55,7 @@ def test_test_task():
     # then
     test_task = tasks.get_task("model.dbt_test.dim_users").test_airflow_task
     assert test_task.cmds == ["bash", "-c"]
-    assert "set -e; dbt --no-write-json test " in test_task.arguments[0]
+    assert "test " in test_task.arguments[0]
     assert "--select dim_users" in test_task.arguments[0]
     assert '--vars "{}"' in test_task.arguments[0]
     assert test_task.name == "dim-users-test" if IS_FIRST_AIRFLOW_VERSION else "test"
@@ -74,5 +74,5 @@ def test_dbt_vars():
     # then
     run_task = tasks.get_task("model.dbt_test.dim_users").execution_airflow_task
     assert run_task.cmds == ["bash", "-c"]
-    assert "set -e; dbt --no-write-json run " in run_task.arguments[0]
+    assert "run " in run_task.arguments[0]
     assert '--vars "{variable_1: 123, variable_2: var2}"' in run_task.arguments[0]

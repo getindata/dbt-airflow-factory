@@ -4,4 +4,4 @@ image:
   tag: 123
 
 type: k8s
-execution_script: true
+execution_script: "./test_script.sh"
