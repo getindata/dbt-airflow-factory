@@ -16,4 +16,4 @@ def test_configuration_with_qa_config():
         "value": "http://test_url:8080",
         "value_from": None,
     }
-    assert "./test_script.sh" in run_task.arguments[0]
+    assert "./executor_with_test_reports_ingestions.sh" in run_task.arguments[0]
