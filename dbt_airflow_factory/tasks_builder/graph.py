@@ -67,7 +67,8 @@ class DbtAirflowGraph:
         for node_name in ephemeral_nodes:
             self.graph.add_edges_from(
                 itertools.product(
-                    list(self.graph.predecessors(node_name)), list(self.graph.successors(node_name))
+                    list(self.graph.predecessors(node_name)),
+                    list(self.graph.successors(node_name)),
                 )
             )
             self.graph.remove_node(node_name)
@@ -109,7 +110,9 @@ class DbtAirflowGraph:
     ) -> None:
         self._add_execution_graph_node(node_name, manifest_node, NodeType.MULTIPLE_DEPS_TEST)
 
-    def _get_test_with_multiple_deps_names_by_deps(self) -> Dict[Tuple[str, ...], List[str]]:
+    def _get_test_with_multiple_deps_names_by_deps(
+        self,
+    ) -> Dict[Tuple[str, ...], List[str]]:
         tests_with_more_deps: Dict[Tuple[str, ...], List[str]] = {}
 
         for node_name, node in self.graph.nodes(data=True):
@@ -130,7 +133,11 @@ class DbtAirflowGraph:
         first_test_node = test_node_names[0]
         for test_node in test_node_names[1:]:
             nx.contracted_nodes(
-                self.graph, first_test_node, test_node, self_loops=False, copy=False  # in-memory
+                self.graph,
+                first_test_node,
+                test_node,
+                self_loops=False,
+                copy=False,  # in-memory
             )
 
         self.graph.nodes[first_test_node]["select"] = " ".join(test_names)

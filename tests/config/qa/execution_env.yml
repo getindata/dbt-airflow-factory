@@ -1,0 +1,7 @@
+
+image:
+  repository: 123.gcr/dbt-platform-poc
+  tag: 123
+
+type: k8s
+execution_script: "./executor_with_test_reports_ingestions.sh"

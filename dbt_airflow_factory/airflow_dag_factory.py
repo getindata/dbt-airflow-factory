@@ -57,7 +57,11 @@ class AirflowDagFactory:
         self._notifications_handlers_builder = NotificationHandlersFactory()
         self.airflow_config = self._read_config(dag_path, env, airflow_config_file_name)
         self._builder = DbtAirflowTasksBuilderFactory(
-            dag_path, env, self.airflow_config, dbt_config_file_name, execution_env_config_file_name
+            dag_path,
+            env,
+            self.airflow_config,
+            dbt_config_file_name,
+            execution_env_config_file_name,
         ).create()
         self.dag_path = dag_path
 
