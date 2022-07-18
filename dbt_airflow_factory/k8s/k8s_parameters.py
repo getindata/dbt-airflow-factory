@@ -56,7 +56,7 @@ class KubernetesExecutionParameters:
         secrets: Optional[List[Secret]] = None,
         is_delete_operator_pod: bool = True,
         config_file: str = "~/.kube/config",
-        execution_script: str = "./executor_with_test_reports_ingestions.sh",
+        execution_script: str = "dbt --no-write-json",
         **kwargs: Any,
     ) -> None:
         self.namespace = namespace
