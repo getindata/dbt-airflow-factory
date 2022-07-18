@@ -58,7 +58,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
         additional_dbt_args: Optional[List[str]],
     ) -> List[str]:
         args = [
-            "./cmd_executor.sh"
+            "./executor_with_test_reports_ingestions.sh"
             if self.kubernetes_execution_parameters.execution_script
             else "set -e;",
             f"dbt --no-write-json {command}",

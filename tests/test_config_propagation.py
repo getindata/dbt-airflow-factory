@@ -77,7 +77,7 @@ def test_configuration_with_qa_config():
     run_task = tasks.get_task("model.dbt_test.dim_users").execution_airflow_task
     assert (
         run_task.arguments[0]
-        == './cmd_executor.sh dbt --no-write-json run --target qa --vars "{}" --project-dir /dbt --profiles-dir /root/.dbt --select dim_users'  # noqa: E501
+        == './executor_with_test_reports_ingestions.sh dbt --no-write-json run --target qa --vars "{}" --project-dir /dbt --profiles-dir /root/.dbt --select dim_users'  # noqa: E501
     )
     assert run_task.env_vars[2].to_dict() == {
         "name": "DATAHUB_GMS_URL",
