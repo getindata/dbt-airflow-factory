@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.28.0] - 2022-07-19
+
 ## [0.27.0] - 2022-07-01
 
 ## [0.26.0] - 2022-05-13
@@ -120,7 +122,9 @@ This version brings compatibility with `dbt 1.0`.
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library.
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.27.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.28.0...HEAD
+
+[0.28.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.27.0...0.28.0
 
 [0.27.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.26.0...0.27.0
 
