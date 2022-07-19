@@ -103,17 +103,14 @@ execution_env.yml file
    * - image.repository
      - string
      - x
-     -
      - Docker image repository URL
    * - image.tag
      - string
      - x
-     -
      - Docker image tag
    * - type
      - string
      - x
-     -
      - Selects type of execution environment. Currently only k8s is available.
 
 k8s.yml file
@@ -155,6 +152,10 @@ k8s.yml file
      - boolean
      -
      - If set to True finished containers will be deleted
+   * - config_file
+     - string
+     -
+     - Path to the k8s configuration available in Airflow
    * - resources.node_selectors
      - dictionary
      -

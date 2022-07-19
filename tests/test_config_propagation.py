@@ -20,7 +20,6 @@ def test_configuration():
     run_task = tasks.get_task("model.dbt_test.dim_users").execution_airflow_task
     assert run_task.namespace == "apache-airflow"
     assert run_task.image == "123.gcr/dbt-platform-poc:123"
-
     if IS_FIRST_AIRFLOW_VERSION:
         assert run_task.node_selectors == {"group": "data-processing"}
         assert run_task.tolerations[0]["key"] == "group"
@@ -41,6 +40,16 @@ def test_configuration():
         assert run_task.k8s_resources.requests == {"memory": "1024M", "cpu": "1"}
 
     assert run_task.labels == {"runner": "airflow"}
+    assert run_task.env_vars[0].to_dict() == {
+        "name": "EXAMPLE_ENV",
+        "value": "example",
+        "value_from": None,
+    }
+    assert run_task.env_vars[1].to_dict() == {
+        "name": "SECOND_EXAMPLE_ENV",
+        "value": "second",
+        "value_from": None,
+    }
     assert run_task.secrets == [
         Secret("env", "test", "snowflake-access-user-key", None),
         Secret("volume", "/var", "snowflake-access-user-key", None),

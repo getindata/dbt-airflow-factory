@@ -1,0 +1,3 @@
+sink:
+  config:
+    server: "http://test_url:8080"
