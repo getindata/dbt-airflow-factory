@@ -59,3 +59,16 @@ def test_no_task_group_dag_factory():
     # then
     assert len(dag.tasks) == 10
     assert len(dag.task_group.children) == 10
+
+
+def test_gateway_dag_factory():
+    # if IS_FIRST_AIRFLOW_VERSION:  # You cannot use TaskGroup in Airflow 1 anyway
+    #     return True
+
+    # given
+    factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "gateway")
+
+    # when
+    dag = factory.create()
+
+

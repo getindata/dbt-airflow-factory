@@ -1,2 +1,24 @@
 [tool.black]
 line-length = 100
+[tool.poetry]
+name = "dbt-airflow-factory"
+version = "0.1.0"
+description = ""
+authors = ["Pawel Kocinski <pawel.kocinski@getindata.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+apache-airflow = "^2.3.3"
+pytest = "^7.1.2"
+apache-airflow-providers-cncf-kubernetes = "^4.2.0"
+networkx = "^2.8.5"
+matplotlib = "^3.5.2"
+notebook = "6.0.0"
+pytimeparse = "^1.1.8"
+apache-airflow-providers-slack = "^5.1.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
