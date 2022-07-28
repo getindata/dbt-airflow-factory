@@ -139,11 +139,9 @@ class DbtAirflowGraph:
         for downstream_node in downstream_dependencies:
             prod_deps = manifest["nodes"][downstream_node]["depends_on"]["nodes"]
             for dep in prod_deps:
-                try:
+                if is_model_run_task(dep):
                     if manifest["nodes"][dep]["schema"] == separation_layer_left:
                         upstream_dependencies_connected_to_downstream.append(dep)
-                except Exception as e:
-                    pass
 
         dependencies = [
             node_name for node_name, values in manifest["nodes"].items()
@@ -199,12 +197,14 @@ class DbtAirflowGraph:
 
     def _get_model_dependencies_from_manifest_node(self, node: Dict[str, Any], manifest: dict) -> List[str]:
         filtered_records = list(filter(DbtAirflowGraph._is_valid_dependency, node["depends_on"]["nodes"]))
+        node_schema = node["schema"]
+        if self.configuration.gateway and node_schema in self.configuration.gateway.separation_schemas:
 
-        if self.configuration.gateway:
-            for index, schema_name in enumerate(self.configuration.gateway.separation_schemas[:-1]):
-                separation_layers = self.configuration.gateway.separation_schemas
-                separation_layer_left = separation_layers[index]
-                separation_layer_right = separation_layers[index+1]
+            node_schema_index = self.configuration.gateway.separation_schemas.index(node_schema)
+            separation_layers = self.configuration.gateway.separation_schemas
+            if node_schema_index >= 1:
+                separation_layer_left = separation_layers[node_schema_index-1]
+                separation_layer_right = separation_layers[node_schema_index]
 
                 filtered_records_by_s = list(filter(lambda dep_node: is_gateway_valid_dependency(
                     dependency_node_name=dep_node, manifest=manifest, node=node,
