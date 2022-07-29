@@ -40,7 +40,7 @@ class DbtAirflowGraph:
 
     def add_execution_tasks(self, manifest: dict) -> None:
         if self.configuration.gateway.separation_schemas.__len__() >= 2:
-            for index, separation_layer in enumerate(
+            for index, _ in enumerate(
                 self.configuration.gateway.separation_schemas[:-1]
             ):
                 separation_layers = self.configuration.gateway.separation_schemas
@@ -145,8 +145,9 @@ class DbtAirflowGraph:
             node_type=NodeType.MOCK_GATEWAY,
         )
 
+    @staticmethod
     def get_downstream_dependencies(
-        self, manifest: dict, separation_layer_left: str, separation_layer_right: str
+        manifest: dict, separation_layer_left: str, separation_layer_right: str
     ) -> List:
         downstream_dependencies = [
             node_name
@@ -285,6 +286,5 @@ def is_gateway_valid_dependency(
 
         if dependency_node["schema"] == dataset_left and node["schema"] == dataset_right:
             return False
-        else:
-            return True
+        return True
     return True
