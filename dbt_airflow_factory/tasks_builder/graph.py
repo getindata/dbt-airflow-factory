@@ -1,7 +1,7 @@
 import itertools
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 import networkx as nx
 
@@ -27,7 +27,7 @@ class TaskGraphConfiguration:
 
 def create_gateway_name(
     separation_layer_left: str, separation_layer_right: str, gateway_task_name: str
-):
+) -> str:
     return f"{separation_layer_left}_{separation_layer_right}_{gateway_task_name}"
 
 

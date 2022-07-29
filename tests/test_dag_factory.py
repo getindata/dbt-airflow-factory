@@ -69,6 +69,7 @@ def test_gateway_dag_factory():
     dag = factory.create()
 
     # then save points should be as passed in the config file
+    assert dag.tasks.__len__() == 15
     assert factory.airflow_config["save_points"] == ["datalab_stg", "datalab"]
 
 
@@ -81,6 +82,9 @@ def test_should_not_fail_when_savepoint_property_wasnt_passed():
 
     # then save_points_property should be empty
     assert factory.airflow_config.get("save_points", []).__len__() == 0
+
+    # and number of tasks should match
+    assert dag.tasks.__len__() == 4
 
 
 def test_should_properly_map_tasks():

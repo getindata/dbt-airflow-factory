@@ -1,7 +1,7 @@
 """Class parsing ``manifest.json`` into Airflow tasks."""
 import json
 import logging
-from typing import Any, ContextManager, Dict, NoReturn, Optional, Tuple
+from typing import Any, ContextManager, Dict, Tuple
 
 import airflow
 from airflow.models.baseoperator import BaseOperator
@@ -18,7 +18,6 @@ from dbt_airflow_factory.operator import DbtRunOperatorBuilder, EphemeralOperato
 from dbt_airflow_factory.tasks import ModelExecutionTask, ModelExecutionTasks
 from dbt_airflow_factory.tasks_builder.graph import (
     DbtAirflowGraph,
-    GatewayConfiguration,
     TaskGraphConfiguration,
 )
 
@@ -39,7 +38,7 @@ class DbtAirflowTasksBuilder:
         self,
         airflow_config: TasksBuildingParameters,
         operator_builder: DbtRunOperatorBuilder,
-        gateway_config: Optional[TaskGraphConfiguration],
+        gateway_config: TaskGraphConfiguration,
     ):
         self.operator_builder = operator_builder
         self.airflow_config = airflow_config

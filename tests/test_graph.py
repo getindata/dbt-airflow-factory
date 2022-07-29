@@ -18,7 +18,7 @@ gateway_config = GatewayConfiguration(
     "test_name,manifest,node,gateway_config,dependency_node_name,expected_value",
     [
         (
-            "when there is staging element with different schema connected to presentation node should return False",
+            "when stg element with different schema connected to presentation node, return False",
             {
                 "nodes": {
                     "model.dim_user": {
