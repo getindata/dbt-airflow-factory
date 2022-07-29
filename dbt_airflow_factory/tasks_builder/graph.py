@@ -40,17 +40,7 @@ class DbtAirflowGraph:
 
     def add_execution_tasks(self, manifest: dict) -> None:
         if self.configuration.gateway.separation_schemas.__len__() >= 2:
-            for index, _ in enumerate(
-                self.configuration.gateway.separation_schemas[:-1]
-            ):
-                separation_layers = self.configuration.gateway.separation_schemas
-                separation_layer_left = separation_layers[index]
-                separation_layer_right = separation_layers[index + 1]
-                self._add_gateway_node(
-                    manifest=manifest,
-                    separation_layer_left=separation_layer_left,
-                    separation_layer_right=separation_layer_right,
-                )
+            self._add_gateway_execution_tasks(manifest=manifest)
 
         for node_name, manifest_node in manifest["nodes"].items():
             if is_model_run_task(node_name):
@@ -63,6 +53,17 @@ class DbtAirflowGraph:
             ):
                 logging.info("Creating tasks for: " + node_name)
                 self._add_graph_node_for_multiple_deps_test(node_name, manifest_node, manifest)
+
+    def _add_gateway_execution_tasks(self, manifest: dict) -> None:
+        for index, _ in enumerate(self.configuration.gateway.separation_schemas[:-1]):
+            separation_layers = self.configuration.gateway.separation_schemas
+            separation_layer_left = separation_layers[index]
+            separation_layer_right = separation_layers[index + 1]
+            self._add_gateway_node(
+                manifest=manifest,
+                separation_layer_left=separation_layer_left,
+                separation_layer_right=separation_layer_right,
+            )
 
     def add_external_dependencies(self, manifest: dict) -> None:
         manifest_child_map = manifest["child_map"]
