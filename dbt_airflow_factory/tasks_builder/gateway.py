@@ -59,7 +59,6 @@ def _get_upstream_dependencies_connected_to_downstream(
     for downstream_node in downstream_dependencies:
         upstream_deps = manifest["nodes"][downstream_node]["depends_on"]["nodes"]
         for dep in upstream_deps:
-            if is_model_run_task(dep):
-                if manifest["nodes"][dep]["schema"] == separation_layer_left:
-                    upstream_dependencies_connected_to_downstream.append(dep)
+            if is_model_run_task(dep) and manifest["nodes"][dep]["schema"] == separation_layer_left:
+                upstream_dependencies_connected_to_downstream.append(dep)
     return upstream_dependencies_connected_to_downstream
