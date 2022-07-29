@@ -1,7 +1,7 @@
 """Class parsing ``manifest.json`` into Airflow tasks."""
 import json
 import logging
-from typing import Any, ContextManager, Dict, NoReturn, Tuple, Optional
+from typing import Any, ContextManager, Dict, NoReturn, Optional, Tuple
 
 import airflow
 from airflow.models.baseoperator import BaseOperator
@@ -16,7 +16,11 @@ if not airflow.__version__.startswith("1."):
 
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder, EphemeralOperator
 from dbt_airflow_factory.tasks import ModelExecutionTask, ModelExecutionTasks
-from dbt_airflow_factory.tasks_builder.graph import DbtAirflowGraph, TaskGraphConfiguration, GatewayConfiguration
+from dbt_airflow_factory.tasks_builder.graph import (
+    DbtAirflowGraph,
+    GatewayConfiguration,
+    TaskGraphConfiguration,
+)
 
 
 class DbtAirflowTasksBuilder:
@@ -32,8 +36,10 @@ class DbtAirflowTasksBuilder:
     """
 
     def __init__(
-            self, airflow_config: TasksBuildingParameters, operator_builder: DbtRunOperatorBuilder,
-            gateway_config: Optional[TaskGraphConfiguration]
+        self,
+        airflow_config: TasksBuildingParameters,
+        operator_builder: DbtRunOperatorBuilder,
+        gateway_config: Optional[TaskGraphConfiguration],
     ):
         self.operator_builder = operator_builder
         self.airflow_config = airflow_config
@@ -76,7 +82,7 @@ class DbtAirflowTasksBuilder:
         )
 
     def _make_dbt_multiple_deps_test_task(
-            self, test_names: str, dependency_tuple_str: str
+        self, test_names: str, dependency_tuple_str: str
     ) -> BaseOperator:
         command = "test"
         return self.operator_builder.create(dependency_tuple_str, command, test_names)
@@ -95,7 +101,7 @@ class DbtAirflowTasksBuilder:
 
     @staticmethod
     def _create_task_group_for_model(
-            model_name: str, use_task_group: bool
+        model_name: str, use_task_group: bool
     ) -> Tuple[Any, ContextManager]:
         import contextlib
 
@@ -107,10 +113,10 @@ class DbtAirflowTasksBuilder:
         return task_group, task_group_ctx
 
     def _create_task_for_model(
-            self,
-            model_name: str,
-            is_ephemeral_task: bool,
-            use_task_group: bool,
+        self,
+        model_name: str,
+        is_ephemeral_task: bool,
+        use_task_group: bool,
     ) -> ModelExecutionTask:
         if is_ephemeral_task:
             return ModelExecutionTask(EphemeralOperator(task_id=f"{model_name}__ephemeral"), None)
@@ -125,7 +131,7 @@ class DbtAirflowTasksBuilder:
         return ModelExecutionTask(run_task, test_task, task_group)
 
     def _create_task_from_graph_node(
-            self, node_name: str, node: Dict[str, Any]
+        self, node_name: str, node: Dict[str, Any]
     ) -> ModelExecutionTask:
         if node["node_type"] == NodeType.MULTIPLE_DEPS_TEST:
             return ModelExecutionTask(
@@ -182,7 +188,7 @@ class DbtAirflowTasksBuilder:
                 task_id="sensor_" + node["select"],
                 external_dag_id=node["dag"],
                 external_task_id=node["select"]
-                                 + (".test" if self.airflow_config.use_task_group else "_test"),
+                + (".test" if self.airflow_config.use_task_group else "_test"),
                 timeout=24 * 60 * 60,
                 allowed_states=["success"],
                 failed_states=["failed", "skipped"],
@@ -192,8 +198,4 @@ class DbtAirflowTasksBuilder:
 
     @staticmethod
     def _create_dummy_task(node: Dict[str, Any]) -> ModelExecutionTask:
-        return ModelExecutionTask(
-            DummyOperator(
-                task_id=node["select"]
-            )
-        )
+        return ModelExecutionTask(DummyOperator(task_id=node["select"]))

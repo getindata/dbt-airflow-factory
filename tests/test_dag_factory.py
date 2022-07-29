@@ -98,11 +98,10 @@ def test_should_properly_map_tasks():
     assert dag.tasks.__len__() == 15
 
     # and tasks should be correctly matched to themselves
-    gateway_task = [task for task in dag.tasks if task.task_id == f'{save_points[0]}_{save_points[1]}_gateway'][0]
+    gateway_task = [
+        task for task in dag.tasks if task.task_id == f"{save_points[0]}_{save_points[1]}_gateway"
+    ][0]
 
-    assert gateway_task.downstream_task_ids == {
-        'user.run', 'shop.run', 'payment.run'
-    }
+    assert gateway_task.downstream_task_ids == {"user.run", "shop.run", "payment.run"}
 
-    assert gateway_task.upstream_task_ids == {'stg_payment.test', 'stg_shop.test', 'stg_user.test'}
-
+    assert gateway_task.upstream_task_ids == {"stg_payment.test", "stg_shop.test", "stg_user.test"}
