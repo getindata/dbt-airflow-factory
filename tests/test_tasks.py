@@ -76,7 +76,3 @@ def test_dbt_vars():
     assert run_task.cmds == ["bash", "-c"]
     assert "set -e; dbt --no-write-json run " in run_task.arguments[0]
     assert '--vars "{variable_1: 123, variable_2: var2}"' in run_task.arguments[0]
-
-
-def test_gateway_created_tasks():
-    pass
