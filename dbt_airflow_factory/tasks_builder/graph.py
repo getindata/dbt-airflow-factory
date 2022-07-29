@@ -7,7 +7,7 @@ import networkx as nx
 
 from dbt_airflow_factory.tasks_builder.gateway import (
     get_gateway_dependencies,
-    is_gateway_valid_dependency,
+    is_gateway_valid_dependency, create_gateway_name, add_gateway_to_dependencies,
 )
 from dbt_airflow_factory.tasks_builder.node_type import NodeType
 from dbt_airflow_factory.tasks_builder.utils import (
@@ -27,12 +27,6 @@ class GatewayConfiguration:
 @dataclass
 class TaskGraphConfiguration:
     gateway: GatewayConfiguration
-
-
-def create_gateway_name(
-    separation_layer_left: str, separation_layer_right: str, gateway_task_name: str
-) -> str:
-    return f"{separation_layer_left}_{separation_layer_right}_{gateway_task_name}"
 
 
 class DbtAirflowGraph:
@@ -229,14 +223,15 @@ class DbtAirflowGraph:
                     )
                 )
 
-                if len(filtered_dependencies) < len(filtered_records):
-                    filtered_dependencies.append(
-                        create_gateway_name(
-                            separation_layer_left=separation_layer_left,
-                            separation_layer_right=separation_layer_right,
-                            gateway_task_name=self.configuration.gateway.gateway_task_name,
-                        )
+                add_gateway_to_dependencies(
+                    filtered_dependencies=filtered_dependencies,
+                    filtered_records=filtered_records,
+                    gateway_name=create_gateway_name(
+                        separation_layer_left=separation_layer_left,
+                        separation_layer_right=separation_layer_right,
+                        gateway_task_name=self.configuration.gateway.gateway_task_name,
                     )
+                )
                 return filtered_dependencies
 
         return filtered_records

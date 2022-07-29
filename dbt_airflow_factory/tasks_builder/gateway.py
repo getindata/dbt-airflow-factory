@@ -59,6 +59,37 @@ def _get_upstream_dependencies_connected_to_downstream(
     for downstream_node in downstream_dependencies:
         upstream_deps = manifest["nodes"][downstream_node]["depends_on"]["nodes"]
         for dep in upstream_deps:
+            _add_task(
+                upstream_dependencies_connected_to_downstream=upstream_dependencies_connected_to_downstream,
+                dep=dep,
+                manifest=manifest,
+                separation_layer_left=separation_layer_left
+            )
             if is_model_run_task(dep) and manifest["nodes"][dep]["schema"] == separation_layer_left:
                 upstream_dependencies_connected_to_downstream.append(dep)
     return upstream_dependencies_connected_to_downstream
+
+
+def _add_task(
+        upstream_dependencies_connected_to_downstream: List,
+        dep: str,
+        manifest: dict,
+        separation_layer_left: str
+):
+    if is_model_run_task(dep) and manifest["nodes"][dep]["schema"] == separation_layer_left:
+        upstream_dependencies_connected_to_downstream.append(dep)
+
+
+def add_gateway_to_dependencies(
+        gateway_name: str,
+        filtered_dependencies: List[str],
+        filtered_records: List[str]
+):
+    if len(filtered_dependencies) < len(filtered_records):
+        filtered_dependencies.append(gateway_name)
+
+
+def create_gateway_name(
+        separation_layer_left: str, separation_layer_right: str, gateway_task_name: str
+) -> str:
+    return f"{separation_layer_left}_{separation_layer_right}_{gateway_task_name}"
