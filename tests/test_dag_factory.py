@@ -62,13 +62,47 @@ def test_no_task_group_dag_factory():
 
 
 def test_gateway_dag_factory():
-    # if IS_FIRST_AIRFLOW_VERSION:  # You cannot use TaskGroup in Airflow 1 anyway
-    #     return True
-
     # given
     factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "gateway")
 
     # when
     dag = factory.create()
 
+    # then save points should be as passed in the config file
+    assert factory.airflow_config["save_points"] == ["datalab_stg", "datalab"]
+
+
+def test_should_not_fail_when_savepoint_property_wasnt_passed():
+    # given
+    factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "no_gateway")
+
+    # when
+    dag = factory.create()
+
+    # then save_points_property should be empty
+    assert factory.airflow_config.get("save_points", []).__len__() == 0
+
+
+def test_should_properly_map_tasks():
+    # given
+    factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "gateway")
+
+    # when
+    dag = factory.create()
+
+    # then save_points_property should be empty
+    save_points = factory.airflow_config.get("save_points")
+    assert save_points.__len__() == 2
+
+    # and number of tasks should be as expected
+    assert dag.tasks.__len__() == 15
+
+    # and tasks should be correctly matched to themselves
+    gateway_task = [task for task in dag.tasks if task.task_id == f'{save_points[0]}_{save_points[1]}_gateway'][0]
+
+    assert gateway_task.downstream_task_ids == {
+        'user.run', 'shop.run', 'payment.run'
+    }
+
+    assert gateway_task.upstream_task_ids == {'stg_payment.test', 'stg_shop.test', 'stg_user.test'}
 

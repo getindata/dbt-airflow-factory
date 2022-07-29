@@ -107,8 +107,7 @@ class DbtAirflowGraph:
             node_name,
             select=manifest_node["name"],
             depends_on=self._get_model_dependencies_from_manifest_node(manifest_node, manifest),
-            node_type=node_type,
-            target_schema=manifest_node["schema"],
+            node_type=node_type
         )
 
     def _add_sensor_source_node(self, node_name: str, manifest_node: Dict[str, Any]) -> None:
@@ -197,9 +196,9 @@ class DbtAirflowGraph:
 
     def _get_model_dependencies_from_manifest_node(self, node: Dict[str, Any], manifest: dict) -> List[str]:
         filtered_records = list(filter(DbtAirflowGraph._is_valid_dependency, node["depends_on"]["nodes"]))
-        node_schema = node["schema"]
-        if self.configuration.gateway and node_schema in self.configuration.gateway.separation_schemas:
+        node_schema = node.get("schema", None)
 
+        if self.configuration.gateway and node_schema in self.configuration.gateway.separation_schemas:
             node_schema_index = self.configuration.gateway.separation_schemas.index(node_schema)
             separation_layers = self.configuration.gateway.separation_schemas
             if node_schema_index >= 1:

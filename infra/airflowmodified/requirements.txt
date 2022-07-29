@@ -1,5 +1,0 @@
-airflow-dbt==0.4.0
-dbt-core==1.0.5
-dbt-snowflake==1.0.1
-apache-airflow-providers-airbyte==2.1.4
-apache-airflow-providers-snowflake==2.6.0

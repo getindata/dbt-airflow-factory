@@ -41,7 +41,7 @@
         "pre-hook": []
       },
       "database": "db",
-      "schema": "pawel_datalab_stg",
+      "schema": "datalab_stg",
       "fqn": [
         "datalab",
         "stg",
@@ -85,10 +85,10 @@
         "materialized": "table"
       },
       "created_at": 1658947904.1164968,
-      "compiled_sql": "\nWITH payments_data AS (\n    SELECT\n        1 AS id,\n        '2022-07-24' AS transaction_date,\n        1 AS user_id,\n        1 AS shop_id\n    UNION ALL\n    SELECT\n        2 AS id,\n        '2022-07-25' AS transaction_date,\n        1 AS user_id,\n        2 AS shop_id\n    UNION ALL\n    SELECT\n        3 AS id,\n        '2022-07-25' AS transaction_date,\n        2 AS user_id,\n        1 AS shop_id\n    UNION ALL\n    SELECT\n        4 AS id,\n        '2022-07-25' AS transaction_date,\n        2 AS user_id,\n        2 AS shop_id\n),\n     merged AS (\n    SELECT p.*, s.name AS shop_name, u.name AS user_name FROM payments_data AS p\n    JOIN  \"db\".\"pawel_datalab_stg\".\"shop\" AS s ON p.shop_id = s.id\n    JOIN  \"db\".\"pawel_datalab_stg\".\"user\" AS u ON p.user_id = u.id\n )\nSELECT * FROM merged",
+      "compiled_sql": "\nWITH payments_data AS (\n    SELECT\n        1 AS id,\n        '2022-07-24' AS transaction_date,\n        1 AS user_id,\n        1 AS shop_id\n    UNION ALL\n    SELECT\n        2 AS id,\n        '2022-07-25' AS transaction_date,\n        1 AS user_id,\n        2 AS shop_id\n    UNION ALL\n    SELECT\n        3 AS id,\n        '2022-07-25' AS transaction_date,\n        2 AS user_id,\n        1 AS shop_id\n    UNION ALL\n    SELECT\n        4 AS id,\n        '2022-07-25' AS transaction_date,\n        2 AS user_id,\n        2 AS shop_id\n),\n     merged AS (\n    SELECT p.*, s.name AS shop_name, u.name AS user_name FROM payments_data AS p\n    JOIN  \"db\".\"datalab_stg\".\"shop\" AS s ON p.shop_id = s.id\n    JOIN  \"db\".\"datalab_stg\".\"user\" AS u ON p.user_id = u.id\n )\nSELECT * FROM merged",
       "extra_ctes_injected": true,
       "extra_ctes": [],
-      "relation_name": "\"db\".\"pawel_datalab_stg\".\"payment\""
+      "relation_name": "\"db\".\"datalab_stg\".\"payment\""
     },
     "model.datalab.stg_shop": {
       "raw_sql": "{{ config(\n    alias=\"shop\",\n    schema=\"stg\",\n    materialized='table'\n) }}\nWITH shops AS (\n    SELECT\n        1 as id,\n        'Biedronka' As name\n    union all\n    SELECT\n        1 as id,\n        'Lidl' As name\n)\nSELECT * FROM shops",
@@ -117,7 +117,7 @@
         "pre-hook": []
       },
       "database": "db",
-      "schema": "pawel_datalab_stg",
+      "schema": "datalab_stg",
       "fqn": [
         "datalab",
         "stg",
@@ -157,7 +157,7 @@
       "compiled_sql": "\nWITH shops AS (\n    SELECT\n        1 as id,\n        'Biedronka' As name\n    union all\n    SELECT\n        1 as id,\n        'Lidl' As name\n)\nSELECT * FROM shops",
       "extra_ctes_injected": true,
       "extra_ctes": [],
-      "relation_name": "\"db\".\"pawel_datalab_stg\".\"shop\""
+      "relation_name": "\"db\".\"datalab_stg\".\"shop\""
     },
     "model.datalab.stg_user": {
       "raw_sql": "{{ config(\n    alias=\"user\",\n    schema=\"stg\",\n    materialized='table'\n) }}\nWITH user_data AS (\n\n    SELECT\n        1 as id,\n        'jhon' AS name\n    union all\n    SELECT\n        2 as id,\n        'michael' AS name\n\n)\nSELECT * FROM user_data",
@@ -186,7 +186,7 @@
         "pre-hook": []
       },
       "database": "db",
-      "schema": "pawel_datalab_stg",
+      "schema": "datalab_stg",
       "fqn": [
         "datalab",
         "stg",
@@ -226,7 +226,7 @@
       "compiled_sql": "\nWITH user_data AS (\n\n    SELECT\n        1 as id,\n        'jhon' AS name\n    union all\n    SELECT\n        2 as id,\n        'michael' AS name\n\n)\nSELECT * FROM user_data",
       "extra_ctes_injected": true,
       "extra_ctes": [],
-      "relation_name": "\"db\".\"pawel_datalab_stg\".\"user\""
+      "relation_name": "\"db\".\"datalab_stg\".\"user\""
     },
     "test.datalab.unique_my_first_dbt_model_id.16e066b321": {
       "raw_sql": "{{ test_unique(**_dbt_generic_test_kwargs) }}",
@@ -262,7 +262,7 @@
         "error_if": "!= 0"
       },
       "database": "db",
-      "schema": "pawel_datalab_dbt_test__audit",
+      "schema": "datalab_dbt_test__audit",
       "fqn": [
         "datalab",
         "example",
@@ -336,7 +336,7 @@
         "error_if": "!= 0"
       },
       "database": "db",
-      "schema": "pawel_datalab_dbt_test__audit",
+      "schema": "datalab_dbt_test__audit",
       "fqn": [
         "datalab",
         "example",
@@ -410,7 +410,7 @@
         "error_if": "!= 0"
       },
       "database": "db",
-      "schema": "pawel_datalab_dbt_test__audit",
+      "schema": "datalab_dbt_test__audit",
       "fqn": [
         "datalab",
         "example",
@@ -484,7 +484,7 @@
         "error_if": "!= 0"
       },
       "database": "db",
-      "schema": "pawel_datalab_dbt_test__audit",
+      "schema": "datalab_dbt_test__audit",
       "fqn": [
         "datalab",
         "example",
@@ -553,7 +553,7 @@
         "pre-hook": []
       },
       "database": "db",
-      "schema": "pawel_datalab",
+      "schema": "datalab",
       "fqn": [
         "datalab",
         "dwh",
@@ -592,10 +592,10 @@
         "materialized": "table"
       },
       "created_at": 1658947936.340327,
-      "compiled_sql": "\nSELECT * FROM \"db\".\"pawel_datalab_stg\".\"user\"",
+      "compiled_sql": "\nSELECT * FROM \"db\".\"datalab_stg\".\"user\"",
       "extra_ctes_injected": true,
       "extra_ctes": [],
-      "relation_name": "\"db\".\"pawel_datalab\".\"user\""
+      "relation_name": "\"db\".\"datalab\".\"user\""
     },
     "model.datalab.shop": {
       "raw_sql": "{{ config(\n    materialized='table'\n) }}\nSELECT * FROM {{ ref('stg_shop') }}",
@@ -626,7 +626,7 @@
         "pre-hook": []
       },
       "database": "db",
-      "schema": "pawel_datalab",
+      "schema": "datalab",
       "fqn": [
         "datalab",
         "dwh",
@@ -665,10 +665,10 @@
         "materialized": "table"
       },
       "created_at": 1658947936.3567412,
-      "compiled_sql": "\nSELECT * FROM \"db\".\"pawel_datalab_stg\".\"shop\"",
+      "compiled_sql": "\nSELECT * FROM \"db\".\"datalab_stg\".\"shop\"",
       "extra_ctes_injected": true,
       "extra_ctes": [],
-      "relation_name": "\"db\".\"pawel_datalab\".\"shop\""
+      "relation_name": "\"db\".\"datalab\".\"shop\""
     },
     "model.datalab.payment": {
       "raw_sql": "{{ config(\n    materialized='table'\n) }}\nSELECT * FROM {{ ref('stg_payment') }}",
@@ -699,7 +699,7 @@
         "pre-hook": []
       },
       "database": "db",
-      "schema": "pawel_datalab",
+      "schema": "datalab",
       "fqn": [
         "datalab",
         "dwh",
@@ -738,10 +738,10 @@
         "materialized": "table"
       },
       "created_at": 1658947936.3599339,
-      "compiled_sql": "\nSELECT * FROM \"db\".\"pawel_datalab_stg\".\"payment\"",
+      "compiled_sql": "\nSELECT * FROM \"db\".\"datalab_stg\".\"payment\"",
       "extra_ctes_injected": true,
       "extra_ctes": [],
-      "relation_name": "\"db\".\"pawel_datalab\".\"payment\""
+      "relation_name": "\"db\".\"datalab\".\"payment\""
     }
   },
   "sources": {},
