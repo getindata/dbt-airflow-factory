@@ -140,38 +140,11 @@ class DbtAirflowGraph:
         self.graph.add_node(
             node_name,
             select=node_name,
-            depends_on=self.get_downstream_dependencies(
+            depends_on=get_gateway_dependencies(
                 manifest, separation_layer_left, separation_layer_right
             ),
             node_type=NodeType.MOCK_GATEWAY,
         )
-
-    @staticmethod
-    def get_downstream_dependencies(
-        manifest: dict, separation_layer_left: str, separation_layer_right: str
-    ) -> List:
-        downstream_dependencies = [
-            node_name
-            for node_name, values in manifest["nodes"].items()
-            if values["schema"] == separation_layer_right
-        ]
-
-        upstream_dependencies_connected_to_downstream = []
-
-        for downstream_node in downstream_dependencies:
-            prod_deps = manifest["nodes"][downstream_node]["depends_on"]["nodes"]
-            for dep in prod_deps:
-                if is_model_run_task(dep):
-                    if manifest["nodes"][dep]["schema"] == separation_layer_left:
-                        upstream_dependencies_connected_to_downstream.append(dep)
-
-        dependencies = [
-            node_name
-            for node_name, values in manifest["nodes"].items()
-            if values["schema"] == separation_layer_left
-            and node_name in upstream_dependencies_connected_to_downstream
-        ]
-        return dependencies
 
     def _add_graph_node_for_model_run_task(
         self, node_name: str, manifest_node: Dict[str, Any], manifest: dict
@@ -289,3 +262,49 @@ def is_gateway_valid_dependency(
             return False
         return True
     return True
+
+
+def get_gateway_dependencies(
+    manifest: dict, separation_layer_left: str, separation_layer_right: str
+) -> List:
+    downstream_dependencies = _get_downstream_dependencies(
+        manifest=manifest, separation_layer_right=separation_layer_right
+    )
+
+    upstream_dependencies_connected_to_downstream = (
+        _get_upstream_dependencies_connected_to_downstream(
+            manifest=manifest,
+            separation_layer_left=separation_layer_left,
+            downstream_dependencies=downstream_dependencies,
+        )
+    )
+    dependencies = [
+        node_name
+        for node_name, values in manifest["nodes"].items()
+        if values["schema"] == separation_layer_left
+        and node_name in upstream_dependencies_connected_to_downstream
+    ]
+    return dependencies
+
+
+def _get_downstream_dependencies(manifest: dict, separation_layer_right: str) -> List:
+    downstream_dependencies = [
+        node_name
+        for node_name, values in manifest["nodes"].items()
+        if values["schema"] == separation_layer_right
+    ]
+    return downstream_dependencies
+
+
+def _get_upstream_dependencies_connected_to_downstream(
+    manifest: dict, separation_layer_left: str, downstream_dependencies: List
+) -> List:
+    upstream_dependencies_connected_to_downstream = []
+
+    for downstream_node in downstream_dependencies:
+        upstream_deps = manifest["nodes"][downstream_node]["depends_on"]["nodes"]
+        for dep in upstream_deps:
+            if is_model_run_task(dep):
+                if manifest["nodes"][dep]["schema"] == separation_layer_left:
+                    upstream_dependencies_connected_to_downstream.append(dep)
+    return upstream_dependencies_connected_to_downstream
