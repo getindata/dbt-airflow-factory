@@ -1,5 +1,8 @@
 from datetime import datetime, timezone
 from os import path
+from typing import List, Set
+
+import pytest
 
 from dbt_airflow_factory.airflow_dag_factory import AirflowDagFactory
 
@@ -59,3 +62,64 @@ def test_no_task_group_dag_factory():
     # then
     assert len(dag.tasks) == 10
     assert len(dag.task_group.children) == 10
+
+
+@pytest.mark.parametrize(
+    "test_name,ingestion_enabled,seed_available,expected_start_task_deps",
+    [
+            (
+                    "should return no ingestion task when ingestion is not enabled - seed enabled",
+                    False,
+                    True,
+                    {"postgres_ingestion", "mysql_ingestion", "sales_force_ingestion"}
+            ),
+            (
+                    "should return no ingestion task when ingestion is not enabled - seed disabled",
+                    False,
+                    False,
+                    set()
+            ),
+            (
+                    "should return ingestion tasks when ingestion is enabled - seed disabled",
+                    True,
+                    False,
+                    {"postgres_ingestion", "mysql_ingestion", "sales_force_ingestion"}
+            ),
+            (
+                    "should return ingestion tasks when ingestion is enabled - seed enabled",
+                    True,
+                    True,
+                    set()
+            ),
+    ]
+)
+def test_should_add_airbyte_tasks_when_seed_is_not_available(test_name: str, ingestion_enabled: bool,
+                                                             seed_available: bool,
+                                                             expected_start_task_deps: Set[str]):
+    # given configuration for airbyte_dev
+    factory = AirflowDagFactory(
+        path.dirname(path.abspath(__file__)), "airbyte_dev",
+        airflow_config_file_name=f"airflow_seed_{boolean_mapper[seed_available]}.yml",
+        ingestion_config_file_name=f"ingestion_{boolean_mapper[ingestion_enabled]}.yml"
+    )
+
+    # when creating factory
+    dag = factory.create()
+
+    # airbyte ingestion tasks should be added to dummy task
+    start_task_name = [
+        task for task in dag.tasks if task.task_id == starting_task_mapper[seed_available]
+    ][0]
+
+    assert start_task_name.upstream_task_ids == expected_start_task_deps
+
+
+boolean_mapper = {
+    True: "enabled",
+    False: "disabled"
+}
+
+starting_task_mapper = {
+    True: "dbt_seed",
+    False: "start"
+}
