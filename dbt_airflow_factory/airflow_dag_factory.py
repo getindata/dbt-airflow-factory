@@ -1,13 +1,12 @@
 """Factory creating Airflow DAG."""
 
 import os
-from typing import Optional
 
 import airflow
 from airflow import DAG
 from airflow.models import BaseOperator
 
-from dbt_airflow_factory.ingestion import AirbyteIngestionTasksBuilder, IngestionTasksBuilder
+from dbt_airflow_factory.ingestion import IngestionEngine, IngestionFactory
 
 if airflow.__version__.startswith("1."):
     from airflow.operators.dummy_operator import DummyOperator
@@ -58,7 +57,6 @@ class AirflowDagFactory:
         airflow_config_file_name: str = "airflow.yml",
         airbyte_config_file_name: str = "airbyte.yml",
         ingestion_config_file_name: str = "ingestion.yml",
-        ingestion_tasks_builder: Optional[IngestionTasksBuilder] = None
     ):
         self._notifications_handlers_builder = NotificationHandlersFactory()
         self.airflow_config = self._read_config(dag_path, env, airflow_config_file_name)
@@ -66,13 +64,18 @@ class AirflowDagFactory:
             dag_path, env, self.airflow_config, dbt_config_file_name, execution_env_config_file_name
         ).create()
         self.dag_path = dag_path
-        airbyte_config = read_env_config(dag_path=dag_path, env=env, file_name=airbyte_config_file_name)
-        self.ingestion_tasks_builder = ingestion_tasks_builder
-        self.ingestion_config = read_env_config(dag_path=dag_path, env=env, file_name=ingestion_config_file_name)
-        if not ingestion_tasks_builder:
-            self.ingestion_tasks_builder = AirbyteIngestionTasksBuilder(
-                config=airbyte_config
-            )
+        airbyte_config = read_env_config(
+            dag_path=dag_path, env=env, file_name=airbyte_config_file_name
+        )
+        self.ingestion_config = read_env_config(
+            dag_path=dag_path, env=env, file_name=ingestion_config_file_name
+        )
+        self.ingestion_tasks_builder_factory = IngestionFactory(
+            ingestion_config=airbyte_config,
+            name=IngestionEngine.value_of(
+                self.ingestion_config.get("engine", IngestionEngine.AIRBYTE.value)
+            ),
+        )
 
     def create(self) -> DAG:
         """
@@ -95,8 +98,10 @@ class AirflowDagFactory:
         ingestion_enabled = self.ingestion_config["enable"]
 
         start = self._create_starting_task()
-        if ingestion_enabled:
-            self.ingestion_tasks_builder.build() >> start
+        if ingestion_enabled and self.ingestion_tasks_builder_factory:
+            builder = self.ingestion_tasks_builder_factory.create()
+            ingestion_tasks = builder.build()
+            ingestion_tasks >> start
         end = DummyOperator(task_id="end")
         tasks = self._builder.parse_manifest_into_tasks(self._manifest_file_path())
         for starting_task in tasks.get_starting_tasks():
