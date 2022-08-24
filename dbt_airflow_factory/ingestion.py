@@ -41,11 +41,6 @@ class AirbyteIngestionTasksBuilder(IngestionTasksBuilder):
         return airflow_tasks
 
 
-class AbstractIngestionFactory:
-    def create(self) -> IngestionTasksBuilder:
-        raise NotImplementedError("Should implement create method")
-
-
 class IngestionFactory:
     def __init__(self, ingestion_config: dict, name: IngestionEngine):
         self.ingestion_config = ingestion_config
