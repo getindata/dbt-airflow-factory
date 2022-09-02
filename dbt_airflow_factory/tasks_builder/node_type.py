@@ -6,3 +6,4 @@ class NodeType(Enum):
     MULTIPLE_DEPS_TEST = 2
     EPHEMERAL = 3
     SOURCE_SENSOR = 4
+    MOCK_GATEWAY = 5

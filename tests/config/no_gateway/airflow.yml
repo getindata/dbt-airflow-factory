@@ -1,0 +1,24 @@
+
+default_args:
+  owner: Piotr Pekala
+  email:
+    - "test@getindata.com"
+  depends_on_past: False
+  start_date: 2021-10-20T00:00:00
+  email_on_failure: False
+  email_on_retry: False
+  retries: 0
+  retry_delay: 5m
+
+
+dag:
+  dag_id: dbt-platform-poc
+  description: 'Experimental snadbox data platform DAG'
+  schedule_interval: '0 12 * * *'
+  catchup: False
+
+seed_task: True
+manifest_file_name: ../tests/manifest.json
+use_task_group: True
+dags_path: "gs://example-bucket/dags/experimental-sandbox"
+show_ephemeral_models: True

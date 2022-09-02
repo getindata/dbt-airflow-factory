@@ -99,7 +99,7 @@ class AirflowDagFactory:
         Parse ``manifest.json`` and create tasks based on the data contained there.
         """
 
-        ingestion_enabled = self.ingestion_config["enable"]
+        ingestion_enabled = self.ingestion_config.get("enable", False)
 
         start = self._create_starting_task()
         if ingestion_enabled and self.ingestion_tasks_builder_factory:
