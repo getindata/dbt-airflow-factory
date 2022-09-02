@@ -10,8 +10,10 @@ from dbt_airflow_factory.k8s.k8s_parameters_loader import (
 )
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder
 from dbt_airflow_factory.tasks_builder.builder import DbtAirflowTasksBuilder
-from dbt_airflow_factory.tasks_builder.gateway import GatewayConfiguration
-from dbt_airflow_factory.tasks_builder.graph import TaskGraphConfiguration
+from dbt_airflow_factory.tasks_builder.gateway import (
+    GatewayConfiguration,
+    TaskGraphConfiguration,
+)
 from dbt_airflow_factory.tasks_builder.parameters import TasksBuildingParameters
 
 

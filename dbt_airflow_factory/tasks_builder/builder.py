@@ -16,7 +16,8 @@ if not airflow.__version__.startswith("1."):
 
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder, EphemeralOperator
 from dbt_airflow_factory.tasks import ModelExecutionTask, ModelExecutionTasks
-from dbt_airflow_factory.tasks_builder.graph import DbtAirflowGraph, TaskGraphConfiguration
+from dbt_airflow_factory.tasks_builder.gateway import TaskGraphConfiguration
+from dbt_airflow_factory.tasks_builder.graph import DbtAirflowGraph
 
 
 class DbtAirflowTasksBuilder:

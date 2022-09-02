@@ -9,7 +9,7 @@ class IngestionEngine(Enum):
     AIRBYTE = "airbyte"
 
     @classmethod
-    def value_of(cls, value: str):
+    def value_of(cls, value: str) -> "IngestionEngine":
         return IngestionEngine(value)
 
 
