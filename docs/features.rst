@@ -80,4 +80,33 @@ The following picture presents DAG that belongs to Team B that needs to use data
 .. image:: images/downstream.png
    :width: 600
 
+Adding ingestion layer
++++++++++++++++++++
+Airflow dbt factory adds the possibility to specify ingestion tasks before dbt process. This helps with keeping data
+reliable and trustworthy.  No more data inconsistencies, to turn this option on you need  to add 2 configuration files
+to airflow dbt factory.
+
+- ingestion.yml
+.. code-block:: yaml
+
+ enable: True
+ engine: airbyte
+
+- airbyte.yml
+.. code-block:: yaml
+
+ airbyte_connection_id: "airbyte_connection_id"
+ tasks:
+   - task_id: "postgres_ingestion"
+     connection_id: "748ae2b6-b96d-4269-9550-d6ed57046182"
+     asyncrounous: True
+     api_version: "v1"
+     wait_seconds: 3
+     timeout: 110.0
+
+
+When options are properly filled in, the ingestion tasks should appear before the dbt data transformation step.
+
+.. image:: images/ingestions_tasks.png
+   :width: 600
 
