@@ -248,6 +248,65 @@ ingestion.yml file
      -
      - Enumeration based option, currently only supported value is airbyte
 
+
+airbyte.yml file
+~~~~~~~~~~~~~~~~~~~~~~~
+.. list-table::
+   :widths: 25 20 2 13 40
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Required
+     - Default
+     - Description
+   * - airbyte_connection_id
+     - string
+     - x
+     -
+     - Connection id for airbyte in airflow instance. Remember to add this to airflow dependencies
+       `apache-airflow-providers-airbyte` to be able to add such connection.
+   * - tasks
+     - list of objects
+     - x
+     -
+     - Each task consist of fields
+
+       **task_id**: string - name of the task which will be shown on airflow
+
+       **connection_id**: string - id of airbyte connection
+
+       **asyncrounous**: boolean - Flag to get job_id after submitting the job to the Airbyte API.
+
+       **api_version**: string - Airbyte API version
+
+       **wait_seconds**: integer - Number of seconds between checks. Only used when ``asynchronous`` is False
+
+       **timeout**: float - The amount of time, in seconds, to wait for the request to complete
+
+
+ingestion.yml file
+~~~~~~~~~~~~~~~~~~~~~~~
+.. list-table::
+   :widths: 25 20 2 13 40
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Required
+     - Default
+     - Description
+   * - enable
+     - boolean
+     - x
+     -
+     - Boolean value to specify if ingestion task should be added to airflow dag.
+   * - engine
+     - string
+     - x
+     -
+     - Enumeration based option, currently only supported value is airbyte
+
 Example files
 +++++++++++++++++++
 
