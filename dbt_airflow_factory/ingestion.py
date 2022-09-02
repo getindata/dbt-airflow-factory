@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, List
+from typing import List
 
 from airflow.models import BaseOperator
 from airflow.providers.airbyte.operators.airbyte import AirbyteTriggerSyncOperator

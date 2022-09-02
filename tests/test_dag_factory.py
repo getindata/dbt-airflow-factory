@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from os import path
-from typing import List, Set
+from typing import Set
 
 import pytest
 
