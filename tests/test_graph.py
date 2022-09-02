@@ -2,10 +2,12 @@ from typing import Any, Dict
 
 import pytest
 
-from dbt_airflow_factory.tasks_builder.gateway import GatewayConfiguration, SeparationLayer, NodeProperties
-from dbt_airflow_factory.tasks_builder.graph import (
-    is_gateway_valid_dependency,
+from dbt_airflow_factory.tasks_builder.gateway import (
+    GatewayConfiguration,
+    NodeProperties,
+    SeparationLayer,
 )
+from dbt_airflow_factory.tasks_builder.graph import is_gateway_valid_dependency
 
 presentation_schema_name = "presentation"
 staging_schema_name = "stg"
@@ -106,11 +108,12 @@ def test_is_gateway_valid_dependency(
     is_valid_dependency = is_gateway_valid_dependency(
         dependency_node_properties=NodeProperties(
             schema_name=manifest["nodes"][dependency_node_name]["schema"],
-            node_name=dependency_node_name
+            node_name=dependency_node_name,
         ),
-        separation_layer=SeparationLayer(left=gateway_config.separation_schemas[0],
-                                         right=gateway_config.separation_schemas[1]),
-        node_schema=node["schema"]
+        separation_layer=SeparationLayer(
+            left=gateway_config.separation_schemas[0], right=gateway_config.separation_schemas[1]
+        ),
+        node_schema=node["schema"],
     )
 
     assert expected_value == is_valid_dependency

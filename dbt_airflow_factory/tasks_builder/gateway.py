@@ -71,7 +71,7 @@ def _get_downstream_dependencies(manifest: dict, separation_layer_right: str) ->
 def _get_upstream_dependencies_connected_to_downstream(
     manifest: dict, separation_layer_left: str, downstream_dependencies: List[str]
 ) -> List:
-    upstream_dependencies_connected_to_downstream: List[str] = []
+    upstream_deps_connected_to_downstream: List[str] = []
 
     for downstream_node in downstream_dependencies:
         upstream_deps = manifest["nodes"][downstream_node]["depends_on"]["nodes"]
@@ -80,9 +80,9 @@ def _get_upstream_dependencies_connected_to_downstream(
                 dep=dep,
                 manifest=manifest,
                 separation_layer_left=separation_layer_left,
-                upstream_dependencies_connected_to_downstream=upstream_dependencies_connected_to_downstream,
+                upstream_dependencies_connected_to_downstream=upstream_deps_connected_to_downstream,
             )
-    return upstream_dependencies_connected_to_downstream
+    return upstream_deps_connected_to_downstream
 
 
 def _add_upstream_dep_based_on_downstream(
