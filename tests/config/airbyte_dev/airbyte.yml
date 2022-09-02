@@ -1,0 +1,20 @@
+airbyte_connection_id: "airbyte_connection_id"
+tasks:
+  - task_id: "postgres_ingestion"
+    connection_id: "748ae2b6-b96d-4269-9550-d6ed57046182"
+    asyncrounous: True
+    api_version: "v1"
+    wait_seconds: 3
+    timeout: 110.0
+  - task_id: "mysql_ingestion"
+    connection_id: "fb016b35-535d-4571-8a67-3eab0a93373c"
+    asyncrounous: False
+    api_version: "v2"
+    wait_seconds: 8
+    timeout: 130.0
+  - task_id: "sales_force_ingestion"
+    connection_id: "8247b701-3357-4442-90bc-27a4dcd10b64"
+    asyncrounous: True
+    api_version: "v1"
+    wait_seconds: 5
+    timeout: 120.0

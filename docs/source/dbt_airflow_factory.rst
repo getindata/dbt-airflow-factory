@@ -14,6 +14,8 @@ Subpackages
 
    dbt_airflow_factory.ecs
    dbt_airflow_factory.k8s
+   dbt_airflow_factory.notifications
+   dbt_airflow_factory.tasks_builder
 
 Submodules
 ----------
@@ -22,14 +24,6 @@ dbt\_airflow\_factory.airflow\_dag\_factory module
 --------------------------------------------------
 
 .. automodule:: dbt_airflow_factory.airflow_dag_factory
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dbt\_airflow\_factory.builder module
-------------------------------------
-
-.. automodule:: dbt_airflow_factory.builder
    :members:
    :undoc-members:
    :show-inheritance:
@@ -54,6 +48,14 @@ dbt\_airflow\_factory.dbt\_parameters module
 --------------------------------------------
 
 .. automodule:: dbt_airflow_factory.dbt_parameters
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dbt\_airflow\_factory.ingestion module
+--------------------------------------
+
+.. automodule:: dbt_airflow_factory.ingestion
    :members:
    :undoc-members:
    :show-inheritance:
