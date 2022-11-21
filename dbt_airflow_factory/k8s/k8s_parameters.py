@@ -57,6 +57,8 @@ class KubernetesExecutionParameters:
         is_delete_operator_pod: bool = True,
         config_file: str = "~/.kube/config",
         execution_script: str = "dbt --no-write-json",
+        in_cluster: Optional[bool] = None,
+        cluster_context: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         self.namespace = namespace
@@ -73,6 +75,8 @@ class KubernetesExecutionParameters:
         self.is_delete_operator_pod = is_delete_operator_pod
         self.config_file = config_file
         self.execution_script = execution_script
+        self.in_cluster = in_cluster
+        self.cluster_context = cluster_context
 
     @property
     def resources(self):  # type: ignore
