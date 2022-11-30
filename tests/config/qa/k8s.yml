@@ -1,7 +1,3 @@
-
-image_pull_policy: IfNotPresent
-namespace: apache-airflow
-
 secrets:
   - secret: snowflake-access-user-key
     deploy_type: env
@@ -9,35 +5,3 @@ secrets:
   - secret: snowflake-access-user-key
     deploy_type: volume
     deploy_target: /var
-
-envs:
-  EXAMPLE_ENV: "example"
-  SECOND_EXAMPLE_ENV: "second"
-
-labels:
-  runner: airflow
-
-annotations:
-  iam.amazonaws.com/role: "k8s-airflow"
-
-is_delete_operator_pod: True
-
-in_cluster: False
-cluster_context: test
-
-resources:
-  node_selectors:
-    group: data-processing
-  tolerations:
-    - key: group
-      operator: Equal
-      value: data-processing
-      effect: NoSchedule
-  limit:
-    memory: 2048M
-    cpu: '2'
-  requests:
-    memory: 1024M
-    cpu: '1'
-
-config_file: '/usr/local/airflow/dags/kube_config.yaml'
