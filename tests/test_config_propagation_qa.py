@@ -23,3 +23,5 @@ def test_configuration_with_qa_config():
         Secret("env", "test", "snowflake-access-user-key", None),
         Secret("volume", "/var", "snowflake-access-user-key", None),
     ]
+    assert run_task.in_cluster is False
+    assert run_task.cluster_context == "test"

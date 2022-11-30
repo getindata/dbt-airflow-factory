@@ -14,9 +14,6 @@ annotations:
 
 is_delete_operator_pod: True
 
-in_cluster: False
-cluster_context: test
-
 resources:
   node_selectors:
     group: data-processing
