@@ -6,7 +6,12 @@ with open("README.md") as f:
     README = f.read()
 
 # Runtime Requirements.
-INSTALL_REQUIRES = ["pytimeparse==1.1.8", "networkx==2.6.3"]
+INSTALL_REQUIRES = [
+    "pytimeparse==1.1.8",
+    "networkx==2.6.3",
+    "apache-airflow[kubernetes,slack]==2.2.0",
+    "apache-airflow-providers-airbyte==3.1.0",
+]
 
 # Dev Requirements
 EXTRA_REQUIRE = {
