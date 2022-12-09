@@ -114,6 +114,30 @@ def test_should_properly_map_tasks():
     assert gateway_task.upstream_task_ids == {"stg_payment.test", "stg_shop.test", "stg_user.test"}
 
 
+def test_should_properly_map_tasks_with_source():
+    # given
+    factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "gateway_source")
+
+    # when
+    dag = factory.create()
+
+    # then save_points_property should be empty
+    save_points = factory.airflow_config.get("save_points")
+    assert save_points.__len__() == 2
+
+    # and number of tasks should be as expected
+    assert dag.tasks.__len__() == 7
+
+    # and tasks should be correctly matched to themselves
+    gateway_task = [
+        task for task in dag.tasks if task.task_id == f"{save_points[0]}_{save_points[1]}_gateway"
+    ][0]
+
+    assert gateway_task.downstream_task_ids == {"my_second_dbt_model.run"}
+
+    assert gateway_task.upstream_task_ids == {"my_first_dbt_model.test"}
+
+
 @pytest.mark.parametrize(
     "test_name,ingestion_enabled,seed_available,expected_start_task_deps",
     [
