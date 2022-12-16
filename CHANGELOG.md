@@ -2,10 +2,6 @@
 
 ## [Unreleased]
 
-## [0.30.0] - 2022-09-02
--   Add in_cluster, cluster_context params
--   Repair secrets to be not required
--   Update docs
 ## [0.29.0] - 2022-09-02
 
 ## [0.28.0] - 2022-07-19
