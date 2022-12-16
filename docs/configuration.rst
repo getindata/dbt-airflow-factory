@@ -180,7 +180,7 @@ k8s.yml file
    * - execution_script
      - str
      -
-     - Script what will be executed inside pod
+     - Script that will be executed inside pod
    * - in_cluster
      - bool
      -
