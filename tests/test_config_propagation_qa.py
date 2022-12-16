@@ -1,3 +1,5 @@
+from airflow.kubernetes.secret import Secret
+
 from .utils import builder_factory, manifest_file_with_models, test_dag
 
 
@@ -17,3 +19,9 @@ def test_configuration_with_qa_config():
         "value_from": None,
     }
     assert "./executor_with_test_reports_ingestions.sh" in run_task.arguments[0]
+    assert run_task.secrets == [
+        Secret("env", "test", "snowflake-access-user-key", None),
+        Secret("volume", "/var", "snowflake-access-user-key", None),
+    ]
+    assert run_task.in_cluster is False
+    assert run_task.cluster_context == "test"

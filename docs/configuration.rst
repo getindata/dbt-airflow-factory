@@ -177,7 +177,18 @@ k8s.yml file
      - dictionary
      -
      - See more details in Kubernetes documentation: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-
+   * - execution_script
+     - str
+     -
+     - Script that will be executed inside pod
+   * - in_cluster
+     - bool
+     -
+     - Run kubernetes client with in_cluster configuration
+   * - cluster_context
+     - str
+     -
+     - Context that points to kubernetes cluster, ignored when in_cluster is True. If None, current-context is used.
 
 airbyte.yml file
 ~~~~~~~~~~~~~~~~~~~~~~~

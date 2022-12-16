@@ -6,14 +6,6 @@ envs:
   EXAMPLE_ENV: "example"
   SECOND_EXAMPLE_ENV: "second"
 
-secrets:
-  - secret: snowflake-access-user-key
-    deploy_type: env
-    deploy_target: test
-  - secret: snowflake-access-user-key
-    deploy_type: volume
-    deploy_target: /var
-
 labels:
   runner: airflow
 
