@@ -39,7 +39,7 @@ class KubernetesExecutionParameters:
     :param is_delete_operator_pod: What to do when the pod reaches its final
         state, or the execution is interrupted. If True: delete the pod.
     :type is_delete_operator_pod: bool
-    :param execution_script: Script what will be executed inside pod.
+    :param execution_script: Script that will be executed inside pod.
     :type execution_script: str
     :param in_cluster: Run kubernetes client with in_cluster configuration.
     :type in_cluster: bool
