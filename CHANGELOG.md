@@ -2,9 +2,7 @@
 
 ## [Unreleased]
 
-## [0.30.0] - 2022-12-16
-
-## [0.30.0] - 2022-09-02
+## [0.30.0] - 2022-12-19
 
 -   Add in_cluster, cluster_context params
 -   Repair secrets to be not required
@@ -134,7 +132,7 @@ This version brings compatibility with `dbt 1.0`.
 
 [Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.30.0...HEAD
 
-[0.30.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.30.0...0.30.0
+[0.30.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.29.0...0.30.0
 
 [0.29.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.28.0...0.29.0
 
