@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.30.0] - 2022-12-19
+
 -   Add in_cluster, cluster_context params
 -   Repair secrets to be not required
 -   Update docs
@@ -128,7 +130,9 @@ This version brings compatibility with `dbt 1.0`.
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library.
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.29.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.30.0...HEAD
+
+[0.30.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.29.0...0.30.0
 
 [0.29.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.28.0...0.29.0
 
