@@ -84,7 +84,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             labels=self.kubernetes_execution_parameters.labels,
             name=name,
             task_id=name,
-            resources=self.kubernetes_execution_parameters.resources,
+            container_resources=self.kubernetes_execution_parameters.resources,
             env_vars=self.kubernetes_execution_parameters.env_vars,
             secrets=self.kubernetes_execution_parameters.secrets,
             is_delete_operator_pod=self.kubernetes_execution_parameters.is_delete_operator_pod,  # noqa: E501
