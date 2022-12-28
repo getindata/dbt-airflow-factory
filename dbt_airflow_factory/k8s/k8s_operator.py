@@ -77,7 +77,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             image=self.kubernetes_execution_parameters.image,
             image_pull_policy=self.kubernetes_execution_parameters.image_pull_policy,
             cmds=["bash", "-c"],
-            node_selectors=self.kubernetes_execution_parameters.node_selectors,
+            node_selector=self.kubernetes_execution_parameters.node_selectors,
             tolerations=self.kubernetes_execution_parameters.tolerations,
             annotations=self.kubernetes_execution_parameters.annotations,
             arguments=args,
