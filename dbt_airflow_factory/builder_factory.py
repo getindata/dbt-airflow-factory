@@ -8,6 +8,10 @@ from dbt_airflow_factory.k8s.k8s_operator import KubernetesPodOperatorBuilder
 from dbt_airflow_factory.k8s.k8s_parameters_loader import (
     KubernetesExecutionParametersLoader,
 )
+from dbt_airflow_factory.bash.bash_operator import BashOperatorBuilder
+from dbt_airflow_factory.bash.bash_parameters_loader import (
+    BashExecutionParametersLoader,
+)
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder
 from dbt_airflow_factory.tasks_builder.builder import DbtAirflowTasksBuilder
 from dbt_airflow_factory.tasks_builder.gateway import (
@@ -102,6 +106,13 @@ class DbtAirflowTasksBuilderFactory:
             return EcsPodOperatorBuilder(
                 dbt_params,
                 EcsExecutionParametersLoader.create_config(
+                    self.dag_path, self.env, self.execution_env_config_file_name
+                ),
+            )
+        elif type == "bash":
+            return BashOperatorBuilder(
+                dbt_params,
+                BashExecutionParametersLoader.create_config(
                     self.dag_path, self.env, self.execution_env_config_file_name
                 ),
             )
