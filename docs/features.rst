@@ -12,9 +12,13 @@ of transformations and the second one is for testing (``dbt run`` and ``dbt test
 
 Kubernetes as execution environment
 +++++++++++++++++++
-At the moment library supports only Kubernetes as an execution environment.
+At the moment library supports Kubernetes as an execution environment.
 It is possible to use the same Kubernetes that Airflow is deployed on as well as an external one
 (in the case of deployment with celery).
+
+Bash Operator
++++++++++++++++++++
+For local testing library supports BashOperator.
 
 Tasks grouping
 +++++++++++++++++++
