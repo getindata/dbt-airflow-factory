@@ -37,6 +37,8 @@ def test_configuration():
         assert run_task.k8s_resources.limits == {"memory": "2048M", "cpu": "2"}
         assert run_task.k8s_resources.requests == {"memory": "1024M", "cpu": "1"}
 
+    assert run_task.startup_timeout_seconds == 120
+
     assert run_task.labels == {"runner": "airflow"}
     assert run_task.env_vars[0].to_dict() == {
         "name": "EXAMPLE_ENV",

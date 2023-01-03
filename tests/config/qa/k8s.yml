@@ -8,3 +8,4 @@ secrets:
 
 in_cluster: False
 cluster_context: test
+startup_timeout_seconds: 600
