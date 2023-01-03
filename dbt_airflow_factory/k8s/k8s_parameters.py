@@ -66,6 +66,7 @@ class KubernetesExecutionParameters:
         execution_script: str = "dbt --no-write-json",
         in_cluster: Optional[bool] = None,
         cluster_context: Optional[str] = None,
+        startup_timeout_seconds: int = 120,
         **kwargs: Any,
     ) -> None:
         self.namespace = namespace
@@ -84,6 +85,7 @@ class KubernetesExecutionParameters:
         self.execution_script = execution_script
         self.in_cluster = in_cluster
         self.cluster_context = cluster_context
+        self.startup_timeout_seconds = startup_timeout_seconds
 
     @property
     def resources(self):  # type: ignore
