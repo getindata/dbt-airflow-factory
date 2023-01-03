@@ -1,0 +1,10 @@
+secrets:
+  - secret: snowflake-access-user-key
+    deploy_type: env
+    deploy_target: test
+  - secret: snowflake-access-user-key
+    deploy_type: volume
+    deploy_target: /var
+
+in_cluster: False
+cluster_context: test
