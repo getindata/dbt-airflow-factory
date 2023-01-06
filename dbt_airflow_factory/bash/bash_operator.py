@@ -2,8 +2,6 @@
 
 from typing import List, Optional
 
-import airflow
-
 from airflow.models.baseoperator import BaseOperator
 from airflow.operators.bash_operator import BashOperator
 

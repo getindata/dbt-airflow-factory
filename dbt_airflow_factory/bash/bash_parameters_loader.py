@@ -12,5 +12,3 @@ class BashExecutionParametersLoader:
         config = read_config(dag_path, env, "bash.yml")
         config.update(read_config(dag_path, env, execution_env_config_file_name))
         return BashExecutionParameters(**config)
-
-
