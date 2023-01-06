@@ -5,7 +5,9 @@
 -   Add in_cluster, cluster_context params
 -   Repair secrets to be not required
 -   Update docs
+-   Add BashOperator
 -   Exposes param to control the pod startup timeout
+
 
 ## [0.29.0] - 2022-09-02
 
