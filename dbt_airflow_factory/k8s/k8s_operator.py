@@ -92,4 +92,5 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             config_file=self.kubernetes_execution_parameters.config_file,
             in_cluster=self.kubernetes_execution_parameters.in_cluster,
             cluster_context=self.kubernetes_execution_parameters.cluster_context,
+            startup_timeout_seconds=self.kubernetes_execution_parameters.startup_timeout_seconds,
         )

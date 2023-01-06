@@ -25,3 +25,4 @@ def test_configuration_with_qa_config():
     ]
     assert run_task.in_cluster is False
     assert run_task.cluster_context == "test"
+    assert run_task.startup_timeout_seconds == 600
