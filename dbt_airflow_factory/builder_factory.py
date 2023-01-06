@@ -1,5 +1,9 @@
 """Factory creating Airflow tasks."""
 
+from dbt_airflow_factory.bash.bash_operator import BashOperatorBuilder
+from dbt_airflow_factory.bash.bash_parameters_loader import (
+    BashExecutionParametersLoader,
+)
 from dbt_airflow_factory.config_utils import read_config
 from dbt_airflow_factory.dbt_parameters import DbtExecutionEnvironmentParameters
 from dbt_airflow_factory.ecs.ecs_operator import EcsPodOperatorBuilder
@@ -7,10 +11,6 @@ from dbt_airflow_factory.ecs.ecs_parameters_loader import EcsExecutionParameters
 from dbt_airflow_factory.k8s.k8s_operator import KubernetesPodOperatorBuilder
 from dbt_airflow_factory.k8s.k8s_parameters_loader import (
     KubernetesExecutionParametersLoader,
-)
-from dbt_airflow_factory.bash.bash_operator import BashOperatorBuilder
-from dbt_airflow_factory.bash.bash_parameters_loader import (
-    BashExecutionParametersLoader,
 )
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder
 from dbt_airflow_factory.tasks_builder.builder import DbtAirflowTasksBuilder

@@ -1,7 +1,5 @@
-
-
-from dbt_airflow_factory.config_utils import read_config
 from dbt_airflow_factory.bash.bash_parameters import BashExecutionParameters
+from dbt_airflow_factory.config_utils import read_config
 
 
 class BashExecutionParametersLoader:

@@ -5,10 +5,9 @@ from typing import List, Optional
 from airflow.models.baseoperator import BaseOperator
 from airflow.operators.bash_operator import BashOperator
 
-from dbt_airflow_factory.dbt_parameters import DbtExecutionEnvironmentParameters
 from dbt_airflow_factory.bash.bash_parameters import BashExecutionParameters
+from dbt_airflow_factory.dbt_parameters import DbtExecutionEnvironmentParameters
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder
-
 
 
 class BashOperatorBuilder(DbtRunOperatorBuilder):
@@ -64,8 +63,5 @@ class BashOperatorBuilder(DbtRunOperatorBuilder):
             args += additional_dbt_args
         return [" ".join(args)]
 
-    def _create(self, args: Optional[List[str]], name: str) -> BashOperator:
-        return BashOperator(
-            bash_command=' '.join(args),
-            task_id=name
-        )
+    def _create(self, args: List[str], name: str) -> BashOperator:
+        return BashOperator(bash_command=" ".join(args), task_id=name)

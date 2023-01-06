@@ -6,6 +6,7 @@ class BashExecutionParameters:
     :param execution_script: Script that will be executed inside pod.
     :type execution_script: str
     """
+
     def __init__(
         self,
         execution_script: str = "dbt --no-write-json",
