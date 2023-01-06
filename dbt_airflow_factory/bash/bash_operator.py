@@ -4,13 +4,13 @@ from typing import List, Optional
 
 import airflow
 
+from airflow.models.baseoperator import BaseOperator
+from airflow.operators.bash_operator import BashOperator
+
 from dbt_airflow_factory.dbt_parameters import DbtExecutionEnvironmentParameters
 from dbt_airflow_factory.bash.bash_parameters import BashExecutionParameters
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder
 
-from airflow.operators.bash_operator import BashOperator
-
-from airflow.models.baseoperator import BaseOperator
 
 
 class BashOperatorBuilder(DbtRunOperatorBuilder):
