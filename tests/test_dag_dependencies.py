@@ -30,7 +30,7 @@ extra_metadata_data = {
         "source.upstream_pipeline_sources.upstream_pipeline.no_dag": {
             "database": "gid-dataops-labs",
             "schema": "presentation",
-            "name": "unused",
+            "name": "no_dag",
             "unique_id": "source.upstream_pipeline_sources.upstream_pipeline.no_dag",
             "source_meta": {},
         },
