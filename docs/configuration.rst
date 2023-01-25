@@ -189,6 +189,10 @@ k8s.yml file
      - str
      -
      - Context that points to kubernetes cluster, ignored when in_cluster is True. If None, current-context is used.
+   * - startup_timeout_seconds
+     - int
+     -
+     - Timeout in seconds to startup the pod.
 
 airbyte.yml file
 ~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,5 +1,9 @@
 """Factory creating Airflow tasks."""
 
+from dbt_airflow_factory.bash.bash_operator import BashOperatorBuilder
+from dbt_airflow_factory.bash.bash_parameters_loader import (
+    BashExecutionParametersLoader,
+)
 from dbt_airflow_factory.config_utils import read_config
 from dbt_airflow_factory.dbt_parameters import DbtExecutionEnvironmentParameters
 from dbt_airflow_factory.ecs.ecs_operator import EcsPodOperatorBuilder
@@ -102,6 +106,13 @@ class DbtAirflowTasksBuilderFactory:
             return EcsPodOperatorBuilder(
                 dbt_params,
                 EcsExecutionParametersLoader.create_config(
+                    self.dag_path, self.env, self.execution_env_config_file_name
+                ),
+            )
+        elif type == "bash":
+            return BashOperatorBuilder(
+                dbt_params,
+                BashExecutionParametersLoader.create_config(
                     self.dag_path, self.env, self.execution_env_config_file_name
                 ),
             )
