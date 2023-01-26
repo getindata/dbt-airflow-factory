@@ -232,8 +232,9 @@ class DbtAirflowGraph:
                     separation_layer=SeparationLayer(
                         left=separation_layer_left, right=separation_layer_right
                     ),
-                    dependency_node_properties=_get_node_properties(
-                        node_name=dep_node, manifest=manifest
+                    dependency_node_properties=NodeProperties(
+                        node_name=dep_node,
+                        schema_name=manifest["nodes"][dep_node]["schema"],
                     ),
                     node_schema=node["schema"],
                 ),
@@ -260,12 +261,3 @@ class DbtAirflowGraph:
     @staticmethod
     def _build_multiple_deps_test_name(dependencies: tuple) -> str:
         return "_".join((node_name.split(".")[-1] for node_name in dependencies)) + "_test"
-
-
-def _get_node_properties(node_name: str, manifest: Dict[str, Any]) -> NodeProperties:
-
-    resources = manifest["sources"] if is_source_sensor_task(node_name) else manifest["nodes"]
-    return NodeProperties(
-        node_name=node_name,
-        schema_name=resources[node_name]["schema"],
-    )

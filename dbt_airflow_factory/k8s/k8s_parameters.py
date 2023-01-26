@@ -39,13 +39,6 @@ class KubernetesExecutionParameters:
     :param is_delete_operator_pod: What to do when the pod reaches its final
         state, or the execution is interrupted. If True: delete the pod.
     :type is_delete_operator_pod: bool
-    :param execution_script: Script that will be executed inside pod.
-    :type execution_script: str
-    :param in_cluster: Run kubernetes client with in_cluster configuration.
-    :type in_cluster: bool
-    :param cluster_context: Context that points to kubernetes cluster.
-        Ignored when in_cluster is True. If None, current-context is used.
-    :type cluster_context: str
     """
 
     def __init__(
@@ -64,8 +57,6 @@ class KubernetesExecutionParameters:
         is_delete_operator_pod: bool = True,
         config_file: str = "~/.kube/config",
         execution_script: str = "dbt --no-write-json",
-        in_cluster: Optional[bool] = None,
-        cluster_context: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         self.namespace = namespace
@@ -78,12 +69,10 @@ class KubernetesExecutionParameters:
         self._requests = requests
         self.annotations = annotations
         self._env_vars = envs
-        self._secrets = secrets
+        self.secrets = secrets
         self.is_delete_operator_pod = is_delete_operator_pod
         self.config_file = config_file
         self.execution_script = execution_script
-        self.in_cluster = in_cluster
-        self.cluster_context = cluster_context
 
     @property
     def resources(self):  # type: ignore
@@ -134,14 +123,3 @@ class KubernetesExecutionParameters:
             from kubernetes.client import models as k8s
 
             return [k8s.V1EnvVar(k, v) for k, v in self._env_vars.items()]
-
-    @property
-    def secrets(self) -> Optional[List[Secret]]:
-        """
-        Return list containing secrets to be set in Kubernetes.
-        :return List containing kubernetes Secrets
-        """
-        if self._secrets is None:
-            return None
-
-        return [Secret(**secret) for secret in self._secrets]

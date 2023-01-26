@@ -19,6 +19,3 @@ coverage.xml
 
 docs/_build
 __pycache__/
-
-.venv/
-.vscode/
