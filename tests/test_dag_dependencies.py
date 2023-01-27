@@ -106,7 +106,7 @@ def test_dag_sensor_no_meta():
         {
             "model.dbt_test.dependent_model": [
                 "source.upstream_pipeline_sources.upstream_pipeline.some_final_model",
-                "source.upstream_pipeline_sources.upstream_pipeline.no_dag"
+                "source.upstream_pipeline_sources.upstream_pipeline.no_dag",
             ]
         },
         extra_metadata_data,
