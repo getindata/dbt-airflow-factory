@@ -27,6 +27,13 @@ extra_metadata_data = {
             "unique_id": "source.upstream_pipeline_sources.upstream_pipeline.unused",
             "source_meta": {"dag": "dbt-tpch-test"},
         },
+        "source.upstream_pipeline_sources.upstream_pipeline.no_dag": {
+            "database": "gid-dataops-labs",
+            "schema": "presentation",
+            "name": "no_dag",
+            "unique_id": "source.upstream_pipeline_sources.upstream_pipeline.no_dag",
+            "source_meta": {},
+        },
     },
 }
 
@@ -91,3 +98,27 @@ def test_dag_sensor_dependency():
             "source.upstream_pipeline_sources.upstream_pipeline.some_final_model"
         ).execution_airflow_task.downstream_task_ids
     )
+
+
+def test_dag_sensor_no_meta():
+    # given
+    manifest_path = manifest_file_with_models(
+        {
+            "model.dbt_test.dependent_model": [
+                "source.upstream_pipeline_sources.upstream_pipeline.some_final_model",
+                "source.upstream_pipeline_sources.upstream_pipeline.no_dag",
+            ]
+        },
+        extra_metadata_data,
+    )
+
+    # when
+    with test_dag():
+        tasks = (
+            builder_factory(enable_project_dependencies=True)
+            .create()
+            .parse_manifest_into_tasks(manifest_path)
+        )
+
+    # then
+    assert tasks.length() == 2
