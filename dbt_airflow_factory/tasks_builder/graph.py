@@ -69,8 +69,11 @@ class DbtAirflowGraph:
     def create_edges_from_dependencies(self, include_sensors: bool = False) -> None:
         for graph_node_name, graph_node in self.graph.nodes(data=True):
             for dependency in graph_node.get("depends_on", []):
-                if not is_source_sensor_task(dependency) or include_sensors:
-                    self.graph.add_edge(dependency, graph_node_name)
+                if is_source_sensor_task(dependency) and not include_sensors:
+                    continue
+                if not self.graph.has_node(dependency):
+                    continue
+                self.graph.add_edge(dependency, graph_node_name)
 
     def get_graph_sources(self) -> List[str]:
         return [
@@ -232,9 +235,8 @@ class DbtAirflowGraph:
                     separation_layer=SeparationLayer(
                         left=separation_layer_left, right=separation_layer_right
                     ),
-                    dependency_node_properties=NodeProperties(
-                        node_name=dep_node,
-                        schema_name=manifest["nodes"][dep_node]["schema"],
+                    dependency_node_properties=_get_node_properties(
+                        node_name=dep_node, manifest=manifest
                     ),
                     node_schema=node["schema"],
                 ),
@@ -261,3 +263,12 @@ class DbtAirflowGraph:
     @staticmethod
     def _build_multiple_deps_test_name(dependencies: tuple) -> str:
         return "_".join((node_name.split(".")[-1] for node_name in dependencies)) + "_test"
+
+
+def _get_node_properties(node_name: str, manifest: Dict[str, Any]) -> NodeProperties:
+
+    resources = manifest["sources"] if is_source_sensor_task(node_name) else manifest["nodes"]
+    return NodeProperties(
+        node_name=node_name,
+        schema_name=resources[node_name]["schema"],
+    )

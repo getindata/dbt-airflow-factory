@@ -1,5 +1,3 @@
-from airflow.kubernetes.secret import Secret
-
 from .utils import (
     IS_FIRST_AIRFLOW_VERSION,
     builder_factory,
@@ -39,6 +37,8 @@ def test_configuration():
         assert run_task.k8s_resources.limits == {"memory": "2048M", "cpu": "2"}
         assert run_task.k8s_resources.requests == {"memory": "1024M", "cpu": "1"}
 
+    assert run_task.startup_timeout_seconds == 120
+
     assert run_task.labels == {"runner": "airflow"}
     assert run_task.env_vars[0].to_dict() == {
         "name": "EXAMPLE_ENV",
@@ -50,10 +50,8 @@ def test_configuration():
         "value": "second",
         "value_from": None,
     }
-    assert run_task.secrets == [
-        Secret("env", "test", "snowflake-access-user-key", None),
-        Secret("volume", "/var", "snowflake-access-user-key", None),
-    ]
+    assert run_task.in_cluster is None
+    assert run_task.cluster_context is None
     assert run_task.config_file == "/usr/local/airflow/dags/kube_config.yaml"
     assert run_task.is_delete_operator_pod
     assert "--project-dir /dbt" in run_task.arguments[0]
