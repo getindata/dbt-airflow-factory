@@ -266,7 +266,6 @@ class DbtAirflowGraph:
 
 
 def _get_node_properties(node_name: str, manifest: Dict[str, Any]) -> NodeProperties:
-
     resources = manifest["sources"] if is_source_sensor_task(node_name) else manifest["nodes"]
     return NodeProperties(
         node_name=node_name,

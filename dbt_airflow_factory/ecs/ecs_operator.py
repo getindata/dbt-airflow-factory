@@ -10,7 +10,6 @@ from dbt_airflow_factory.operator import DbtRunOperatorBuilder
 
 
 class EcsPodOperatorBuilder(DbtRunOperatorBuilder):
-
     dbt_execution_env_parameters: DbtExecutionEnvironmentParameters
     """POD representing DBT operator config file."""
     ecs_execution_parameters: EcsExecutionParameters

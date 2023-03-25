@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Use `node_selector` and `container_resources` parameters in `KubernetesPodOperator` if Airflow is 2.3+.
+
 ## [0.30.0] - 2023-02-08
 
 -   Add in_cluster, cluster_context params

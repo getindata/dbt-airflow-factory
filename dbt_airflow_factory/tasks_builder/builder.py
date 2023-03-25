@@ -167,7 +167,6 @@ class DbtAirflowTasksBuilder:
         return tasks_with_context
 
     def _create_tasks_graph(self, manifest: dict) -> DbtAirflowGraph:
-
         dbt_airflow_graph = DbtAirflowGraph(self.gateway_config)
         dbt_airflow_graph.add_execution_tasks(manifest)
         if self.airflow_config.enable_dags_dependencies:

@@ -1,5 +1,6 @@
 """Factories creating Airflow Operators running DBT tasks."""
 
+import inspect
 from typing import List, Optional
 
 import airflow
@@ -72,19 +73,28 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
         return [" ".join(args)]
 
     def _create(self, args: Optional[List[str]], name: str) -> KubernetesPodOperator:
+        airflow_compatibility_dict = {
+            "node_selectors"
+            if airflow.__version__.startswith("1.")
+            else "node_selector": self.kubernetes_execution_parameters.node_selectors,
+            # Since Airflow 2.3, https://github.com/apache/airflow/blob/12c3c39d1a816c99c626fe4c650e88cf7b1cc1bc/airflow/providers/cncf/kubernetes/CHANGELOG.rst#500  # noqa: E501
+            "container_resources"
+            if inspect.signature(KubernetesPodOperator).parameters.get("container_resources")
+            is not None
+            else "resources": self.kubernetes_execution_parameters.resources,
+        }
+
         return KubernetesPodOperator(
             namespace=self.kubernetes_execution_parameters.namespace,
             image=self.kubernetes_execution_parameters.image,
             image_pull_policy=self.kubernetes_execution_parameters.image_pull_policy,
             cmds=["bash", "-c"],
-            node_selectors=self.kubernetes_execution_parameters.node_selectors,
             tolerations=self.kubernetes_execution_parameters.tolerations,
             annotations=self.kubernetes_execution_parameters.annotations,
             arguments=args,
             labels=self.kubernetes_execution_parameters.labels,
             name=name,
             task_id=name,
-            resources=self.kubernetes_execution_parameters.resources,
             env_vars=self.kubernetes_execution_parameters.env_vars,
             secrets=self.kubernetes_execution_parameters.secrets,
             is_delete_operator_pod=self.kubernetes_execution_parameters.is_delete_operator_pod,  # noqa: E501
@@ -93,4 +103,5 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             in_cluster=self.kubernetes_execution_parameters.in_cluster,
             cluster_context=self.kubernetes_execution_parameters.cluster_context,
             startup_timeout_seconds=self.kubernetes_execution_parameters.startup_timeout_seconds,
+            **airflow_compatibility_dict,
         )
