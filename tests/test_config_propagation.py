@@ -1,4 +1,5 @@
 from .utils import (
+    IS_AIRFLOW_NEWER_THAN_2_4,
     IS_FIRST_AIRFLOW_VERSION,
     builder_factory,
     manifest_file_with_models,
@@ -34,8 +35,12 @@ def test_configuration():
         assert run_task.tolerations[0].operator == "Equal"
         assert run_task.tolerations[0].value == "data-processing"
         assert run_task.tolerations[0].effect == "NoSchedule"
-        assert run_task.k8s_resources.limits == {"memory": "2048M", "cpu": "2"}
-        assert run_task.k8s_resources.requests == {"memory": "1024M", "cpu": "1"}
+        if IS_AIRFLOW_NEWER_THAN_2_4:
+            assert run_task.container_resources.limits == {"memory": "2048M", "cpu": "2"}
+            assert run_task.container_resources.requests == {"memory": "1024M", "cpu": "1"}
+        else:
+            assert run_task.k8s_resources.limits == {"memory": "2048M", "cpu": "2"}
+            assert run_task.k8s_resources.requests == {"memory": "1024M", "cpu": "1"}
 
     assert run_task.startup_timeout_seconds == 120
 
