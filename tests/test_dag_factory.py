@@ -5,8 +5,7 @@ from typing import Set
 import pytest
 
 from dbt_airflow_factory.airflow_dag_factory import AirflowDagFactory
-
-from .utils import IS_FIRST_AIRFLOW_VERSION
+from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 
 
 def test_dag_factory():

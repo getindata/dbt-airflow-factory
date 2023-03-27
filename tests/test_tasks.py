@@ -1,9 +1,9 @@
 from os import path
 
 from dbt_airflow_factory.builder_factory import DbtAirflowTasksBuilderFactory
+from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 
 from .utils import (
-    IS_FIRST_AIRFLOW_VERSION,
     builder_factory,
     manifest_file_with_models,
     task_group_prefix_builder,

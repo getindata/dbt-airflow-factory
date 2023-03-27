@@ -3,9 +3,9 @@
 import abc
 from typing import List, Optional
 
-import airflow
+from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 
-if airflow.__version__.startswith("1."):
+if IS_FIRST_AIRFLOW_VERSION:
     from airflow.operators.dummy_operator import DummyOperator
 else:
     from airflow.operators.dummy import DummyOperator
