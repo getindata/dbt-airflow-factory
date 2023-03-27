@@ -3,6 +3,8 @@ from unittest.mock import MagicMock, patch
 
 import airflow
 
+from tests.utils import IS_AIRFLOW_NEWER_THAN_2_4, IS_FIRST_AIRFLOW_VERSION
+
 if airflow.__version__.startswith("1."):
     from airflow.contrib.operators.slack_webhook_operator import SlackWebhookOperator
 else:
@@ -24,14 +26,13 @@ def test_notification_callback_creation():
 
 
 @patch(
-    "airflow.hooks.base_hook.BaseHook.get_connection"
-    if airflow.__version__.startswith("1.")
-    or (airflow.__version__.startswith("2.") and int(airflow.__version__.split(".")[1]) < 4)
-    else "airflow.hooks.base.BaseHook.get_connection"
+    "airflow.hooks.base.BaseHook.get_connection"
+    if IS_AIRFLOW_NEWER_THAN_2_4
+    else "airflow.hooks.base_hook.BaseHook.get_connection"
 )
 @patch(
     "airflow.contrib.operators.slack_webhook_operator.SlackWebhookOperator.__new__"
-    if airflow.__version__.startswith("1.")
+    if IS_FIRST_AIRFLOW_VERSION
     else "airflow.providers.slack.operators.slack_webhook.SlackWebhookOperator.__new__"
 )
 def test_notification_send(mock_operator_init, mock_get_connection):
