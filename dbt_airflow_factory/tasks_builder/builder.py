@@ -3,15 +3,15 @@ import json
 import logging
 from typing import Any, ContextManager, Dict, Tuple
 
-import airflow
 from airflow.models.baseoperator import BaseOperator
 from airflow.operators.dummy import DummyOperator
 from airflow.sensors.external_task_sensor import ExternalTaskSensor
 
+from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 from dbt_airflow_factory.tasks_builder.node_type import NodeType
 from dbt_airflow_factory.tasks_builder.parameters import TasksBuildingParameters
 
-if not airflow.__version__.startswith("1."):
+if not IS_FIRST_AIRFLOW_VERSION:
     from airflow.utils.task_group import TaskGroup
 
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder, EphemeralOperator
@@ -102,9 +102,10 @@ class DbtAirflowTasksBuilder:
     ) -> Tuple[Any, ContextManager]:
         import contextlib
 
-        is_first_version = airflow.__version__.startswith("1.")
         task_group = (
-            None if (is_first_version or not use_task_group) else TaskGroup(group_id=model_name)
+            None
+            if (IS_FIRST_AIRFLOW_VERSION or not use_task_group)
+            else TaskGroup(group_id=model_name)
         )
         task_group_ctx = task_group or contextlib.nullcontext()
         return task_group, task_group_ctx
@@ -167,7 +168,6 @@ class DbtAirflowTasksBuilder:
         return tasks_with_context
 
     def _create_tasks_graph(self, manifest: dict) -> DbtAirflowGraph:
-
         dbt_airflow_graph = DbtAirflowGraph(self.gateway_config)
         dbt_airflow_graph.add_execution_tasks(manifest)
         if self.airflow_config.enable_dags_dependencies:

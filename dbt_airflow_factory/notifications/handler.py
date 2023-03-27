@@ -1,13 +1,20 @@
 from collections.abc import Callable
 from typing import Any
 
-import airflow
+from dbt_airflow_factory.constants import (
+    IS_AIRFLOW_NEWER_THAN_2_4,
+    IS_FIRST_AIRFLOW_VERSION,
+)
 
-if airflow.__version__.startswith("1."):
+if IS_FIRST_AIRFLOW_VERSION:
     from airflow.contrib.operators.slack_webhook_operator import SlackWebhookOperator
 else:
     from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
-from airflow.hooks.base_hook import BaseHook
+
+if IS_AIRFLOW_NEWER_THAN_2_4:
+    from airflow.hooks.base import BaseHook
+else:
+    from airflow.hooks.base_hook import BaseHook
 
 
 class NotificationHandlersFactory:

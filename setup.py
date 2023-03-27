@@ -19,7 +19,7 @@ EXTRA_REQUIRE = {
         "tox==3.21.1",
         "pre-commit==2.9.3",
         "pandas==1.2.5",
-        "apache-airflow[kubernetes,slack]==2.2.0",
+        "apache-airflow[kubernetes,slack]==2.5.2",
         "apache-airflow-providers-airbyte==3.1.0",
     ],
     "docs": [
@@ -33,7 +33,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="dbt-airflow-factory",
-    version="0.30.0",
+    version="0.31.0",
     description="Library to convert DBT manifest metadata to Airflow tasks",
     long_description=README,
     long_description_content_type="text/markdown",

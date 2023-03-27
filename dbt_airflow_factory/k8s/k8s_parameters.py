@@ -2,9 +2,9 @@
 
 from typing import Any, Dict, List, Optional
 
-import airflow
+from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 
-if airflow.__version__.startswith("1."):
+if IS_FIRST_AIRFLOW_VERSION:
     from airflow.contrib.kubernetes.secret import Secret
 else:
     from airflow.kubernetes.secret import Secret
@@ -102,7 +102,7 @@ class KubernetesExecutionParameters:
 
         :return: Dictionary containing resources requests and limits.
         """
-        if airflow.__version__.startswith("1."):
+        if IS_FIRST_AIRFLOW_VERSION:
             return {
                 "limit_memory": self._limit["memory"] if self._limit else None,
                 "limit_cpu": self._limit["cpu"] if self._limit else None,
@@ -130,7 +130,7 @@ class KubernetesExecutionParameters:
         if self._env_vars is None:
             return None
 
-        if airflow.__version__.startswith("1."):
+        if IS_FIRST_AIRFLOW_VERSION:
             return self._env_vars
         else:
             from kubernetes.client import models as k8s
