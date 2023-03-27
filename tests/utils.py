@@ -3,7 +3,6 @@ import os
 import tempfile
 from datetime import datetime
 
-import airflow
 from airflow import DAG
 
 from dbt_airflow_factory.builder_factory import DbtAirflowTasksBuilderFactory
@@ -40,13 +39,9 @@ def test_dag():
     return DAG("test", default_args={"start_date": datetime(2021, 10, 13)})
 
 
-IS_FIRST_AIRFLOW_VERSION = airflow.__version__.startswith("1.")
-IS_AIRFLOW_NEWER_THAN_2_4 = not IS_FIRST_AIRFLOW_VERSION and (
-    not airflow.__version__.startswith("2.") or int(airflow.__version__.split(".")[1]) > 4
-)
-
-
 def task_group_prefix_builder(task_model_id: str, task_command: str) -> str:
+    from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
+
     return (
         f"{task_model_id}_{task_command}"
         if IS_FIRST_AIRFLOW_VERSION

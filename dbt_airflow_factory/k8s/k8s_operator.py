@@ -3,13 +3,12 @@
 import inspect
 from typing import List, Optional
 
-import airflow
-
+from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 from dbt_airflow_factory.dbt_parameters import DbtExecutionEnvironmentParameters
 from dbt_airflow_factory.k8s.k8s_parameters import KubernetesExecutionParameters
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder
 
-if airflow.__version__.startswith("1."):
+if IS_FIRST_AIRFLOW_VERSION:
     from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 else:
     from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
@@ -75,7 +74,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
     def _create(self, args: Optional[List[str]], name: str) -> KubernetesPodOperator:
         airflow_compatibility_dict = {
             "node_selectors"
-            if airflow.__version__.startswith("1.")
+            if IS_FIRST_AIRFLOW_VERSION
             else "node_selector": self.kubernetes_execution_parameters.node_selectors,
             # Since Airflow 2.3, https://github.com/apache/airflow/blob/12c3c39d1a816c99c626fe4c650e88cf7b1cc1bc/airflow/providers/cncf/kubernetes/CHANGELOG.rst#500  # noqa: E501
             "container_resources"

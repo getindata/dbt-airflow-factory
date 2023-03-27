@@ -1,10 +1,9 @@
-from .utils import (
+from dbt_airflow_factory.constants import (
     IS_AIRFLOW_NEWER_THAN_2_4,
     IS_FIRST_AIRFLOW_VERSION,
-    builder_factory,
-    manifest_file_with_models,
-    test_dag,
 )
+
+from .utils import builder_factory, manifest_file_with_models, test_dag
 
 
 def test_configuration():

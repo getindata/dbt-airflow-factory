@@ -2,13 +2,13 @@
 
 import os
 
-import airflow
 from airflow import DAG
 from airflow.models import BaseOperator
 
+from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 from dbt_airflow_factory.ingestion import IngestionEngine, IngestionFactory
 
-if airflow.__version__.startswith("1."):
+if IS_FIRST_AIRFLOW_VERSION:
     from airflow.operators.dummy_operator import DummyOperator
 else:
     from airflow.operators.dummy import DummyOperator
