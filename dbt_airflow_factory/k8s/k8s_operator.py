@@ -83,7 +83,7 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             else "resources": self.kubernetes_execution_parameters.resources,
         }
 
-        k = KubernetesPodOperator(
+        return KubernetesPodOperator(
             namespace=self.kubernetes_execution_parameters.namespace,
             image=self.kubernetes_execution_parameters.image,
             image_pull_policy=self.kubernetes_execution_parameters.image_pull_policy,
@@ -104,5 +104,3 @@ class KubernetesPodOperatorBuilder(DbtRunOperatorBuilder):
             startup_timeout_seconds=self.kubernetes_execution_parameters.startup_timeout_seconds,
             **airflow_compatibility_dict,
         )
-        k.dry_run()
-        return k
