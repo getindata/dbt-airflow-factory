@@ -1,6 +1,6 @@
 """POD representing Kubernetes operator config file."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 
@@ -62,7 +62,7 @@ class KubernetesExecutionParameters:
         envs: Optional[Dict[str, str]] = None,
         secrets: Optional[List[Secret]] = None,
         is_delete_operator_pod: bool = True,
-        config_file: str = "~/.kube/config",
+        config_file: Union[str, None] = None,
         execution_script: str = "dbt --no-write-json",
         in_cluster: Optional[bool] = None,
         cluster_context: Optional[str] = None,
