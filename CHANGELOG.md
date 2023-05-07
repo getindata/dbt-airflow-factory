@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Replace `config_file` default value from `"~/.kube/config"` to `None` in `KubernetesPodOperator` [#90](https://github.com/getindata/dbt-airflow-factory/issues/90)
+
 ## [0.31.0] - 2023-03-27
 
 ### Fixed
