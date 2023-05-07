@@ -1,6 +1,6 @@
 """POD representing Kubernetes operator config file."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 
@@ -39,6 +39,9 @@ class KubernetesExecutionParameters:
     :param is_delete_operator_pod: What to do when the pod reaches its final
         state, or the execution is interrupted. If True: delete the pod.
     :type is_delete_operator_pod: bool
+    :param config_file: The path to the Kubernetes config file. (templated)
+        If not specified, default value is ``~/.kube/config``
+    :type config_file: str
     :param execution_script: Script that will be executed inside pod.
     :type execution_script: str
     :param in_cluster: Run kubernetes client with in_cluster configuration.
@@ -62,7 +65,7 @@ class KubernetesExecutionParameters:
         envs: Optional[Dict[str, str]] = None,
         secrets: Optional[List[Secret]] = None,
         is_delete_operator_pod: bool = True,
-        config_file: Union[str, None] = None,
+        config_file: Optional[str] = None,
         execution_script: str = "dbt --no-write-json",
         in_cluster: Optional[bool] = None,
         cluster_context: Optional[str] = None,
