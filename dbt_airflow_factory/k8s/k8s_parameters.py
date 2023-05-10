@@ -41,7 +41,7 @@ class KubernetesExecutionParameters:
     :type is_delete_operator_pod: bool
     :param config_file: The path to the Kubernetes config file. (templated)
         If not specified, default value is ``~/.kube/config``
-    :type config_file: str
+    :type config_file: Optional[str]
     :param execution_script: Script that will be executed inside pod.
     :type execution_script: str
     :param in_cluster: Run kubernetes client with in_cluster configuration.
