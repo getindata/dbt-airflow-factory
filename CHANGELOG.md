@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.31.1] - 2023-05-12
+
+### Fixed
+
+-   Replace `config_file` default value from `"~/.kube/config"` to `None` in `KubernetesPodOperator` [#90](https://github.com/getindata/dbt-airflow-factory/issues/90)
+
 ## [0.31.0] - 2023-03-27
 
 ### Fixed
@@ -138,7 +144,9 @@ This version brings compatibility with `dbt 1.0`.
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library.
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.31.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.31.1...HEAD
+
+[0.31.1]: https://github.com/getindata/dbt-airflow-factory/compare/0.31.0...0.31.1
 
 [0.31.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.30.0...0.31.0
 
