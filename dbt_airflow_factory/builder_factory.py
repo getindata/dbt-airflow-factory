@@ -14,10 +14,7 @@ from dbt_airflow_factory.k8s.k8s_parameters_loader import (
 )
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder
 from dbt_airflow_factory.tasks_builder.builder import DbtAirflowTasksBuilder
-from dbt_airflow_factory.tasks_builder.gateway import (
-    GatewayConfiguration,
-    TaskGraphConfiguration,
-)
+from dbt_graph_builder.builder import create_gateway_config
 from dbt_airflow_factory.tasks_builder.parameters import TasksBuildingParameters
 
 
@@ -77,12 +74,7 @@ class DbtAirflowTasksBuilderFactory:
         return DbtAirflowTasksBuilder(
             tasks_airflow_config,
             self._create_operator_builder(execution_env_type, dbt_params),
-            gateway_config=TaskGraphConfiguration(
-                GatewayConfiguration(
-                    separation_schemas=self.airflow_config.get("save_points", []),
-                    gateway_task_name="gateway",
-                )
-            ),
+            gateway_config=create_gateway_config(self.airflow_config)
         )
 
     def _create_tasks_airflow_config(self) -> TasksBuildingParameters:
