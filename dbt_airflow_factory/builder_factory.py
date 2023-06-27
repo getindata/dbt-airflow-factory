@@ -1,5 +1,7 @@
 """Factory creating Airflow tasks."""
 
+from dbt_graph_builder.builder import create_gateway_config
+
 from dbt_airflow_factory.bash.bash_operator import BashOperatorBuilder
 from dbt_airflow_factory.bash.bash_parameters_loader import (
     BashExecutionParametersLoader,
@@ -14,7 +16,6 @@ from dbt_airflow_factory.k8s.k8s_parameters_loader import (
 )
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder
 from dbt_airflow_factory.tasks_builder.builder import DbtAirflowTasksBuilder
-from dbt_graph_builder.builder import create_gateway_config
 from dbt_airflow_factory.tasks_builder.parameters import TasksBuildingParameters
 
 
@@ -74,7 +75,7 @@ class DbtAirflowTasksBuilderFactory:
         return DbtAirflowTasksBuilder(
             tasks_airflow_config,
             self._create_operator_builder(execution_env_type, dbt_params),
-            gateway_config=create_gateway_config(self.airflow_config)
+            gateway_config=create_gateway_config(self.airflow_config),
         )
 
     def _create_tasks_airflow_config(self) -> TasksBuildingParameters:

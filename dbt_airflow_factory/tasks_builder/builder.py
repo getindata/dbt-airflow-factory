@@ -13,12 +13,13 @@ from dbt_airflow_factory.tasks_builder.parameters import TasksBuildingParameters
 if not IS_FIRST_AIRFLOW_VERSION:
     from airflow.utils.task_group import TaskGroup
 
+from dbt_graph_builder.builder import create_tasks_graph
+from dbt_graph_builder.gateway import TaskGraphConfiguration
+from dbt_graph_builder.graph import DbtManifestGraph
+from dbt_graph_builder.node_type import NodeType
+
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder, EphemeralOperator
 from dbt_airflow_factory.tasks import ModelExecutionTask, ModelExecutionTasks
-from dbt_graph_builder.graph import DbtManifestGraph
-from dbt_graph_builder.gateway import TaskGraphConfiguration
-from dbt_graph_builder.builder import create_tasks_graph
-from dbt_graph_builder.node_type import NodeType
 
 
 class DbtAirflowTasksBuilder:
