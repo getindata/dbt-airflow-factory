@@ -13,7 +13,7 @@ from dbt_airflow_factory.tasks_builder.parameters import TasksBuildingParameters
 if not IS_FIRST_AIRFLOW_VERSION:
     from airflow.utils.task_group import TaskGroup
 
-from dbt_graph_builder.builder import create_tasks_graph, GraphConfiguration
+from dbt_graph_builder.builder import GraphConfiguration, create_tasks_graph
 from dbt_graph_builder.gateway import GatewayConfiguration
 from dbt_graph_builder.graph import DbtManifestGraph
 from dbt_graph_builder.node_type import NodeType
@@ -170,7 +170,7 @@ class DbtAirflowTasksBuilder:
                 gateway_config=self.gateway_config,
                 enable_dags_dependencies=self.airflow_config.enable_dags_dependencies,
                 show_ephemeral_models=self.airflow_config.show_ephemeral_models,
-            )
+            ),
         )
         tasks_with_context = self._create_tasks_from_graph(dbt_airflow_graph)
         logging.info(f"Created {str(tasks_with_context.length())} tasks groups")
