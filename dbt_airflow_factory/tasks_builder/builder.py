@@ -13,8 +13,8 @@ from dbt_airflow_factory.tasks_builder.parameters import TasksBuildingParameters
 if not IS_FIRST_AIRFLOW_VERSION:
     from airflow.utils.task_group import TaskGroup
 
-from dbt_graph_builder.builder import create_tasks_graph
-from dbt_graph_builder.gateway import TaskGraphConfiguration
+from dbt_graph_builder.builder import create_tasks_graph, GraphConfiguration
+from dbt_graph_builder.gateway import GatewayConfiguration
 from dbt_graph_builder.graph import DbtManifestGraph
 from dbt_graph_builder.node_type import NodeType
 
@@ -31,14 +31,14 @@ class DbtAirflowTasksBuilder:
     :param operator_builder: DBT node operator.
     :type operator_builder: DbtRunOperatorBuilder
     :param gateway_config: DBT node operator.
-    :type gateway_config: TaskGraphConfiguration
+    :type gateway_config: GatewayConfiguration
     """
 
     def __init__(
         self,
         airflow_config: TasksBuildingParameters,
         operator_builder: DbtRunOperatorBuilder,
-        gateway_config: TaskGraphConfiguration,
+        gateway_config: GatewayConfiguration,
     ):
         self.operator_builder = operator_builder
         self.airflow_config = airflow_config
@@ -165,10 +165,12 @@ class DbtAirflowTasksBuilder:
     def _make_dbt_tasks(self, manifest_path: str) -> ModelExecutionTasks:
         manifest = self._load_dbt_manifest(manifest_path)
         dbt_airflow_graph: DbtManifestGraph = create_tasks_graph(
-            self.gateway_config,
             manifest,
-            self.airflow_config.enable_dags_dependencies,
-            self.airflow_config.show_ephemeral_models,
+            GraphConfiguration(
+                gateway_config=self.gateway_config,
+                enable_dags_dependencies=self.airflow_config.enable_dags_dependencies,
+                show_ephemeral_models=self.airflow_config.show_ephemeral_models,
+            )
         )
         tasks_with_context = self._create_tasks_from_graph(dbt_airflow_graph)
         logging.info(f"Created {str(tasks_with_context.length())} tasks groups")
