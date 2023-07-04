@@ -33,7 +33,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="dbt-airflow-factory",
-    version="0.31.2",
+    version="0.31.1",
     description="Library to convert DBT manifest metadata to Airflow tasks",
     long_description=README,
     long_description_content_type="text/markdown",
