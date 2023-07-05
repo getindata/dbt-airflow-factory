@@ -16,7 +16,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v2.2.1
         with:
-          python-version: 3.7
+          python-version: "3.8"
 
       - name: Setup virtualenv
         run: |
@@ -35,7 +35,7 @@ jobs:
 
       - name: Test with tox
         run: |
-          tox -e py37
+          tox -e py38
 
       - name: Report coverage
         uses: paambaati/codeclimate-action@v2.7.5
