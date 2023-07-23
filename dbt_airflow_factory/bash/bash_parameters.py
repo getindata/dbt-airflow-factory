@@ -1,5 +1,7 @@
 """POD representing Bash operator config file."""
 
+from typing import Any
+
 
 class BashExecutionParameters:
     """POD representing Bash operator config file.
@@ -7,8 +9,5 @@ class BashExecutionParameters:
     :type execution_script: str
     """
 
-    def __init__(
-        self,
-        execution_script: str = "dbt --no-write-json",
-    ) -> None:
+    def __init__(self, execution_script: str = "dbt --no-write-json", **kwargs: Any) -> None:
         self.execution_script = execution_script
