@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+-   Correcting required packages [#97](https://github.com/getindata/dbt-airflow-factory/issues/97)
+
 ## [0.32.0] - 2023-07-04
 
 ## [0.31.1] - 2023-05-12
