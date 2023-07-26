@@ -68,16 +68,4 @@ class NotificationHandlersFactory:
                         theme_color="FF0000",
                         http_conn_id=handler_definition["connection_id"])
                     return teams_notification.execute(context)
-
-                    # connection = BaseHook.get_connection(handler_definition["connection_id"])
-                    # return MSTeamsWebhookOperator(
-                    #     task_id=context.get("task_instance").task_id,
-                    #     http_conn_id='msteams_webhook_url',
-                    #     message="Hello from Airflow!",
-                    #     subtitle="This is the **subtitle**",
-                    #     button_text="My button",
-                    #     button_url="https://example.com",
-                    #     theme_color="00FF00",
-                    #     #proxy = "https://yourproxy.domain:3128/",
-                    #     dag=context.get("task_instance").dag_id)
         return failure_handler
