@@ -53,7 +53,7 @@ class NotificationHandlersFactory:
                         base_url, dag_id, task_id, context['ts'])
 
                     teams_notification = MSTeamsWebhookOperator(
-                        task_id="msteams_notify_failure",
+                        task_id="teams_failure_notification",
                         # trigger_rule="all_done",
                         # message="`{}` has failed on task: `{}`".format(dag_id, task_id),
                         message=handler_definition["message_template"].format(
