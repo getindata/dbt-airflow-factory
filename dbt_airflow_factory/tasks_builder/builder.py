@@ -8,16 +8,18 @@ from airflow.operators.dummy import DummyOperator
 from airflow.sensors.external_task_sensor import ExternalTaskSensor
 
 from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
-from dbt_airflow_factory.tasks_builder.node_type import NodeType
 from dbt_airflow_factory.tasks_builder.parameters import TasksBuildingParameters
 
 if not IS_FIRST_AIRFLOW_VERSION:
     from airflow.utils.task_group import TaskGroup
 
+from dbt_graph_builder.builder import GraphConfiguration, create_tasks_graph
+from dbt_graph_builder.gateway import GatewayConfiguration
+from dbt_graph_builder.graph import DbtManifestGraph
+from dbt_graph_builder.node_type import NodeType
+
 from dbt_airflow_factory.operator import DbtRunOperatorBuilder, EphemeralOperator
 from dbt_airflow_factory.tasks import ModelExecutionTask, ModelExecutionTasks
-from dbt_airflow_factory.tasks_builder.gateway import TaskGraphConfiguration
-from dbt_airflow_factory.tasks_builder.graph import DbtAirflowGraph
 
 
 class DbtAirflowTasksBuilder:
@@ -29,14 +31,14 @@ class DbtAirflowTasksBuilder:
     :param operator_builder: DBT node operator.
     :type operator_builder: DbtRunOperatorBuilder
     :param gateway_config: DBT node operator.
-    :type gateway_config: TaskGraphConfiguration
+    :type gateway_config: GatewayConfiguration
     """
 
     def __init__(
         self,
         airflow_config: TasksBuildingParameters,
         operator_builder: DbtRunOperatorBuilder,
-        gateway_config: TaskGraphConfiguration,
+        gateway_config: GatewayConfiguration,
     ):
         self.operator_builder = operator_builder
         self.airflow_config = airflow_config
@@ -146,12 +148,12 @@ class DbtAirflowTasksBuilder:
                 self.airflow_config.use_task_group,
             )
 
-    def _create_tasks_from_graph(self, dbt_airflow_graph: DbtAirflowGraph) -> ModelExecutionTasks:
+    def _create_tasks_from_graph(self, dbt_airflow_graph: DbtManifestGraph) -> ModelExecutionTasks:
         result_tasks = {
             node_name: self._create_task_from_graph_node(node_name, node)
-            for node_name, node in dbt_airflow_graph.graph.nodes(data=True)
+            for node_name, node in dbt_airflow_graph.get_graph_nodes()
         }
-        for node, neighbour in dbt_airflow_graph.graph.edges():
+        for node, neighbour in dbt_airflow_graph.get_graph_edges():
             # noinspection PyStatementEffect
             (result_tasks[node].get_end_task() >> result_tasks[neighbour].get_start_task())
         return ModelExecutionTasks(
@@ -162,23 +164,17 @@ class DbtAirflowTasksBuilder:
 
     def _make_dbt_tasks(self, manifest_path: str) -> ModelExecutionTasks:
         manifest = self._load_dbt_manifest(manifest_path)
-        dbt_airflow_graph = self._create_tasks_graph(manifest)
+        dbt_airflow_graph: DbtManifestGraph = create_tasks_graph(
+            manifest,
+            GraphConfiguration(
+                gateway_config=self.gateway_config,
+                enable_dags_dependencies=self.airflow_config.enable_dags_dependencies,
+                show_ephemeral_models=self.airflow_config.show_ephemeral_models,
+            ),
+        )
         tasks_with_context = self._create_tasks_from_graph(dbt_airflow_graph)
         logging.info(f"Created {str(tasks_with_context.length())} tasks groups")
         return tasks_with_context
-
-    def _create_tasks_graph(self, manifest: dict) -> DbtAirflowGraph:
-        dbt_airflow_graph = DbtAirflowGraph(self.gateway_config)
-        dbt_airflow_graph.add_execution_tasks(manifest)
-        if self.airflow_config.enable_dags_dependencies:
-            dbt_airflow_graph.add_external_dependencies(manifest)
-        dbt_airflow_graph.create_edges_from_dependencies(
-            self.airflow_config.enable_dags_dependencies
-        )
-        if not self.airflow_config.show_ephemeral_models:
-            dbt_airflow_graph.remove_ephemeral_nodes_from_graph()
-        dbt_airflow_graph.contract_test_nodes()
-        return dbt_airflow_graph
 
     def _create_dag_sensor(self, node: Dict[str, Any]) -> ModelExecutionTask:
         # todo move parameters to configuration

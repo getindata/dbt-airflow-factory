@@ -7,8 +7,10 @@ with open("README.md") as f:
 
 # Runtime Requirements.
 INSTALL_REQUIRES = [
+    "apache-airflow[kubernetes,slack]==2.5.2",
+    "apache-airflow-providers-airbyte==3.1.0",
     "pytimeparse==1.1.8",
-    "networkx==2.6.3",
+    "dbt-graph-builder>=0.3.0",
 ]
 
 # Dev Requirements
@@ -19,8 +21,6 @@ EXTRA_REQUIRE = {
         "tox==3.21.1",
         "pre-commit==2.9.3",
         "pandas==1.2.5",
-        "apache-airflow[kubernetes,slack]==2.5.2",
-        "apache-airflow-providers-airbyte==3.1.0",
     ],
     "docs": [
         "sphinx==4.3.1",
@@ -33,7 +33,7 @@ EXTRA_REQUIRE = {
 
 setup(
     name="dbt-airflow-factory",
-    version="0.31.1",
+    version="0.32.0",
     description="Library to convert DBT manifest metadata to Airflow tasks",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -41,8 +41,10 @@ setup(
     python_requires=">=3",
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
     keywords="dbt airflow manifest parser python",
     author="Piotr Pekala",
