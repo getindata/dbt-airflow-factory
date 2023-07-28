@@ -16,7 +16,7 @@ if IS_AIRFLOW_NEWER_THAN_2_4:
 else:
     from airflow.hooks.base_hook import BaseHook
 
-from ms_teams_webhook_operator import MSTeamsWebhookOperator
+from dbt_airflow_factory.notifications.ms_teams_webhook_operator import MSTeamsWebhookOperator
 
 
 class NotificationHandlersFactory:
