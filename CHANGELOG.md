@@ -4,6 +4,7 @@
 
 -   Add `kwargs` to `BashExecutionParameters` [#90](https://github.com/getindata/dbt-airflow-factory/issues/90)
 -   Correcting required packages [#97](https://github.com/getindata/dbt-airflow-factory/issues/97)
+-   Add `MS Teams` notifications handler
 
 ## [0.32.0] - 2023-07-04
 
