@@ -50,7 +50,7 @@ airflow.yml file
      -
      -
      - Each item of the list contains configuration of notifications handler in case Tasks / DAG fails. Each item is a dictionary with following fields
-        type (type of handler eg. *slack*), connection_id (id of the Airflow's connection) and message_template that will be sent.
+        type (type of handler eg. *slack* or *teams*), Airflow Webserver URL, connection_id (id of the Airflow's connection) and message_template that will be sent.
    * - enable_project_dependencies
      - boolean
      -

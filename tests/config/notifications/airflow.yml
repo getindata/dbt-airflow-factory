@@ -11,8 +11,8 @@ failure_handlers:
   - type: teams
     connection_id: teams_failure
     message_template: |
-        :red_circle: Task Failed.
-        *Task*: {task}
-        *Dag*: {dag}
-        *Execution Time*: {execution_time}
-        *Log Url*: {url}
+        &#x1F534; **Task Failed** <br><br>
+        **Task**: {task} <br>
+        **Dag**: {dag} <br>
+        **Execution Time**: {execution_time} <br>
+        **Log Url**: {url}
