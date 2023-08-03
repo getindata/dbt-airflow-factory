@@ -8,7 +8,7 @@ with open("README.md") as f:
 # Runtime Requirements.
 INSTALL_REQUIRES = [
     "pytimeparse==1.1.8",
-    "dbt-graph-builder>=0.6.1",
+    "dbt-graph-builder>=0.6.2",
 ]
 
 # Dev Requirements
