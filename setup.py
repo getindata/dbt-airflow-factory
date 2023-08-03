@@ -8,7 +8,7 @@ with open("README.md") as f:
 # Runtime Requirements.
 INSTALL_REQUIRES = [
     "pytimeparse==1.1.8",
-    "dbt-graph-builder>=0.3.0",
+    "dbt-graph-builder>=0.6.1",
 ]
 
 # Dev Requirements
@@ -41,7 +41,6 @@ setup(
     python_requires=">=3",
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
