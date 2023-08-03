@@ -7,8 +7,10 @@ with open("README.md") as f:
 
 # Runtime Requirements.
 INSTALL_REQUIRES = [
-    "pytimeparse==1.1.8",
+    "pytimeparse>=1, <2",
     "dbt-graph-builder>=0.6.2",
+    "apache-airflow[kubernetes,slack]",
+    "apache-airflow-providers-airbyte",
 ]
 
 # Dev Requirements
@@ -18,9 +20,7 @@ EXTRA_REQUIRE = {
         "pytest-cov>=2.8.0, <3.0.0",
         "tox==3.21.1",
         "pre-commit==2.9.3",
-        "pandas==1.2.5",
-        "apache-airflow[kubernetes,slack]==2.5.2",
-        "apache-airflow-providers-airbyte==3.1.0",
+        "pandas>=1.2.5, <2.0.0",
     ],
     "docs": [
         "sphinx==4.3.1",
