@@ -170,6 +170,7 @@ class DbtAirflowTasksBuilder:
                 gateway_config=self.gateway_config,
                 enable_dags_dependencies=self.airflow_config.enable_dags_dependencies,
                 show_ephemeral_models=self.airflow_config.show_ephemeral_models,
+                check_all_deps_for_multiple_deps_tests=self.airflow_config.check_all_deps_for_multiple_deps_tests,
             ),
         )
         tasks_with_context = self._create_tasks_from_graph(dbt_airflow_graph)
