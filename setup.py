@@ -8,7 +8,7 @@ with open("README.md") as f:
 # Runtime Requirements.
 INSTALL_REQUIRES = [
     "pytimeparse>=1, <2",
-    "dbt-graph-builder>=0.6",
+    "dbt-graph-builder>=0.6.3",
     "apache-airflow[kubernetes,slack]>=2.5, <3.0",
     "apache-airflow-providers-airbyte>=3, <4",
 ]
