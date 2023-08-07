@@ -1,13 +1,5 @@
 
 failure_handlers:
-  - type: slack
-    connection_id: slack_failure
-    message_template: |
-        :red_circle: Task Failed.
-        *Task*: {task}
-        *Dag*: {dag}
-        *Execution Time*: {execution_time}
-        *Log Url*: {url}
   - type: teams
     webserver_url: https://your.airflow-webserver.url
     connection_id: teams_failure
