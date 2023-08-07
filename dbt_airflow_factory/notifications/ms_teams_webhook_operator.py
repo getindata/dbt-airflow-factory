@@ -25,6 +25,7 @@ from airflow.utils.decorators import apply_defaults
 from dbt_airflow_factory.notifications.ms_teams_webhook_hook import MSTeamsWebhookHook
 import logging
 from typing import Any
+from airflow.utils.context import Context
 
 
 class MSTeamsWebhookOperator(SimpleHttpOperator):
@@ -64,7 +65,7 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
                  theme_color="00FF00",
                  proxy=None,
                  *args,
-                 **kwargs):
+                 **kwargs) -> None:
 
         super(MSTeamsWebhookOperator, self).__init__(endpoint=webhook_token, *args, **kwargs)
         self.http_conn_id = http_conn_id
@@ -77,7 +78,7 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
         self.proxy = proxy
         self.hook = None
 
-    def execute(self, context) -> Any:
+    def execute(self, context: Context) -> Any:
         """
         Call the webhook with the required parameters
         """

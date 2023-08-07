@@ -22,6 +22,7 @@
 
 from airflow.providers.http.hooks.http import HttpHook
 from airflow.exceptions import AirflowException
+from typing import Any
 
 
 class MSTeamsWebhookHook(HttpHook):
@@ -60,7 +61,7 @@ class MSTeamsWebhookHook(HttpHook):
                  proxy=None,
                  *args,
                  **kwargs
-                 ):
+                 ) -> None:
         super(MSTeamsWebhookHook, self).__init__(*args, **kwargs)
         self.http_conn_id = http_conn_id
         self.webhook_token = self.get_token(webhook_token, http_conn_id)
@@ -71,17 +72,21 @@ class MSTeamsWebhookHook(HttpHook):
         self.theme_color = theme_color
         self.proxy = proxy
 
-    def get_proxy(self, http_conn_id) -> str:
+    def get_proxy(self, http_conn_id: Any) -> str:
+        """
+        Return proxy address from connection object
+        :param http_conn_id: The conn_id provided
+        :return: proxy address (str) to use
+        """
         conn = self.get_connection(http_conn_id)
         extra = conn.extra_dejson
-        print(extra)
         return extra.get("proxy", '')
 
-    def get_token(self, token, http_conn_id) -> str:
+    def get_token(self, token: Any, http_conn_id: Any) -> str:
         """
         Given either a manually set token or a conn_id, return the webhook_token to use
         :param token: The manually provided token
-        :param conn_id: The conn_id provided
+        :param http_conn_id: The conn_id provided
         :return: webhook_token (str) to use
         """
         if token:
