@@ -20,9 +20,10 @@
 # under the License.
 #
 
-from airflow.providers.http.hooks.http import HttpHook
-from airflow.exceptions import AirflowException
 from typing import Any
+
+from airflow.exceptions import AirflowException
+from airflow.providers.http.hooks.http import HttpHook
 
 
 class MSTeamsWebhookHook(HttpHook):
@@ -50,18 +51,20 @@ class MSTeamsWebhookHook(HttpHook):
     :type proxy: str
 
     """
-    def __init__(self,
-                 http_conn_id: Any = None,
-                 webhook_token: Any = None,
-                 message: str = "",
-                 subtitle: str = "",
-                 button_text: str = "",
-                 button_url: str = "",
-                 theme_color: str = "00FF00",
-                 proxy: Any = None,
-                 *args: Any,
-                 **kwargs: Any
-                 ) -> None:
+
+    def __init__(
+        self,
+        http_conn_id: Any = None,
+        webhook_token: Any = None,
+        message: str = "",
+        subtitle: str = "",
+        button_text: str = "",
+        button_url: str = "",
+        theme_color: str = "00FF00",
+        proxy: Any = None,
+        *args: Any,
+        **kwargs: Any
+    ) -> None:
         super(MSTeamsWebhookHook, self).__init__(*args, **kwargs)
         self.http_conn_id = http_conn_id
         self.webhook_token = self.get_token(webhook_token, http_conn_id)
@@ -80,7 +83,7 @@ class MSTeamsWebhookHook(HttpHook):
         """
         conn = self.get_connection(http_conn_id)
         extra = conn.extra_dejson
-        return extra.get("proxy", '')
+        return extra.get("proxy", "")
 
     def get_token(self, token: Any, http_conn_id: Any) -> str:
         """
@@ -94,10 +97,11 @@ class MSTeamsWebhookHook(HttpHook):
         elif http_conn_id:
             conn = self.get_connection(http_conn_id)
             extra = conn.extra_dejson
-            return extra.get('webhook_token', '')
+            return extra.get("webhook_token", "")
         else:
-            raise AirflowException('Cannot get URL: No valid MS Teams '
-                                   'webhook URL nor conn_id supplied')
+            raise AirflowException(
+                "Cannot get URL: No valid MS Teams " "webhook URL nor conn_id supplied"
+            )
 
     def build_message(self) -> str:
         cardjson = """
@@ -122,8 +126,14 @@ class MSTeamsWebhookHook(HttpHook):
             }}]
             }}
                 """
-        return cardjson.format(self.message, self.message, self.subtitle, self.theme_color,
-                               self.button_text, self.button_url)
+        return cardjson.format(
+            self.message,
+            self.message,
+            self.subtitle,
+            self.theme_color,
+            self.button_text,
+            self.button_url,
+        )
 
     def execute(self) -> None:
         """
@@ -136,9 +146,11 @@ class MSTeamsWebhookHook(HttpHook):
         proxy_url = self.get_proxy(self.http_conn_id)
         print("Proxy is : " + proxy_url)
         if len(proxy_url) > 5:
-            proxies = {'https': proxy_url}
+            proxies = {"https": proxy_url}
 
-        self.run(endpoint=self.webhook_token,
-                 data=self.build_message(),
-                 headers={'Content-type': 'application/json'},
-                 extra_options={'proxies': proxies})
+        self.run(
+            endpoint=self.webhook_token,
+            data=self.build_message(),
+            headers={"Content-type": "application/json"},
+            extra_options={"proxies": proxies},
+        )

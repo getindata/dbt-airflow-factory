@@ -16,7 +16,9 @@ if IS_AIRFLOW_NEWER_THAN_2_4:
 else:
     from airflow.hooks.base_hook import BaseHook
 
-from dbt_airflow_factory.notifications.ms_teams_webhook_operator import MSTeamsWebhookOperator
+from dbt_airflow_factory.notifications.ms_teams_webhook_operator import (
+    MSTeamsWebhookOperator,
+)
 
 
 class NotificationHandlersFactory:
@@ -41,9 +43,10 @@ class NotificationHandlersFactory:
                     webserver_url = handler_definition["webserver_url"]
                     dag_id = context.get("task_instance").dag_id
                     task_id = context.get("task_instance").task_id
-                    context['task_instance'].xcom_push(key=dag_id, value=True)
+                    context["task_instance"].xcom_push(key=dag_id, value=True)
                     logs_url = "{}/log?dag_id={}&task_id={}&execution_date={}".format(
-                        webserver_url, dag_id, task_id, context['ts'])
+                        webserver_url, dag_id, task_id, context["ts"]
+                    )
 
                     teams_notification = MSTeamsWebhookOperator(
                         task_id="teams_failure_notification",
@@ -56,6 +59,8 @@ class NotificationHandlersFactory:
                         button_text="View log",
                         button_url=logs_url,
                         theme_color="FF0000",
-                        http_conn_id=handler_definition["connection_id"])
+                        http_conn_id=handler_definition["connection_id"],
+                    )
                     return teams_notification.execute(context)
+
         return failure_handler
