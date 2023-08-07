@@ -71,13 +71,13 @@ class MSTeamsWebhookHook(HttpHook):
         self.theme_color = theme_color
         self.proxy = proxy
 
-    def get_proxy(self, http_conn_id):
+    def get_proxy(self, http_conn_id) -> str:
         conn = self.get_connection(http_conn_id)
         extra = conn.extra_dejson
         print(extra)
         return extra.get("proxy", '')
 
-    def get_token(self, token, http_conn_id):
+    def get_token(self, token, http_conn_id) -> str:
         """
         Given either a manually set token or a conn_id, return the webhook_token to use
         :param token: The manually provided token
@@ -94,7 +94,7 @@ class MSTeamsWebhookHook(HttpHook):
             raise AirflowException('Cannot get URL: No valid MS Teams '
                                    'webhook URL nor conn_id supplied')
 
-    def build_message(self):
+    def build_message(self) -> str:
         cardjson = """
                 {{
             "@type": "MessageCard",
@@ -120,7 +120,7 @@ class MSTeamsWebhookHook(HttpHook):
         return cardjson.format(self.message, self.message, self.subtitle, self.theme_color,
                                self.button_text, self.button_url)
 
-    def execute(self):
+    def execute(self) -> None:
         """
         Remote Popen (actually execute the webhook call)
 
