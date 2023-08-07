@@ -9,6 +9,7 @@ failure_handlers:
         *Execution Time*: {execution_time}
         *Log Url*: {url}
   - type: teams
+    webserver_url: https://your.airflow-webserver.url
     connection_id: teams_failure
     message_template: |
         &#x1F534; **Task Failed** <br><br>

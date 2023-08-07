@@ -44,7 +44,7 @@ airflow.yml file
      - boolean
      -
      - True
-     - Enabled/disables separate tasks for DBT's ephemeral models. The tasks are finisheds in second as they have nothing to do.
+     - Enabled/disables separate tasks for DBT's ephemeral models. The tasks are finished in second as they have nothing to do.
    * - failure_handlers
      - list
      -
