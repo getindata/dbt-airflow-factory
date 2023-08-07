@@ -20,12 +20,14 @@
 # under the License.
 #
 
-from airflow.providers.http.operators.http import SimpleHttpOperator
-from airflow.utils.decorators import apply_defaults
-from dbt_airflow_factory.notifications.ms_teams_webhook_hook import MSTeamsWebhookHook
 import logging
 from typing import Any, Optional
+
+from airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.utils.context import Context
+from airflow.utils.decorators import apply_defaults
+
+from dbt_airflow_factory.notifications.ms_teams_webhook_hook import MSTeamsWebhookHook
 
 
 class MSTeamsWebhookOperator(SimpleHttpOperator):
@@ -52,20 +54,25 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
     :type proxy: str
     """
 
-    template_fields = ('message', 'subtitle',)
+    template_fields = (
+        "message",
+        "subtitle",
+    )
 
     @apply_defaults
-    def __init__(self,
-                 http_conn_id: Any = None,
-                 webhook_token: Any = None,
-                 message: str = "",
-                 subtitle: str = "",
-                 button_text: str = "",
-                 button_url: str = "",
-                 theme_color: str = "00FF00",
-                 proxy: Any = None,
-                 *args: Any,
-                 **kwargs: Any) -> None:
+    def __init__(
+        self,
+        http_conn_id: Any = None,
+        webhook_token: Any = None,
+        message: str = "",
+        subtitle: str = "",
+        button_text: str = "",
+        button_url: str = "",
+        theme_color: str = "00FF00",
+        proxy: Any = None,
+        *args: Any,
+        **kwargs: Any
+    ) -> None:
 
         super(MSTeamsWebhookOperator, self).__init__(endpoint=webhook_token, *args, **kwargs)
         self.http_conn_id = http_conn_id
@@ -90,7 +97,7 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
             self.button_text,
             self.button_url,
             self.theme_color,
-            self.proxy
+            self.proxy,
         )
         self.hook.execute()
         logging.info("Webhook request sent to MS Teams")
