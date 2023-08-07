@@ -24,7 +24,7 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.utils.decorators import apply_defaults
 from dbt_airflow_factory.notifications.ms_teams_webhook_hook import MSTeamsWebhookHook
 import logging
-from typing import Any
+from typing import Any, Optional
 from airflow.utils.context import Context
 
 
@@ -76,7 +76,7 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
         self.button_url = button_url
         self.theme_color = theme_color
         self.proxy = proxy
-        self.hook = None
+        self.hook: Optional[MSTeamsWebhookHook] = None
 
     def execute(self, context: Context) -> Any:
         """

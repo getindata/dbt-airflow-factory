@@ -1,6 +1,6 @@
 # Installation
 
-Use the package manager `pip <https://pip.pypa.io/en/stable/>`_ to install the library:
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the library:
 
 ```shell
 pip install dbt-airflow-factory
