@@ -1,14 +1,13 @@
+import json
 from os import path
 from unittest.mock import MagicMock, patch
 
 import pytest
+from airflow.models import Connection
 
 from dbt_airflow_factory.constants import (
     IS_AIRFLOW_NEWER_THAN_2_4,
     IS_FIRST_AIRFLOW_VERSION,
-)
-from dbt_airflow_factory.notifications.ms_teams_webhook_operator import (
-    MSTeamsWebhookOperator,
 )
 
 if IS_FIRST_AIRFLOW_VERSION:
@@ -54,8 +53,8 @@ def test_notification_send_for_slack(mock_operator_init, mock_get_connection):
         path.dirname(path.abspath(__file__)), "notifications_slack"
     ).airflow_config["failure_handlers"]
     factory = NotificationHandlersFactory()
-    context = create_slack_context()
-    mock_get_connection.return_value = create_connection()
+    context = create_context()
+    mock_get_connection.return_value = create_slack_connection()
     mock_operator = MagicMock()
     mock_operator_init.return_value = mock_operator
 
@@ -83,56 +82,50 @@ def test_notification_send_for_slack(mock_operator_init, mock_get_connection):
     if IS_AIRFLOW_NEWER_THAN_2_4
     else "airflow.hooks.base_hook.BaseHook.get_connection"
 )
-@patch("dbt_airflow_factory.notifications.ms_teams_webhook_operator.MSTeamsWebhookOperator.__new__")
-def test_notification_send_for_teams(mock_operator_init, mock_get_connection):
+@patch("airflow.providers.http.hooks.http.requests.Session.send")
+def test_notification_send_for_teams(mock_hook_run, mock_get_connection):
     # given
     notifications_config = AirflowDagFactory(
         path.dirname(path.abspath(__file__)), "notifications_teams"
     ).airflow_config["failure_handlers"]
     factory = NotificationHandlersFactory()
-    context = create_teams_context()
-    mock_get_connection.return_value = create_connection()
-    mock_operator = MagicMock()
-    mock_operator_init.return_value = mock_operator
+    context = create_context()
+    mock_get_connection.return_value = create_teams_connection()
+    with open("teams_webhook_expected_paylaod.json", "rt") as f:
+        teams_webhook_expected_payload = json.load(f)
 
     # when
     factory.create_failure_handler(notifications_config)(context)
 
     # then
-    mock_operator_init.assert_called_once_with(
-        MSTeamsWebhookOperator,
-        task_id="teams_failure_notification",
-        message="&#x1F534; **Task Failed** <br><br>\n"
-        "**Task**: task_id <br>\n**Dag**: dag_id <br>\n"
-        "**Execution Time**: some date <br>\n"
-        "**Log Url**: https://your.airflow-webserver.url/log?dag_id=dag_id&task_id=task_id&execution_date=ts",
-        http_conn_id="teams_failure",
-        button_text="View log",
-        button_url="https://your.airflow-webserver.url/log?dag_id=dag_id&task_id=task_id&execution_date=ts",
-        theme_color="FF0000",
-    )
-    mock_operator.execute.assert_called_once_with(context)
+    request = mock_hook_run.call_args_list[0][0][0]
+    webhook_post_data = json.loads(request.body.replace("\n", "").replace(" ", ""))
+    assert mock_hook_run.called_once
+    assert request.method == "POST"
+    assert request.url == "https://teams.com/webhook_endpoint"
+    assert webhook_post_data == teams_webhook_expected_payload
 
 
-def create_connection():
+def create_slack_connection():
     connection = MagicMock()
     connection.configure_mock(**{"login": "test_login", "password": "test_password"})
     return connection
 
 
-def create_slack_context():
-    task_instance = MagicMock()
-    task_instance.configure_mock(**{"task_id": "task_id", "dag_id": "dag_id", "log_url": "log_url"})
-    return {"task_instance": task_instance, "execution_date": "some date"}
-
-
-def create_teams_context():
-    task_instance = MagicMock()
-    task_instance.configure_mock(
+def create_teams_connection():
+    connection = Connection(
         **{
-            "task_id": "task_id",
-            "dag_id": "dag_id",
-            "log_url": "log_url",
+            "login": None,
+            "password": None,
+            "conn_type": "http",
+            "host": "teams.com/webhook_endpoint",
+            "schema": "https",
         }
     )
+    return connection
+
+
+def create_context():
+    task_instance = MagicMock()
+    task_instance.configure_mock(**{"task_id": "task_id", "dag_id": "dag_id", "log_url": "log_url"})
     return {"task_instance": task_instance, "execution_date": "some date", "ts": "ts"}
