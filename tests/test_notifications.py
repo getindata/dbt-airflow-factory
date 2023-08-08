@@ -91,7 +91,7 @@ def test_notification_send_for_teams(mock_hook_run, mock_get_connection):
     factory = NotificationHandlersFactory()
     context = create_context()
     mock_get_connection.return_value = create_teams_connection()
-    with open("teams_webhook_expected_paylaod.json", "rt") as f:
+    with open("tests/teams_webhook_expected_paylaod.json", "rt") as f:
         teams_webhook_expected_payload = json.load(f)
 
     # when
