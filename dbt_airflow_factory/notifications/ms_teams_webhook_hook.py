@@ -1,31 +1,14 @@
-# -*- coding: utf-8 -*-
-#
-# Source origin: https://code.mendhak.com/Airflow-MS-Teams-Operator/
-#
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-#
+"""
+MS Teams webhook implementation.
+"""
 
-from typing import Any
+from typing import Any, Optional
 
 from airflow.exceptions import AirflowException
 from airflow.providers.http.hooks.http import HttpHook
 
 
+# Credits: https://code.mendhak.com/Airflow-MS-Teams-Operator/
 class MSTeamsWebhookHook(HttpHook):
     """
     This hook allows you to post messages to MS Teams using the Incoming Webhook connector.
@@ -54,14 +37,14 @@ class MSTeamsWebhookHook(HttpHook):
 
     def __init__(
         self,
-        http_conn_id: Any = None,
-        webhook_token: Any = None,
+        http_conn_id: str,
+        webhook_token: Optional[str] = None,
         message: str = "",
         subtitle: str = "",
         button_text: str = "",
         button_url: str = "",
         theme_color: str = "00FF00",
-        proxy: Any = None,
+        proxy: Optional[str] = None,
         *args: Any,
         **kwargs: Any
     ) -> None:
@@ -85,7 +68,7 @@ class MSTeamsWebhookHook(HttpHook):
         extra = conn.extra_dejson
         return extra.get("proxy", "")
 
-    def get_token(self, token: Any, http_conn_id: Any) -> str:
+    def get_token(self, token: Optional[str], http_conn_id: str) -> str:
         """
         Given either a manually set token or a conn_id, return the webhook_token to use
         :param token: The manually provided token
@@ -94,17 +77,19 @@ class MSTeamsWebhookHook(HttpHook):
         """
         if token:
             return token
-        elif http_conn_id:
+
+        if http_conn_id:
             conn = self.get_connection(http_conn_id)
             extra = conn.extra_dejson
             return extra.get("webhook_token", "")
-        else:
-            raise AirflowException(
-                "Cannot get URL: No valid MS Teams " "webhook URL nor conn_id supplied"
-            )
+
+        raise AirflowException("Cannot get URL: No valid MS Teams webhook URL nor conn_id supplied")
 
     def build_message(self) -> str:
-        cardjson = """
+        """
+        Builds payload for MS Teams webhook.
+        """
+        card_json = """
                 {{
             "@type": "MessageCard",
             "@context": "http://schema.org/extensions",
@@ -126,7 +111,7 @@ class MSTeamsWebhookHook(HttpHook):
             }}]
             }}
                 """
-        return cardjson.format(
+        return card_json.format(
             self.message,
             self.message,
             self.subtitle,
@@ -144,7 +129,7 @@ class MSTeamsWebhookHook(HttpHook):
         """
         proxies = {}
         proxy_url = self.get_proxy(self.http_conn_id)
-        print("Proxy is : " + proxy_url)
+
         if len(proxy_url) > 5:
             proxies = {"https": proxy_url}
 

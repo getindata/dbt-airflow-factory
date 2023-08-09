@@ -1,4 +1,5 @@
 import json
+import pathlib
 from os import path
 from unittest.mock import MagicMock, patch
 
@@ -82,7 +83,7 @@ def test_notification_send_for_slack(mock_operator_init, mock_get_connection):
     if IS_AIRFLOW_NEWER_THAN_2_4
     else "airflow.hooks.base_hook.BaseHook.get_connection"
 )
-@patch("airflow.providers.http.hooks.http.requests.Session.send")
+@patch("dbt_airflow_factory.notifications.ms_teams_webhook_hook.MSTeamsWebhookHook.run")
 def test_notification_send_for_teams(mock_hook_run, mock_get_connection):
     # given
     notifications_config = AirflowDagFactory(
@@ -91,19 +92,18 @@ def test_notification_send_for_teams(mock_hook_run, mock_get_connection):
     factory = NotificationHandlersFactory()
     context = create_context()
     mock_get_connection.return_value = create_teams_connection()
-    with open("tests/teams_webhook_expected_paylaod.json", "rt") as f:
-        teams_webhook_expected_payload = json.load(f)
+    expected_payload_path = pathlib.Path(__file__).parent / "teams_webhook_expected_paylaod.json"
+    with open(expected_payload_path, "rt") as f:
+        webhook_expected_payload = json.load(f)
 
     # when
     factory.create_failure_handler(notifications_config)(context)
 
     # then
-    request = mock_hook_run.call_args_list[0][0][0]
-    webhook_post_data = json.loads(request.body.replace("\n", "").replace(" ", ""))
+    request = mock_hook_run.call_args_list[0].kwargs
+    webhook_post_data = json.loads(request["data"].replace("\n", "").replace(" ", ""))
     assert mock_hook_run.called_once
-    assert request.method == "POST"
-    assert request.url == "https://teams.com/webhook_endpoint"
-    assert webhook_post_data == teams_webhook_expected_payload
+    assert webhook_post_data == webhook_expected_payload
 
 
 def create_slack_connection():

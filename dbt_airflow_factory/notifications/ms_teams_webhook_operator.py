@@ -1,24 +1,6 @@
-# -*- coding: utf-8 -*-
-#
-# Source origin: https://code.mendhak.com/Airflow-MS-Teams-Operator/
-#
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-#
+"""
+MS Teams webhook operator.
+"""
 
 import logging
 from typing import Any, Optional
@@ -30,6 +12,7 @@ from airflow.utils.decorators import apply_defaults
 from dbt_airflow_factory.notifications.ms_teams_webhook_hook import MSTeamsWebhookHook
 
 
+# Credits: https://code.mendhak.com/Airflow-MS-Teams-Operator/
 class MSTeamsWebhookOperator(SimpleHttpOperator):
     """
     This operator allows you to post messages to MS Teams using the Incoming Webhooks connector.
@@ -62,16 +45,16 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
     @apply_defaults
     def __init__(
         self,
-        http_conn_id: Any = None,
-        webhook_token: Any = None,
+        http_conn_id: str,
+        webhook_token: Optional[str] = None,
         message: str = "",
         subtitle: str = "",
         button_text: str = "",
         button_url: str = "",
         theme_color: str = "00FF00",
-        proxy: Any = None,
+        proxy: Optional[str] = None,
         *args: Any,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
 
         super(MSTeamsWebhookOperator, self).__init__(endpoint=webhook_token, *args, **kwargs)
@@ -83,13 +66,12 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
         self.button_url = button_url
         self.theme_color = theme_color
         self.proxy = proxy
-        self.hook: Optional[MSTeamsWebhookHook] = None
 
-    def execute(self, context: Context) -> Any:
+    def execute(self, context: Context) -> None:
         """
         Call the webhook with the required parameters
         """
-        self.hook = MSTeamsWebhookHook(
+        MSTeamsWebhookHook(
             self.http_conn_id,
             self.webhook_token,
             self.message,
@@ -98,6 +80,5 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
             self.button_url,
             self.theme_color,
             self.proxy,
-        )
-        self.hook.execute()
+        ).execute()
         logging.info("Webhook request sent to MS Teams")
