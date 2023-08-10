@@ -43,6 +43,7 @@ class MSTeamsWebhookHook(HttpHook):
 
     def __init__(
         self,
+        *args: Any,
         http_conn_id: Optional[str] = None,
         webhook_token: Optional[str] = None,
         message: str = "",
@@ -51,7 +52,6 @@ class MSTeamsWebhookHook(HttpHook):
         button_url: str = "",
         theme_color: str = "00FF00",
         proxy: Optional[str] = None,
-        *args: Any,
         **kwargs: Any
     ) -> None:
         super(MSTeamsWebhookHook, self).__init__(*args, **kwargs)

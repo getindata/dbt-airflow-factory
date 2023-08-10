@@ -50,6 +50,7 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
     @apply_defaults
     def __init__(
         self,
+        *args: Any,
         http_conn_id: Optional[str] = None,
         webhook_token: Optional[str] = None,
         message: str = "",
@@ -58,7 +59,6 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
         button_url: str = "",
         theme_color: str = "00FF00",
         proxy: Optional[str] = None,
-        *args: Any,
         **kwargs: Any,
     ) -> None:
 
