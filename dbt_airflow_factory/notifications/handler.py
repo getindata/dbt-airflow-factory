@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from typing import Any
+from urllib.parse import quote_plus
 
 from dbt_airflow_factory.constants import (
     IS_AIRFLOW_NEWER_THAN_2_4,
@@ -41,12 +42,17 @@ class NotificationHandlersFactory:
                     ).execute(context=context)
                 elif handler_definition["type"] == "teams":
                     webserver_url = handler_definition["webserver_url"]
+                    webserver_url = (
+                        webserver_url[:-1] if webserver_url.endswith("/") else webserver_url
+                    )
                     dag_id = context.get("task_instance").dag_id
                     task_id = context.get("task_instance").task_id
                     context["task_instance"].xcom_push(key=dag_id, value=True)
-                    logs_url = "{}/log?dag_id={}&task_id={}&execution_date={}".format(
-                        webserver_url, dag_id, task_id, context["ts"]
+                    query = quote_plus(
+                        f"log?dag_id={dag_id}&task_id={task_id}&execution_date={context['ts']}",
+                        safe="=&?",
                     )
+                    logs_url = f"{webserver_url}/{query}"
 
                     teams_notification = MSTeamsWebhookOperator(
                         task_id="teams_failure_notification",
