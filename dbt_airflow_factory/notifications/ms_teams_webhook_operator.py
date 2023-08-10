@@ -50,7 +50,7 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
     @apply_defaults
     def __init__(
         self,
-        http_conn_id: str,
+        http_conn_id: Optional[str] = None,
         webhook_token: Optional[str] = None,
         message: str = "",
         subtitle: str = "",
