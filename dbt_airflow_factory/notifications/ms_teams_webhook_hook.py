@@ -5,7 +5,13 @@ MS Teams webhook implementation.
 from typing import Any, Optional
 
 from airflow.exceptions import AirflowException
-from airflow.providers.http.hooks.http import HttpHook
+
+from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
+
+if IS_FIRST_AIRFLOW_VERSION:
+    from airflow.hooks.http_hook import HttpHook
+else:
+    from airflow.providers.http.hooks.http import HttpHook
 
 
 # Credits: https://code.mendhak.com/Airflow-MS-Teams-Operator/
@@ -37,7 +43,7 @@ class MSTeamsWebhookHook(HttpHook):
 
     def __init__(
         self,
-        http_conn_id: str,
+        http_conn_id: Optional[str] = None,
         webhook_token: Optional[str] = None,
         message: str = "",
         subtitle: str = "",
@@ -68,7 +74,7 @@ class MSTeamsWebhookHook(HttpHook):
         extra = conn.extra_dejson
         return extra.get("proxy", "")
 
-    def get_token(self, token: Optional[str], http_conn_id: str) -> str:
+    def get_token(self, token: Optional[str], http_conn_id: Optional[str]) -> str:
         """
         Given either a manually set token or a conn_id, return the webhook_token to use
         :param token: The manually provided token
