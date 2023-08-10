@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+-   Add `MS Teams` notifications handler
 
 ## [0.33.0] - 2023-08-04
 -   Add `kwargs` to `BashExecutionParameters` [#90](https://github.com/getindata/dbt-airflow-factory/issues/90)
