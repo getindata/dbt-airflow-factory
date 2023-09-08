@@ -117,7 +117,6 @@ class DbtAirflowTasksBuilder:
         model_name: str,
         is_ephemeral_task: bool,
         use_task_group: bool,
-        with_test: bool = True,
     ) -> ModelExecutionTask:
         if is_ephemeral_task:
             return ModelExecutionTask(EphemeralOperator(task_id=f"{model_name}__ephemeral"), None)
