@@ -24,7 +24,7 @@ airflow.yml file
      - dictionary
      - x
      -
-     - Values used to DAG creation. Curerntly dag_id, description, schedule_interval and catchup are supported. Check Airflow documentation for more details about each of them.
+     - Values used to DAG creation. Currently ``dag_id``, ``description``, ``schedule_interval`` and ``catchup`` are supported. Check Airflow documentation for more details about each of them.
    * - seed_task
      - boolean
      -
@@ -39,23 +39,24 @@ airflow.yml file
      - boolean
      -
      - False
-     - Enable grouping *dbt run* and *dbt test* into Airflow's Task Groups. It is only available in Airflow 2+ (check Airflow documentation for more details).
+     - Enable grouping ``dbt run`` and ``dbt test`` into Airflow's Task Groups. It is only available in Airflow 2+ (check Airflow documentation for more details).
    * - show_ephemeral_models
      - boolean
      -
      - True
-     - Enabled/disables separate tasks for DBT's ephemeral models. The tasks are finisheds in second as they have nothing to do.
+     - Enabled/disables separate tasks for DBT's ephemeral models. The tasks are finished in second as they have nothing to do.
    * - failure_handlers
      - list
      -
-     -
-     - Each item of the list contains configuration of notifications handler in case Tasks / DAG fails. Each item is a dictionary with following fields
-        type (type of handler eg. *slack*), connection_id (id of the Airflow's connection) and message_template that will be sent.
+     - empty list
+     - Each item of the list contains configuration of notifications handler in case Tasks or DAG fails. Each item is a dictionary with following fields
+       ``type`` (type of handler eg. *slack* or *teams*), ``webserver_url`` (Airflow Webserver URL), ``connection_id`` (id of the Airflow's connection) and ``message_template`` that will be sent.
+       More on how to configure the webhooks can be found here: `Slack <https://airflow.apache.org/docs/apache-airflow-providers-slack/stable/_api/airflow/providers/slack/operators/slack_webhook/index.html>`_ or `MS Teams <https://code.mendhak.com/Airflow-MS-Teams-Operator/#copy-hook-and-operator>`_
    * - enable_project_dependencies
      - boolean
      -
      - False
-     - When True it creates sensors for all sources that have dag name in metadata. The sources wait for selected Dags to finish.
+     - When True it creates sensors for all sources that have dag name in metadata. The sources wait for selected DAGs to finish.
    * - save_points
      - list of string
      -
@@ -82,12 +83,12 @@ dbt.yml file
      - string
      -
      - /dbt
-     - Values used to DAG creation. Curerntly dag_id, description, schedule_interval and catchup are supported. Check Airflow documentation for more details about each of them.
+     - Values used to DAG creation. Currently ``dag_id``, ``description``, ``schedule_interval`` and ``catchup`` are supported. Check Airflow documentation for more details about each of them.
    * - profile_dir_path
      - string
      -
      - /root/.dbt
-     - Enables first task of the DAG that is responsible for executing *dbt seed* command to load some data.
+     - Enables first task of the DAG that is responsible for executing ``dbt seed`` command to load some data.
    * - vars
      - dictionary
      -
@@ -144,7 +145,7 @@ k8s.yml file
    * - secrets
      - list of dictionaries
      -
-     - List that contains secrets mounted to each container. It is required to set `secret` as name, `deploy_type` (env or volume) and `deploy_target` which is path for volume type and name for envs.
+     - List that contains secrets mounted to each container. It is required to set ``secret`` as name, ``deploy_type`` (env or volume) and ``deploy_target`` which is path for volume type and name for envs.
    * - labels
      - dictionary
      -
@@ -188,7 +189,7 @@ k8s.yml file
    * - cluster_context
      - str
      -
-     - Context that points to kubernetes cluster, ignored when in_cluster is True. If None, current-context is used.
+     - Context that points to kubernetes cluster, ignored when ``in_cluster`` is ``True``. If ``None``, current-context is used.
    * - startup_timeout_seconds
      - int
      -
@@ -209,8 +210,8 @@ airbyte.yml file
      - string
      - x
      -
-     - Connection id for airbyte in airflow instance. Remember to add this to airflow dependencies
-       `apache-airflow-providers-airbyte` to be able to add such connection.
+     - Connection id for Airbyte in Airflow instance. Remember to add this to Airflow's dependencies
+       ``apache-airflow-providers-airbyte`` to be able to add such connection.
    * - tasks
      - list of objects
      - x
@@ -219,7 +220,7 @@ airbyte.yml file
 
        **task_id**: string - name of the task which will be shown on airflow
 
-       **connection_id**: string - id of airbyte connection
+       **connection_id**: string - id of Airbyte connection
 
        **asyncrounous**: boolean - Flag to get job_id after submitting the job to the Airbyte API.
 
@@ -245,12 +246,12 @@ ingestion.yml file
      - boolean
      - x
      -
-     - Boolean value to specify if ingestion task should be added to airflow dag.
+     - Boolean value to specify if ingestion task should be added to Airflow's DAG.
    * - engine
      - string
      - x
      -
-     - Enumeration based option, currently only supported value is airbyte
+     - Enumeration based option, currently only supported value is ``airbyte``
 
 
 airbyte.yml file
@@ -269,22 +270,22 @@ airbyte.yml file
      - x
      -
      - Connection id for airbyte in airflow instance. Remember to add this to airflow dependencies
-       `apache-airflow-providers-airbyte` to be able to add such connection.
+       ``apache-airflow-providers-airbyte`` to be able to add such connection.
    * - tasks
      - list of objects
      - x
      -
      - Each task consist of fields
 
-       **task_id**: string - name of the task which will be shown on airflow
+       **task_id**: string - name of the task which will be shown in Airflow
 
-       **connection_id**: string - id of airbyte connection
+       **connection_id**: string - id of Airbyte connection
 
        **asyncrounous**: boolean - Flag to get job_id after submitting the job to the Airbyte API.
 
        **api_version**: string - Airbyte API version
 
-       **wait_seconds**: integer - Number of seconds between checks. Only used when ``asynchronous`` is False
+       **wait_seconds**: integer - Number of seconds between checks. Only used when ``asynchronous`` is ``False``
 
        **timeout**: float - The amount of time, in seconds, to wait for the request to complete
 
@@ -309,7 +310,7 @@ ingestion.yml file
      - string
      - x
      -
-     - Enumeration based option, currently only supported value is airbyte
+     - Enumeration based option, currently only supported value is ``airbyte``
 
 
 airbyte.yml file
@@ -327,8 +328,8 @@ airbyte.yml file
      - string
      - x
      -
-     - Connection id for airbyte in airflow instance. Remember to add this to airflow dependencies
-       `apache-airflow-providers-airbyte` to be able to add such connection.
+     - Connection id for airbyte in airflow instance. Remember to add this to Airflow's dependencies
+       ``apache-airflow-providers-airbyte`` to be able to add such connection.
    * - tasks
      - list of objects
      - x
@@ -363,12 +364,12 @@ ingestion.yml file
      - boolean
      - x
      -
-     - Boolean value to specify if ingestion task should be added to airflow dag.
+     - Boolean value to specify if ingestion task should be added to Airflow's DAG.
    * - engine
      - string
      - x
      -
-     - Enumeration based option, currently only supported value is airbyte
+     - Enumeration based option, currently only supported value is ``airbyte``
 
 Example files
 +++++++++++++++++++

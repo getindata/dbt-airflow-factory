@@ -1,0 +1,25 @@
+{
+    "@type": "MessageCard",
+    "@context": "http://schema.org/extensions",
+    "themeColor": "FF0000",
+    "summary": "&#x1F534;**TaskFailed**<br><br>**Task**:task_id<br>**Dag**:dag_id<br>**ExecutionTime**:somedate<br>**LogUrl**:https://your.airflow-webserver.url/log?dag_id=dag_id&task_id=task_id&execution_date=ts",
+    "sections": [
+        {
+            "activityTitle": "&#x1F534;**TaskFailed**<br><br>**Task**:task_id<br>**Dag**:dag_id<br>**ExecutionTime**:somedate<br>**LogUrl**:https://your.airflow-webserver.url/log?dag_id=dag_id&task_id=task_id&execution_date=ts",
+            "activitySubtitle": "",
+            "markdown": true,
+            "potentialAction": [
+                {
+                    "@type": "OpenUri",
+                    "name": "Viewlog",
+                    "targets": [
+                        {
+                            "os": "default",
+                            "uri": "https://your.airflow-webserver.url/log?dag_id=dag_id&task_id=task_id&execution_date=ts"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
