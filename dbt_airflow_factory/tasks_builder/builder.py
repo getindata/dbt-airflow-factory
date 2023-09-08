@@ -138,7 +138,9 @@ class DbtAirflowTasksBuilder:
         if node["node_type"] == NodeType.MOCK_GATEWAY:
             return self._create_dummy_task(node)
         if node["node_type"] == NodeType.EPHEMERAL:
-            return ModelExecutionTask(EphemeralOperator(task_id=f"{node['select']}__ephemeral"), None)
+            return ModelExecutionTask(
+                EphemeralOperator(task_id=f"{node['select']}__ephemeral"), None
+            )
         return self._create_task_for_model(
             node["select"],
             self.airflow_config.use_task_group,
