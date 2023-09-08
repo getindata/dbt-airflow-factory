@@ -60,7 +60,6 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
         proxy: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
-
         super(MSTeamsWebhookOperator, self).__init__(**kwargs)
         self.http_conn_id = http_conn_id
         self.webhook_token = webhook_token

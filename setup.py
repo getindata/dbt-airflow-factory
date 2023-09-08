@@ -8,7 +8,7 @@ with open("README.md") as f:
 # Runtime Requirements.
 INSTALL_REQUIRES = [
     "pytimeparse>=1.1, <2",
-    "dbt-graph-builder>=0.6.3, <2",
+    "dbt-graph-builder>=0.7.0, <0.8.0",
     "apache-airflow[kubernetes,slack]>=2.5, <3",
     "apache-airflow-providers-airbyte>=3.1, <4",
 ]
@@ -41,6 +41,7 @@ setup(
     python_requires=">=3",
     classifiers=[
         "Development Status :: 3 - Alpha",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",

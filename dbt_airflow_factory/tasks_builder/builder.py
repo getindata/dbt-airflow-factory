@@ -115,12 +115,8 @@ class DbtAirflowTasksBuilder:
     def _create_task_for_model(
         self,
         model_name: str,
-        is_ephemeral_task: bool,
         use_task_group: bool,
     ) -> ModelExecutionTask:
-        if is_ephemeral_task:
-            return ModelExecutionTask(EphemeralOperator(task_id=f"{model_name}__ephemeral"), None)
-
         (task_group, task_group_ctx) = self._create_task_group_for_model(model_name, use_task_group)
         is_in_task_group = task_group is not None
         with task_group_ctx:
@@ -137,16 +133,18 @@ class DbtAirflowTasksBuilder:
             return ModelExecutionTask(
                 self._make_dbt_multiple_deps_test_task(node["select"], node_name), None
             )
-        elif node["node_type"] == NodeType.SOURCE_SENSOR:
+        if node["node_type"] == NodeType.SOURCE_SENSOR:
             return self._create_dag_sensor(node)
-        elif node["node_type"] == NodeType.MOCK_GATEWAY:
+        if node["node_type"] == NodeType.MOCK_GATEWAY:
             return self._create_dummy_task(node)
-        else:
-            return self._create_task_for_model(
-                node["select"],
-                node["node_type"] == NodeType.EPHEMERAL,
-                self.airflow_config.use_task_group,
+        if node["node_type"] == NodeType.EPHEMERAL:
+            return ModelExecutionTask(
+                EphemeralOperator(task_id=f"{node['select']}__ephemeral"), None
             )
+        return self._create_task_for_model(
+            node["select"],
+            self.airflow_config.use_task_group,
+        )
 
     def _create_tasks_from_graph(self, dbt_airflow_graph: DbtManifestGraph) -> ModelExecutionTasks:
         result_tasks = {
