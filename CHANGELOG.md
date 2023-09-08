@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.35.0] - 2023-09-08
+
 ## [0.34.0] - 2023-08-10
 
 -   Add `MS Teams` notifications handler
@@ -155,7 +157,9 @@ This version brings compatibility with `dbt 1.0`.
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library.
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.34.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.35.0...HEAD
+
+[0.35.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.34.0...0.35.0
 
 [0.34.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.33.0...0.34.0
 
