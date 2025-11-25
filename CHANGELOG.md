@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add `Google Chat` notifications handler
+
 ## [0.35.0] - 2023-09-08
 
 ## [0.34.0] - 2023-08-10

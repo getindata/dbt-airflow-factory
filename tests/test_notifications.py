@@ -25,6 +25,7 @@ from dbt_airflow_factory.notifications.handler import NotificationHandlersFactor
     (
         "notifications_slack",
         "notifications_teams",
+        "notifications_google_chat",
     ),
 )
 def test_notification_callback_creation(config_dir):
@@ -102,7 +103,7 @@ def test_notification_send_for_teams(mock_hook_run, mock_get_connection):
     # then
     request = mock_hook_run.call_args_list[0].kwargs
     webhook_post_data = json.loads(request["data"].replace("\n", "").replace(" ", ""))
-    assert mock_hook_run.called_once
+    mock_hook_run.assert_called_once()
     assert webhook_post_data == webhook_expected_payload
 
 
@@ -125,7 +126,41 @@ def create_teams_connection():
     return connection
 
 
+def create_google_chat_connection():
+    connection = Connection(
+        **{
+            "login": None,
+            "password": None,
+            "conn_type": "http",
+            "host": "google.com/webhook_endpoint",
+            "schema": "https",
+        }
+    )
+    return connection
+
+
 def create_context():
     task_instance = MagicMock()
     task_instance.configure_mock(**{"task_id": "task_id", "dag_id": "dag_id", "log_url": "log_url"})
     return {"task_instance": task_instance, "execution_date": "some date", "ts": "ts"}
+
+
+@patch(
+    "airflow.hooks.base.BaseHook.get_connection"
+    if IS_AIRFLOW_NEWER_THAN_2_4
+    else "airflow.hooks.base_hook.BaseHook.get_connection"
+)
+@patch("dbt_airflow_factory.notifications.handler.HttpHook")
+def test_notification_send_for_google_chat(mock_http_hook, mock_get_connection):
+    # given
+    notifications_config = AirflowDagFactory(
+        path.dirname(path.abspath(__file__)), "notifications_google_chat"
+    ).airflow_config["failure_handlers"]
+    factory = NotificationHandlersFactory()
+    context = create_context()
+    mock_get_connection.return_value = create_google_chat_connection()
+    # when
+    factory.create_failure_handler(notifications_config)(context)
+
+    # then
+    mock_http_hook.assert_called_once()
