@@ -5,7 +5,7 @@ failure_handlers:
     connection_id: google_chat_failure
     message_template: |
         🔴 *Task Failed*
-        *Task*: {task_id}
-        *Dag*: {dag_id}
-        *Execution Time*: {execution_date}
-        *Log Url*: {log_url}
+        *Task*: {task}
+        *Dag*: {dag}
+        *Execution Time*: {execution_time}
+        *Log Url*: {url}

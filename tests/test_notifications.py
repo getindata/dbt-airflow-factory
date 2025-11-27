@@ -150,8 +150,8 @@ def create_context():
     if IS_AIRFLOW_NEWER_THAN_2_4
     else "airflow.hooks.base_hook.BaseHook.get_connection"
 )
-@patch("dbt_airflow_factory.notifications.handler.HttpHook")
-def test_notification_send_for_google_chat(mock_http_hook, mock_get_connection):
+@patch("dbt_airflow_factory.notifications.handler.HttpHook.run")
+def test_notification_send_for_google_chat(mock_run, mock_get_connection):
     # given
     notifications_config = AirflowDagFactory(
         path.dirname(path.abspath(__file__)), "notifications_google_chat"
@@ -163,4 +163,10 @@ def test_notification_send_for_google_chat(mock_http_hook, mock_get_connection):
     factory.create_failure_handler(notifications_config)(context)
 
     # then
-    mock_http_hook.assert_called_once()
+    request = mock_run.call_args_list[0].kwargs
+    mock_run.assert_called_once()
+
+    actual_request_data = json.loads(request["data"].replace("\n", "").replace(" ", ""))
+    expected_request_data_path = pathlib.Path(__file__).parent / "google_chat_expected_data.txt"
+    expected_request_data_text = pathlib.Path(expected_request_data_path).read_text()
+    assert actual_request_data["text"] == expected_request_data_text

@@ -87,10 +87,10 @@ class NotificationHandlersFactory:
                     logs_url = f"{webserver_url}/{query}"
 
                     message_text = handler_definition["message_template"].format(
-                        task_id=task_id,
-                        dag_id=dag_id,
-                        execution_date=context.get("execution_date"),
-                        log_url=logs_url,
+                        task=task_id,
+                        dag=dag_id,
+                        execution_time=context.get("execution_date"),
+                        url=logs_url,
                     )
                     message_body = {"text": message_text}
 
