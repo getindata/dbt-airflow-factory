@@ -62,12 +62,15 @@ Any other Airflow template variables will not work in ``airflow.yml``.
 
 Notifications
 +++++++++++++++++++
-It is possible to configure notifications in case of task failure. Currently, the only available channels are Slack and MS Teams.
+It is possible to configure notifications in case of task failure. Currently, the only available channels are Slack, MS Teams and Google Chat.
 
 .. image:: images/slack_notification.png
    :width: 800
 
 .. image:: images/msteams_notification.png
+   :width: 800
+
+.. image:: images/google_chat_notification.png
    :width: 800
 
 Source dependencies

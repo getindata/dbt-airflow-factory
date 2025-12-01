@@ -8,9 +8,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       matrix:
-        python-version: ["3.8"]
+        python-version: ["3.9"]
     env:
       PYTHON_PACKAGE: dbt_airflow_factory
     steps:
@@ -60,8 +62,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish distribution to PyPI  # official action from python maintainers
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
-          user: __token__
           password: ${{ secrets.PYPI_PASSWORD }}
           verbose: true  # trace if the upload fails

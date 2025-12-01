@@ -11,9 +11,12 @@ on:
 jobs:
   prepare-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     strategy:
       matrix:
-        python-version: ["3.8"]
+        python-version: [3.9]
     env:
       PYTHON_PACKAGE: dbt_airflow_factory
     steps:
@@ -44,7 +47,7 @@ jobs:
           git push -u origin release-${{ steps.bump_version.outputs.package_version }}
       - name: Open a PR to merge the release to main
         id: open_pr
-        uses: vsoch/pull-request-action@1.0.12
+        uses: vsoch/pull-request-action@1.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_REQUEST_BRANCH: main

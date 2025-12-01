@@ -1,0 +1,11 @@
+
+failure_handlers:
+  - type: google_chat
+    webserver_url: https://your.airflow-webserver.url
+    connection_id: google_chat_failure
+    message_template: |
+        🔴 *Task Failed*
+        *Task*: {task}
+        *Dag*: {dag}
+        *Execution Time*: {execution_time}
+        *Log Url*: {url}
