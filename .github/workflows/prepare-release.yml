@@ -11,6 +11,9 @@ on:
 jobs:
   prepare-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     strategy:
       matrix:
         python-version: ["3.8"]
