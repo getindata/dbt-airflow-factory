@@ -1,0 +1,5 @@
+🔴*TaskFailed*
+*Task*:task_id
+*Dag*:dag_id
+*ExecutionTime*:somedate
+*LogUrl*:https://your.airflow-webserver.url/log?dag_id=dag_id&task_id=task_id&execution_date=ts

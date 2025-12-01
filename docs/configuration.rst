@@ -50,8 +50,8 @@ airflow.yml file
      -
      - empty list
      - Each item of the list contains configuration of notifications handler in case Tasks or DAG fails. Each item is a dictionary with following fields
-       ``type`` (type of handler eg. *slack* or *teams*), ``webserver_url`` (Airflow Webserver URL), ``connection_id`` (id of the Airflow's connection) and ``message_template`` that will be sent.
-       More on how to configure the webhooks can be found here: `Slack <https://airflow.apache.org/docs/apache-airflow-providers-slack/stable/_api/airflow/providers/slack/operators/slack_webhook/index.html>`_ or `MS Teams <https://code.mendhak.com/Airflow-MS-Teams-Operator/#copy-hook-and-operator>`_
+       ``type`` (type of handler eg. *slack*, *teams* or *google_chat*), ``webserver_url`` (Airflow Webserver URL), ``connection_id`` (id of the Airflow's connection) and ``message_template`` that will be sent.
+       More on how to configure the webhooks can be found here: `Slack <https://airflow.apache.org/docs/apache-airflow-providers-slack/stable/_api/airflow/providers/slack/operators/slack_webhook/index.html>`_, `MS Teams <https://code.mendhak.com/Airflow-MS-Teams-Operator/#copy-hook-and-operator>`_ or `Google Chat <https://developers.google.com/workspace/chat/quickstart/webhooks>`_
    * - enable_project_dependencies
      - boolean
      -
