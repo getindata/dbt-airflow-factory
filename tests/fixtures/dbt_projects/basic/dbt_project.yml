@@ -1,0 +1,19 @@
+name: 'dbt_test'
+version: '1.0.0'
+config-version: 2
+profile: 'default'
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  dbt_test:
+    +materialized: table

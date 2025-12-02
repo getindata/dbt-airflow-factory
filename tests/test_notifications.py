@@ -92,7 +92,9 @@ def test_notification_send_for_teams(mock_hook_run, mock_get_connection):
     factory = NotificationHandlersFactory()
     context = create_context()
     mock_get_connection.return_value = create_teams_connection()
-    expected_payload_path = pathlib.Path(__file__).parent / "teams_webhook_expected_paylaod.json"
+    expected_payload_path = (
+        pathlib.Path(__file__).parent / "fixtures/test_data/teams_webhook_expected_paylaod.json"
+    )
     with open(expected_payload_path, "rt") as f:
         webhook_expected_payload = json.load(f)
 
@@ -102,7 +104,7 @@ def test_notification_send_for_teams(mock_hook_run, mock_get_connection):
     # then
     request = mock_hook_run.call_args_list[0].kwargs
     webhook_post_data = json.loads(request["data"].replace("\n", "").replace(" ", ""))
-    assert mock_hook_run.called_once
+    mock_hook_run.assert_called_once()
     assert webhook_post_data == webhook_expected_payload
 
 

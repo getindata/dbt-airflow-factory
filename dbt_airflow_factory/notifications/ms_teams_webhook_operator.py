@@ -8,9 +8,9 @@ from typing import Any, Optional
 from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 
 if IS_FIRST_AIRFLOW_VERSION:
-    from airflow.providers.http.operators.http import SimpleHttpOperator
-else:
     from airflow.operators.http_operator import SimpleHttpOperator
+else:
+    from airflow.providers.http.operators.http import HttpOperator as SimpleHttpOperator
 
 from airflow.utils.decorators import apply_defaults
 

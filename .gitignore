@@ -6,20 +6,35 @@ dbt_modules/
 logs/
 dbt_airflow_manifest_parser.egg-info
 dbt_airflow_factory.egg-info
-.idea
 out
 
 .user.yml
 
+# Test artifacts
 .coverage
 coverage.xml
-.tox
+.pytest_cache/
+.tox/
+htmlcov/
 
 *.iml
 
+# Documentation
 docs/_build
-__pycache__/
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
 .venv/
+venv/
+env/
+
+# IDE
 .vscode/
+.idea/
+
+# Python version management
 .python-version
