@@ -1,5 +1,7 @@
 """Unit tests for cosmos operator_args_builder module."""
 
+import warnings
+
 from dbt_airflow_factory.cosmos.operator_args_builder import build_operator_args
 
 
@@ -242,3 +244,106 @@ def test_build_operator_args_only_cosmos():
 
     # then
     assert result == {"install_deps": True, "full_refresh": False}
+
+
+def test_build_operator_args_execution_script_backward_compat():
+    """Test backward compatibility with execution_script from execution_env.yml."""
+    # given
+    execution_env_config = {
+        "type": "k8s",
+        "execution_script": "/usr/local/bin/custom-dbt",
+        "image": {
+            "repository": "my-repo/dbt",
+            "tag": "1.7.0",
+        },
+    }
+
+    # when
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        result = build_operator_args(execution_env_config=execution_env_config)
+
+        # then
+        assert result["dbt_executable_path"] == "/usr/local/bin/custom-dbt"
+        assert result["image"] == "my-repo/dbt:1.7.0"
+        assert len(w) == 1
+        assert issubclass(w[0].category, DeprecationWarning)
+        assert "execution_script" in str(w[0].message)
+        assert "dbt_executable_path" in str(w[0].message)
+
+
+def test_build_operator_args_docker_image_construction():
+    """Test Docker image construction from execution_env.yml."""
+    # given
+    execution_env_config = {
+        "type": "k8s",
+        "image": {
+            "repository": "gcr.io/my-project/dbt",
+            "tag": "1.8.0",
+        },
+    }
+
+    # when
+    result = build_operator_args(execution_env_config=execution_env_config)
+
+    # then
+    assert result["image"] == "gcr.io/my-project/dbt:1.8.0"
+
+
+def test_build_operator_args_docker_image_default_tag():
+    """Test Docker image with default 'latest' tag."""
+    # given
+    execution_env_config = {
+        "image": {
+            "repository": "my-dbt-image",
+        },
+    }
+
+    # when
+    result = build_operator_args(execution_env_config=execution_env_config)
+
+    # then
+    assert result["image"] == "my-dbt-image:latest"
+
+
+def test_build_operator_args_cosmos_dbt_flags():
+    """Test Cosmos-specific dbt flags configuration."""
+    # given
+    cosmos_config = {
+        "operator_args": {
+            "dbt_executable_path": "/custom/dbt",
+            "dbt_cmd_global_flags": ["--no-write-json", "--debug"],
+            "dbt_cmd_flags": ["--full-refresh"],
+        },
+    }
+
+    # when
+    result = build_operator_args(cosmos_config=cosmos_config)
+
+    # then
+    assert result["dbt_executable_path"] == "/custom/dbt"
+    assert result["dbt_cmd_global_flags"] == ["--no-write-json", "--debug"]
+    assert result["dbt_cmd_flags"] == ["--full-refresh"]
+
+
+def test_build_operator_args_execution_script_overridden_by_cosmos():
+    """Test that cosmos.yml overrides deprecated execution_script."""
+    # given
+    execution_env_config = {
+        "execution_script": "/old/dbt",
+    }
+    cosmos_config = {
+        "operator_args": {
+            "dbt_executable_path": "/new/dbt",
+        },
+    }
+
+    # when
+    with warnings.catch_warnings(record=True):
+        warnings.simplefilter("always")
+        result = build_operator_args(
+            execution_env_config=execution_env_config, cosmos_config=cosmos_config
+        )
+
+        # then - cosmos override wins
+        assert result["dbt_executable_path"] == "/new/dbt"

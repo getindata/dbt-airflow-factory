@@ -1,5 +1,6 @@
 """Builder for Cosmos operator_args using transparent pass-through strategy."""
 
+import warnings
 from typing import Any, Dict, Optional
 
 
@@ -16,14 +17,17 @@ def build_operator_args(
     config dictionary is passed directly to Cosmos operator_args. Cosmos internally
     handles mapping these parameters to KubernetesPodOperator arguments.
 
-    Only performs transformations for:
-    1. DataHub environment variable injection
-    2. Cosmos-specific overrides from cosmos.yml
+    Performs transformations for:
+    1. Docker image construction from execution_env.yml
+    2. Backward compatibility: execution_script -> dbt_executable_path
+    3. DataHub environment variable injection
+    4. Cosmos-specific overrides from cosmos.yml
 
     Args:
         k8s_config: Complete dictionary from k8s.yml (passed through unchanged)
         datahub_config: Optional dictionary from datahub.yml for env var injection
         cosmos_config: Optional dictionary from cosmos.yml for override merging
+        execution_env_config: Optional dictionary from execution_env.yml
 
     Returns:
         Dictionary to pass as operator_args to Cosmos DbtTaskGroup
@@ -62,10 +66,21 @@ def build_operator_args(
           DATAHUB_GMS_URL: "http://datahub-gms:8080"
           DATAHUB_ENV: "PROD"
 
-    Example cosmos.yml overrides:
+    Example cosmos.yml overrides (supports all Cosmos operator_args):
         operator_args:
           install_deps: true
           full_refresh: false
+          dbt_executable_path: "/custom/path/to/dbt"
+          dbt_cmd_global_flags:
+            - "--no-write-json"
+            - "--debug"
+          dbt_cmd_flags:
+            - "--full-refresh"
+
+    Backward compatibility (DEPRECATED - see MIGRATION.md):
+        execution_env.yml:
+          type: k8s
+          execution_script: "/usr/local/bin/dbt"  # Deprecated, migrate to cosmos.yml
     """
     # Start with empty operator_args
     operator_args = {}
@@ -78,11 +93,20 @@ def build_operator_args(
         if repository:
             operator_args["image"] = f"{repository}:{tag}"
 
-    # 2. Pass through entire k8s.yml config if provided
+    # 2. Backward compatibility: Map execution_script to dbt_executable_path
+    if execution_env_config and "execution_script" in execution_env_config:
+        operator_args["dbt_executable_path"] = execution_env_config["execution_script"]
+        warnings.warn(
+            "'execution_script' is deprecated. Use 'dbt_executable_path' in operator_args.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+    # 3. Pass through entire k8s.yml config if provided
     if k8s_config:
         operator_args.update(k8s_config)
 
-    # 3. Inject DataHub environment variables if provided
+    # 4. Inject DataHub environment variables if provided
     if datahub_config:
         # Merge DataHub env vars with existing envs
         datahub_envs = datahub_config.get("datahub_env_vars", {})
@@ -94,7 +118,7 @@ def build_operator_args(
             if isinstance(envs_dict, dict):
                 envs_dict.update(datahub_envs)
 
-    # 4. Merge cosmos.yml operator_args overrides if provided
+    # 5. Merge cosmos.yml operator_args overrides if provided
     if cosmos_config and "operator_args" in cosmos_config:
         cosmos_overrides = cosmos_config["operator_args"]
         # Deep merge: cosmos overrides take precedence

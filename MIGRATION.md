@@ -317,6 +317,103 @@ image:
 
 This automatically becomes `operator_args["image"] = "gcr.io/my-project/dbt:1.7.0"` in Cosmos.
 
+## Deprecated Configuration: execution_script
+
+### Deprecation Notice
+
+The `execution_script` field in `config/base/execution_env.yml` is **deprecated** in v1.0.0 and will be removed in a future version. It has been replaced by Cosmos-native dbt configuration parameters.
+
+**Old configuration (deprecated):**
+```yaml
+# config/base/execution_env.yml
+type: k8s
+execution_script: "/usr/local/bin/custom-dbt"
+```
+
+**New configuration (recommended):**
+```yaml
+# config/{env}/cosmos.yml
+operator_args:
+  dbt_executable_path: "/usr/local/bin/custom-dbt"
+```
+
+### Why This Changed
+
+Cosmos provides more granular control over dbt execution through three parameters:
+- `dbt_executable_path` - Path to the dbt executable (replaces `execution_script`)
+- `dbt_cmd_global_flags` - Flags applied globally to all dbt commands (e.g., `--no-write-json`, `--debug`)
+- `dbt_cmd_flags` - Flags applied to specific dbt commands (e.g., `--full-refresh`)
+
+### Migration Path
+
+**Option 1: Let it auto-migrate (with deprecation warning)**
+
+Your existing `execution_script` configuration will continue to work, but you'll see a deprecation warning in logs:
+
+```
+DeprecationWarning: 'execution_script' is deprecated. Use 'dbt_executable_path' in operator_args.
+```
+
+**Option 2: Migrate to cosmos.yml (recommended)**
+
+Create or update `config/{env}/cosmos.yml`:
+
+```yaml
+# config/production/cosmos.yml
+operator_args:
+  # Simple case: just the executable path
+  dbt_executable_path: "/usr/local/bin/custom-dbt"
+
+  # Advanced case: with additional flags
+  dbt_cmd_global_flags:
+    - "--no-write-json"
+    - "--debug"
+  dbt_cmd_flags:
+    - "--full-refresh"
+```
+
+**Option 3: Override per environment**
+
+```yaml
+# config/development/cosmos.yml
+operator_args:
+  dbt_executable_path: "/usr/local/bin/dbt"
+  dbt_cmd_flags:
+    - "--full-refresh"  # Always full refresh in dev
+
+# config/production/cosmos.yml
+operator_args:
+  dbt_executable_path: "/usr/local/bin/dbt"
+  dbt_cmd_flags: []  # Incremental builds in prod
+```
+
+### Precedence Rules
+
+If you specify both old and new configurations, **cosmos.yml takes precedence**:
+
+```yaml
+# config/base/execution_env.yml
+execution_script: "/old/path/dbt"  # Will be ignored
+
+# config/production/cosmos.yml
+operator_args:
+  dbt_executable_path: "/new/path/dbt"  # This wins
+```
+
+### Available Cosmos dbt Parameters
+
+All Cosmos `operator_args` are now supported. Common parameters:
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `dbt_executable_path` | Path to dbt executable | `/usr/local/bin/dbt` |
+| `dbt_cmd_global_flags` | Flags for all dbt commands | `["--no-write-json"]` |
+| `dbt_cmd_flags` | Flags for specific commands | `["--full-refresh"]` |
+| `install_deps` | Run `dbt deps` before execution | `true` |
+| `full_refresh` | Force full refresh | `false` |
+
+See [Cosmos documentation](https://astronomer-cosmos.readthedocs.io) for the complete list.
+
 ## Advanced: Extending DbtAirflowFactory
 
 If you've extended `DbtAirflowFactory` in your codebase, review the new internal structure:
