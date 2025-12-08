@@ -8,12 +8,11 @@ with open("README.md") as f:
 # Runtime Requirements.
 INSTALL_REQUIRES = [
     "pytimeparse>=1.1, <2",
-    "astronomer-cosmos>=1.10.0, <2.0",  # Replaces dbt-graph-builder
-    "apache-airflow>=2.5, <3",  # Keep broad Airflow 2.x support
-    # Provider packages - no upper bounds (pip auto-resolves based on Airflow version)
-    "apache-airflow-providers-cncf-kubernetes",  # Was [kubernetes] extra
-    "apache-airflow-providers-slack",  # Was [slack] extra
-    "apache-airflow-providers-airbyte>=3.1",  # Remove upper bound
+    "astronomer-cosmos>=1.10.0, <2.0",
+    "apache-airflow>=2.5, <3",
+    "apache-airflow-providers-cncf-kubernetes",
+    "apache-airflow-providers-slack",
+    "apache-airflow-providers-airbyte>=3.1",
 ]
 
 # Dev Requirements

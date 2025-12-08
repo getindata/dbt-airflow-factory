@@ -65,10 +65,8 @@ class AirflowDagFactory:
         self.dbt_config_file_name = dbt_config_file_name
         self.execution_env_config_file_name = execution_env_config_file_name
 
-        # Read Airflow configuration
         self.airflow_config = self._read_config(dag_path, env, airflow_config_file_name)
 
-        # Read ingestion configuration (Airbyte)
         airbyte_config = read_config(
             dag_path=dag_path, env=env, file_name=airbyte_config_file_name
         )
@@ -103,30 +101,24 @@ class AirflowDagFactory:
         Create all tasks in the DAG: start, ingestion, dbt (via Cosmos), and end tasks.
 
         Task flow:
-        1. Start dummy operator (for backward compatibility)
+        1. Start dummy operator
         2. Airbyte ingestion tasks (if enabled)
         3. Cosmos DbtTaskGroup for dbt models
         4. End dummy operator
         """
         ingestion_enabled = self.ingestion_config.get("enable", False)
 
-        # Create start task for backward compatibility
-        # Users may reference this with dag.get_task("start") to wire custom tasks
+        # Create start task - users can reference with dag.get_task("start") to wire custom tasks
         start = DummyOperator(task_id="start")
 
-        # Create Airbyte ingestion tasks if enabled
         ingestion_tasks = None
         if ingestion_enabled and self.ingestion_tasks_builder_factory:
             builder = self.ingestion_tasks_builder_factory.create()
             ingestion_tasks = builder.build()
 
-        # Create Cosmos DbtTaskGroup for dbt execution
         dbt_task_group = self._create_dbt_task_group()
-
-        # Create end dummy operator
         end = DummyOperator(task_id="end")
 
-        # Wire task dependencies
         if ingestion_tasks:
             start >> ingestion_tasks >> dbt_task_group
         else:
@@ -164,10 +156,8 @@ class AirflowDagFactory:
         # Defaults to dag_path/manifest.json if not specified
         manifest_path = self._manifest_file_path()
 
-        # Get DAG ID for validation
         dag_id = self.airflow_config.get("dag", {}).get("dag_id")
 
-        # Translate configs to Cosmos format
         project_config, profile_config, execution_config, operator_args = translate_configs(
             dbt_config=dbt_config,
             execution_env_config=execution_env_config,
@@ -178,7 +168,6 @@ class AirflowDagFactory:
             dag_id=dag_id,
         )
 
-        # Create Cosmos DbtTaskGroup
         # Note: seed_task config is ignored - Cosmos handles seeds automatically from manifest
         # Use DBT_MANIFEST mode to read directly from manifest.json (fast, no dbt CLI needed)
         dbt_task_group = DbtTaskGroup(

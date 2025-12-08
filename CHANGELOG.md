@@ -5,7 +5,7 @@
 ### Changed
 
 -   **MAJOR:** Replaced `dbt-graph-builder` dependency with `astronomer-cosmos>=1.10.0, <2.0`
--   **MAJOR:** Removed custom task builders (~1000 lines): `tasks_builder/`, `k8s/`, `ecs/`, `bash/`, `operator.py`, `dbt_parameters.py`, `builder_factory.py`, `tasks.py`
+-   **MAJOR:** Removed custom task builders (~900 lines total): `tasks_builder/`, `k8s/`, `ecs/`, `bash/`, `operator.py`, `dbt_parameters.py`, `builder_factory.py`, `tasks.py`
 -   Rewrote `AirflowDagFactory` to use Cosmos `DbtTaskGroup` for dbt task generation
 -   Replaced `apache-airflow[kubernetes,slack]` with individual provider packages (no upper bounds)
 -   Updated `apache-airflow-providers-airbyte` to remove upper bound (auto-resolves based on Airflow version)
@@ -24,6 +24,7 @@
 
 -   **Dependency Change:** `dbt-graph-builder` removed, `astronomer-cosmos` added
 -   **Removed Modules:** All custom task builder code deleted (internal implementation)
+-   **ECS Execution Removed:** `type: ecs` in `execution_env.yml` is no longer supported (Cosmos 1.10 limitation). Use `type: k8s` or `type: docker` instead
 -   **Behavior Change:** `use_task_group: false` config now ignored (Cosmos always uses `DbtTaskGroup`)
 -   **Behavior Change:** `seed_task` config now ignored (Cosmos automatically creates seed tasks from manifest)
 
