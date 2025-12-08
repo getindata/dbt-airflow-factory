@@ -105,7 +105,19 @@ pytest tests/ --cov=dbt_airflow_factory --cov-report=term-missing
 
 ### Known Issue: Installing on Some Systems
 
-If you encounter compilation errors related to `google-re2` (an Airflow dependency):
+If you encounter compilation errors related to `google-re2` (an Airflow dependency), use one of these solutions:
+
+**Option 1 (Recommended) - Use pre-compiled binaries:**
+
+```bash
+pip install dbt-airflow-factory --only-binary=google-re2
+```
+
+This tells pip to use pre-compiled binary wheels instead of compiling from source.
+
+**Option 2 - Install system dependencies:**
+
+If binary wheels aren't available for your platform, install the system-level RE2 library:
 
 ```bash
 # Ubuntu/Debian
@@ -117,6 +129,8 @@ brew install re2
 # Alpine Linux
 apk add --no-cache re2-dev
 ```
+
+Then retry: `pip install dbt-airflow-factory`
 
 [airflow-vars]: https://airflow.apache.org/docs/apache-airflow/stable/templates-ref.html#variables
 [dp-cli]: https://pypi.org/project/data-pipelines-cli/
