@@ -1,14 +1,8 @@
 """Builder for Cosmos operator_args using transparent pass-through strategy."""
 
-import warnings
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
-from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
-
-if IS_FIRST_AIRFLOW_VERSION:
-    from airflow.contrib.kubernetes.secret import Secret
-else:
-    from airflow.kubernetes.secret import Secret
+from airflow.kubernetes.secret import Secret
 
 
 def _convert_secrets_to_objects(secrets_config: List[Dict[str, Any]]) -> List[Secret]:
@@ -128,7 +122,7 @@ def build_operator_args(
 
     # 2a. Flatten resources dict (backward compatibility with v0.35.0)
     if "resources" in operator_args and isinstance(operator_args["resources"], dict):
-        resources = operator_args.pop("resources")
+        resources = cast(Dict[str, Any], operator_args.pop("resources"))
         operator_args.update(resources)
 
     # 2b. Convert secrets from dictionary format to Secret objects
@@ -141,18 +135,21 @@ def build_operator_args(
     if datahub_config:
         datahub_envs = datahub_config.get("datahub_env_vars", {})
         if datahub_envs:
-            if "envs" not in operator_args:
-                operator_args["envs"] = {}
-            envs_dict = operator_args["envs"]
-            if isinstance(envs_dict, dict):
-                envs_dict.update(datahub_envs)
+            # Use setdefault to get or create envs dict
+            existing_envs = operator_args.setdefault("envs", cast(Any, {}))
+            if isinstance(existing_envs, dict):
+                existing_envs.update(datahub_envs)
 
     # 4. Merge cosmos.yml operator_args section
     if cosmos_config and "operator_args" in cosmos_config:
         cosmos_op_args = cosmos_config["operator_args"]
         for key, value in cosmos_op_args.items():
-            if key in operator_args and isinstance(operator_args[key], dict) and isinstance(value, dict):
-                operator_args[key].update(value)
+            if key in operator_args:
+                existing_value = operator_args[key]
+                if isinstance(existing_value, dict) and isinstance(value, dict):
+                    existing_value.update(value)
+                else:
+                    operator_args[key] = value
             else:
                 operator_args[key] = value
 

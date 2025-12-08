@@ -1,14 +1,8 @@
 """Unit tests for cosmos operator_args_builder module."""
 
-import warnings
+from airflow.kubernetes.secret import Secret
 
-from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 from dbt_airflow_factory.cosmos.operator_args_builder import build_operator_args
-
-if IS_FIRST_AIRFLOW_VERSION:
-    from airflow.contrib.kubernetes.secret import Secret
-else:
-    from airflow.kubernetes.secret import Secret
 
 
 def test_build_operator_args_empty():

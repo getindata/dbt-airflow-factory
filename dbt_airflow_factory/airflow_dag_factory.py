@@ -3,22 +3,15 @@
 import os
 
 from airflow import DAG
+from airflow.operators.empty import EmptyOperator
 from cosmos import DbtTaskGroup
 from cosmos.config import RenderConfig
 from cosmos.constants import LoadMode
-
-from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
-from dbt_airflow_factory.cosmos import translate_configs
-from dbt_airflow_factory.ingestion import IngestionEngine, IngestionFactory
-
-if IS_FIRST_AIRFLOW_VERSION:
-    from airflow.operators.dummy_operator import DummyOperator
-else:
-    from airflow.operators.dummy import DummyOperator
-
 from pytimeparse import parse
 
-from dbt_airflow_factory.config_utils import read_config, read_env_config
+from dbt_airflow_factory.config_utils import read_config
+from dbt_airflow_factory.cosmos import translate_configs
+from dbt_airflow_factory.ingestion import IngestionEngine, IngestionFactory
 from dbt_airflow_factory.notifications.handler import NotificationHandlersFactory
 
 
@@ -67,9 +60,7 @@ class AirflowDagFactory:
 
         self.airflow_config = self._read_config(dag_path, env, airflow_config_file_name)
 
-        airbyte_config = read_config(
-            dag_path=dag_path, env=env, file_name=airbyte_config_file_name
-        )
+        airbyte_config = read_config(dag_path=dag_path, env=env, file_name=airbyte_config_file_name)
         self.ingestion_config = read_config(
             dag_path=dag_path, env=env, file_name=ingestion_config_file_name
         )
@@ -109,7 +100,7 @@ class AirflowDagFactory:
         ingestion_enabled = self.ingestion_config.get("enable", False)
 
         # Create start task - users can reference with dag.get_task("start") to wire custom tasks
-        start = DummyOperator(task_id="start")
+        start = EmptyOperator(task_id="start")
 
         ingestion_tasks = None
         if ingestion_enabled and self.ingestion_tasks_builder_factory:
@@ -117,7 +108,7 @@ class AirflowDagFactory:
             ingestion_tasks = builder.build()
 
         dbt_task_group = self._create_dbt_task_group()
-        end = DummyOperator(task_id="end")
+        end = EmptyOperator(task_id="end")
 
         if ingestion_tasks:
             start >> ingestion_tasks >> dbt_task_group

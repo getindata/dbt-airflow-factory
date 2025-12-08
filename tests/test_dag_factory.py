@@ -5,7 +5,6 @@ from typing import Set
 import pytest
 
 from dbt_airflow_factory.airflow_dag_factory import AirflowDagFactory
-from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 
 
 def test_dag_factory():
@@ -42,9 +41,6 @@ def test_dag_factory():
 
 def test_task_group_dag_factory():
     """Test that Cosmos DbtTaskGroup is created and contains dbt tasks"""
-    if IS_FIRST_AIRFLOW_VERSION:  # You cannot use TaskGroup in Airflow 1 anyway
-        pytest.skip("TaskGroup not supported in Airflow 1")
-
     # given
     factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "task_group")
 
@@ -64,9 +60,6 @@ def test_task_group_dag_factory():
 
 def test_no_task_group_dag_factory():
     """Test that DAG creation works even with no_task_group config"""
-    if IS_FIRST_AIRFLOW_VERSION:  # You cannot use TaskGroup in Airflow 1 anyway
-        pytest.skip("TaskGroup not supported in Airflow 1")
-
     # given - Note: Cosmos always uses DbtTaskGroup regardless of old use_task_group config
     factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "no_task_group")
 
@@ -265,23 +258,27 @@ def test_base_env_config_merging():
     k8s_config = read_config(test_path, "config_merge", "k8s.yml")
 
     # Verify namespace from config_merge/k8s.yml overrides base
-    assert k8s_config["namespace"] == "dev-airflow", \
-        "Namespace from env-specific config should override base"
+    assert (
+        k8s_config["namespace"] == "dev-airflow"
+    ), "Namespace from env-specific config should override base"
 
     # Verify envs from base/k8s.yml are merged
     assert "envs" in k8s_config, "Environment variables from base should be present"
-    assert k8s_config["envs"]["EXAMPLE_ENV"] == "example", \
-        "EXAMPLE_ENV from base config should be merged"
+    assert (
+        k8s_config["envs"]["EXAMPLE_ENV"] == "example"
+    ), "EXAMPLE_ENV from base config should be merged"
 
     # Verify secrets from config_merge/k8s.yml are present
     assert "secrets" in k8s_config, "Secrets from env config should be present"
     assert len(k8s_config["secrets"]) > 0, "Should have at least one secret"
-    assert k8s_config["secrets"][0]["secret"] == "snowflake-private-keys", \
-        "Secret configuration should match config_merge/k8s.yml"
+    assert (
+        k8s_config["secrets"][0]["secret"] == "snowflake-private-keys"
+    ), "Secret configuration should match config_merge/k8s.yml"
 
     # Verify image_pull_policy from base/k8s.yml is preserved
-    assert k8s_config["image_pull_policy"] == "IfNotPresent", \
-        "image_pull_policy from base should be preserved when not overridden"
+    assert (
+        k8s_config["image_pull_policy"] == "IfNotPresent"
+    ), "image_pull_policy from base should be preserved when not overridden"
 
     # Test that DAG factory successfully uses merged config
     factory = AirflowDagFactory(test_path, "config_merge")

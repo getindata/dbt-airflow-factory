@@ -4,13 +4,18 @@
 
 ### Changed
 
+-   **BREAKING:** Dropped Airflow 1.x support (min: `apache-airflow>=2.5`)
+-   **BREAKING:** Dropped Python 3.8 (min: Python 3.9)
 -   **MAJOR:** Replaced `dbt-graph-builder` dependency with `astronomer-cosmos>=1.10.0, <2.0`
 -   **MAJOR:** Removed custom task builders (~900 lines total): `tasks_builder/`, `k8s/`, `ecs/`, `bash/`, `operator.py`, `dbt_parameters.py`, `builder_factory.py`, `tasks.py`
 -   Rewrote `AirflowDagFactory` to use Cosmos `DbtTaskGroup` for dbt task generation
 -   Replaced `apache-airflow[kubernetes,slack]` with individual provider packages (no upper bounds)
 -   Updated `apache-airflow-providers-airbyte` to remove upper bound (auto-resolves based on Airflow version)
+-   Migrated `DummyOperator` → `EmptyOperator` (Airflow 2.4+ standard)
 
 ### Added
+
+-   Python 3.12 support
 
 -   New `cosmos/` module for Cosmos integration (~400 lines):
     -   `project_config_builder.py` - Maps `dbt.yml` to Cosmos `ProjectConfig`

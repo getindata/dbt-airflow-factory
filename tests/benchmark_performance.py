@@ -4,7 +4,6 @@ import json
 import os
 import tempfile
 import time
-from pathlib import Path
 
 
 def generate_manifest(num_models: int, output_path: str) -> None:
@@ -61,7 +60,7 @@ def benchmark_dag_creation(manifest_path: str, num_models: int) -> float:
     start = time.perf_counter()
 
     # Build project config (includes manifest parsing)
-    result = build_project_config(
+    _ = build_project_config(
         dbt_config=dbt_config,
         manifest_path=manifest_path,
         dag_id="benchmark_project",
@@ -88,7 +87,11 @@ def run_benchmarks():
             # Benchmark
             elapsed = benchmark_dag_creation(manifest_path, num_models)
 
-            status = "PASS" if (num_models <= 100 and elapsed < 5.0) or (num_models <= 500 and elapsed < 15.0) else "SLOW"
+            status = (
+                "PASS"
+                if (num_models <= 100 and elapsed < 5.0) or (num_models <= 500 and elapsed < 15.0)
+                else "SLOW"
+            )
 
             print(f"{num_models:4d} models | {elapsed:6.3f}s | {manifest_size:6.1f}KB | [{status}]")
 
