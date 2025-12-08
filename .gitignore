@@ -38,3 +38,9 @@ env/
 
 # Python version management
 .python-version
+
+# AI and testing
+.claude/
+openspec/
+examples/
+image/

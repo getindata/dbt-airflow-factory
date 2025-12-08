@@ -69,10 +69,10 @@ class AirflowDagFactory:
         self.airflow_config = self._read_config(dag_path, env, airflow_config_file_name)
 
         # Read ingestion configuration (Airbyte)
-        airbyte_config = read_env_config(
+        airbyte_config = read_config(
             dag_path=dag_path, env=env, file_name=airbyte_config_file_name
         )
-        self.ingestion_config = read_env_config(
+        self.ingestion_config = read_config(
             dag_path=dag_path, env=env, file_name=ingestion_config_file_name
         )
         self.ingestion_tasks_builder_factory = IngestionFactory(
@@ -152,17 +152,13 @@ class AirflowDagFactory:
         # Determine which operator config to read based on execution type
         exec_type = execution_env_config.get("type", "k8s")
         operator_config_file = f"{exec_type}.yml"
-        operator_config = read_env_config(
+        operator_config = read_config(
             dag_path=self.dag_path, env=self.env, file_name=operator_config_file
         )
 
         # Read optional configs
-        datahub_config = read_env_config(
-            dag_path=self.dag_path, env=self.env, file_name="datahub.yml"
-        )
-        cosmos_config = read_env_config(
-            dag_path=self.dag_path, env=self.env, file_name="cosmos.yml"
-        )
+        datahub_config = read_config(dag_path=self.dag_path, env=self.env, file_name="datahub.yml")
+        cosmos_config = read_config(dag_path=self.dag_path, env=self.env, file_name="cosmos.yml")
 
         # Get manifest path from airflow.yml configuration
         # Defaults to dag_path/manifest.json if not specified

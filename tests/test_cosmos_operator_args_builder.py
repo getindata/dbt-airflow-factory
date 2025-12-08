@@ -2,7 +2,13 @@
 
 import warnings
 
+from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
 from dbt_airflow_factory.cosmos.operator_args_builder import build_operator_args
+
+if IS_FIRST_AIRFLOW_VERSION:
+    from airflow.contrib.kubernetes.secret import Secret
+else:
+    from airflow.kubernetes.secret import Secret
 
 
 def test_build_operator_args_empty():
@@ -15,7 +21,7 @@ def test_build_operator_args_empty():
 
 
 def test_build_operator_args_k8s_passthrough():
-    """Test transparent pass-through of k8s.yml configuration."""
+    """Test transparent pass-through of k8s.yml configuration with resources flattening."""
     # given
     k8s_config = {
         "image_pull_policy": "IfNotPresent",
@@ -57,13 +63,16 @@ def test_build_operator_args_k8s_passthrough():
     # when
     result = build_operator_args(k8s_config=k8s_config)
 
-    # then - entire config passed through
-    assert result == k8s_config
+    # then - resources dict is flattened (backward compatibility with v0.35.0)
     assert result["image_pull_policy"] == "IfNotPresent"
     assert result["namespace"] == "apache-airflow"
     assert result["envs"]["EXAMPLE_ENV"] == "example"
     assert result["labels"]["runner"] == "airflow"
-    assert result["resources"]["node_selectors"]["group"] == "data-processing"
+    assert "resources" not in result
+    assert result["node_selectors"]["group"] == "data-processing"
+    assert result["tolerations"][0]["key"] == "group"
+    assert result["limit"]["memory"] == "2048M"
+    assert result["requests"]["cpu"] == "1"
 
 
 def test_build_operator_args_datahub_injection():
@@ -206,7 +215,13 @@ def test_build_operator_args_comprehensive():
     assert result["namespace"] == "airflow"
     assert result["image_pull_policy"] == "IfNotPresent"
     assert result["install_deps"] is True
-    assert result["secrets"][0]["secret"] == "my-secret"
+    # Secrets converted to Secret objects
+    assert len(result["secrets"]) == 1
+    secret = result["secrets"][0]
+    assert isinstance(secret, Secret)
+    assert secret.secret == "my-secret"
+    assert secret.deploy_type == "env"
+    assert secret.deploy_target == "MY_SECRET"
     # All envs merged
     assert result["envs"]["APP_ENV"] == "production"
     assert result["envs"]["DATAHUB_GMS_URL"] == "http://datahub:8080"
@@ -244,32 +259,6 @@ def test_build_operator_args_only_cosmos():
 
     # then
     assert result == {"install_deps": True, "full_refresh": False}
-
-
-def test_build_operator_args_execution_script_backward_compat():
-    """Test backward compatibility with execution_script from execution_env.yml."""
-    # given
-    execution_env_config = {
-        "type": "k8s",
-        "execution_script": "/usr/local/bin/custom-dbt",
-        "image": {
-            "repository": "my-repo/dbt",
-            "tag": "1.7.0",
-        },
-    }
-
-    # when
-    with warnings.catch_warnings(record=True) as w:
-        warnings.simplefilter("always")
-        result = build_operator_args(execution_env_config=execution_env_config)
-
-        # then
-        assert result["dbt_executable_path"] == "/usr/local/bin/custom-dbt"
-        assert result["image"] == "my-repo/dbt:1.7.0"
-        assert len(w) == 1
-        assert issubclass(w[0].category, DeprecationWarning)
-        assert "execution_script" in str(w[0].message)
-        assert "dbt_executable_path" in str(w[0].message)
 
 
 def test_build_operator_args_docker_image_construction():
@@ -326,24 +315,87 @@ def test_build_operator_args_cosmos_dbt_flags():
     assert result["dbt_cmd_flags"] == ["--full-refresh"]
 
 
-def test_build_operator_args_execution_script_overridden_by_cosmos():
-    """Test that cosmos.yml overrides deprecated execution_script."""
+def test_build_operator_args_secrets_conversion():
+    """Test that secrets from k8s.yml are converted to Secret objects."""
     # given
-    execution_env_config = {
-        "execution_script": "/old/dbt",
-    }
-    cosmos_config = {
-        "operator_args": {
-            "dbt_executable_path": "/new/dbt",
-        },
+    k8s_config = {
+        "namespace": "airflow",
+        "secrets": [
+            {
+                "secret": "snowflake-private-keys",
+                "deploy_type": "env",
+                "key": "dbt",
+                "deploy_target": "SNOWFLAKE_DBT_PRIVATE_KEY",
+            },
+            {
+                "secret": "datahub-auth",
+                "deploy_type": "env",
+                "deploy_target": "DATAHUB_TOKEN",
+            },
+        ],
     }
 
     # when
-    with warnings.catch_warnings(record=True):
-        warnings.simplefilter("always")
-        result = build_operator_args(
-            execution_env_config=execution_env_config, cosmos_config=cosmos_config
-        )
+    result = build_operator_args(k8s_config=k8s_config)
 
-        # then - cosmos override wins
-        assert result["dbt_executable_path"] == "/new/dbt"
+    # then - secrets converted to Secret objects
+    assert result["namespace"] == "airflow"
+    assert "secrets" in result
+    assert isinstance(result["secrets"], list)
+    assert len(result["secrets"]) == 2
+
+    # Check first secret
+    secret1 = result["secrets"][0]
+    assert isinstance(secret1, Secret)
+    assert secret1.secret == "snowflake-private-keys"
+    assert secret1.deploy_type == "env"
+    assert secret1.key == "dbt"
+    assert secret1.deploy_target == "SNOWFLAKE_DBT_PRIVATE_KEY"
+
+    # Check second secret
+    secret2 = result["secrets"][1]
+    assert isinstance(secret2, Secret)
+    assert secret2.secret == "datahub-auth"
+    assert secret2.deploy_type == "env"
+    assert secret2.deploy_target == "DATAHUB_TOKEN"
+
+
+def test_build_operator_args_secrets_with_volume_mount():
+    """Test secrets with volume deploy_type."""
+    # given
+    k8s_config = {
+        "secrets": [
+            {
+                "secret": "ssh-keys",
+                "deploy_type": "volume",
+                "deploy_target": "/var/secrets",
+            }
+        ],
+    }
+
+    # when
+    result = build_operator_args(k8s_config=k8s_config)
+
+    # then
+    assert len(result["secrets"]) == 1
+    secret = result["secrets"][0]
+    assert isinstance(secret, Secret)
+    assert secret.secret == "ssh-keys"
+    assert secret.deploy_type == "volume"
+    assert secret.deploy_target == "/var/secrets"
+
+
+def test_build_operator_args_no_secrets():
+    """Test that missing secrets doesn't cause errors."""
+    # given
+    k8s_config = {
+        "namespace": "airflow",
+        "image_pull_policy": "IfNotPresent",
+    }
+
+    # when
+    result = build_operator_args(k8s_config=k8s_config)
+
+    # then - no secrets key
+    assert "secrets" not in result
+    assert result["namespace"] == "airflow"

@@ -1,7 +1,36 @@
 """Builder for Cosmos operator_args using transparent pass-through strategy."""
 
 import warnings
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
+
+from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
+
+if IS_FIRST_AIRFLOW_VERSION:
+    from airflow.contrib.kubernetes.secret import Secret
+else:
+    from airflow.kubernetes.secret import Secret
+
+
+def _convert_secrets_to_objects(secrets_config: List[Dict[str, Any]]) -> List[Secret]:
+    """
+    Convert secrets from dictionary format to Airflow Secret objects.
+
+    The k8s.yml uses dictionary format for secrets:
+        secrets:
+          - secret: my-secret-name
+            deploy_type: env
+            deploy_target: MY_ENV_VAR
+            key: optional-key
+
+    Cosmos/KubernetesPodOperator expects Secret objects from Airflow.
+
+    Args:
+        secrets_config: List of secret dictionaries from k8s.yml
+
+    Returns:
+        List of Airflow Secret objects
+    """
+    return [Secret(**secret) for secret in secrets_config]
 
 
 def build_operator_args(
@@ -93,46 +122,38 @@ def build_operator_args(
         if repository:
             operator_args["image"] = f"{repository}:{tag}"
 
-    # 2. Backward compatibility: Map execution_script to dbt_executable_path
-    if execution_env_config and "execution_script" in execution_env_config:
-        operator_args["dbt_executable_path"] = execution_env_config["execution_script"]
-        warnings.warn(
-            "'execution_script' is deprecated. Use 'dbt_executable_path' in operator_args.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-    # 3. Pass through entire k8s.yml config if provided
+    # 2. Pass through entire k8s.yml config if provided
     if k8s_config:
         operator_args.update(k8s_config)
 
-    # 4. Inject DataHub environment variables if provided
+    # 2a. Flatten resources dict (backward compatibility with v0.35.0)
+    if "resources" in operator_args and isinstance(operator_args["resources"], dict):
+        resources = operator_args.pop("resources")
+        operator_args.update(resources)
+
+    # 2b. Convert secrets from dictionary format to Secret objects
+    if "secrets" in operator_args and isinstance(operator_args["secrets"], list):
+        secrets_list = operator_args["secrets"]
+        if secrets_list and isinstance(secrets_list[0], dict):
+            operator_args["secrets"] = _convert_secrets_to_objects(secrets_list)
+
+    # 3. Inject DataHub environment variables if provided
     if datahub_config:
-        # Merge DataHub env vars with existing envs
         datahub_envs = datahub_config.get("datahub_env_vars", {})
         if datahub_envs:
             if "envs" not in operator_args:
-                operator_args["envs"] = {}  # type: ignore[assignment]
-            # Type assertion for mypy
+                operator_args["envs"] = {}
             envs_dict = operator_args["envs"]
             if isinstance(envs_dict, dict):
                 envs_dict.update(datahub_envs)
 
-    # 5. Merge cosmos.yml operator_args overrides if provided
+    # 4. Merge cosmos.yml operator_args section
     if cosmos_config and "operator_args" in cosmos_config:
-        cosmos_overrides = cosmos_config["operator_args"]
-        # Deep merge: cosmos overrides take precedence
-        for key, value in cosmos_overrides.items():
-            if key in operator_args:
-                existing_value = operator_args[key]
-                if isinstance(existing_value, dict) and isinstance(value, dict):
-                    # Merge dictionaries
-                    existing_value.update(value)
-                else:
-                    # Override directly
-                    operator_args[key] = value
+        cosmos_op_args = cosmos_config["operator_args"]
+        for key, value in cosmos_op_args.items():
+            if key in operator_args and isinstance(operator_args[key], dict) and isinstance(value, dict):
+                operator_args[key].update(value)
             else:
-                # Add new key
                 operator_args[key] = value
 
     return operator_args

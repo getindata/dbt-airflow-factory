@@ -254,6 +254,44 @@ def test_seed_handling_with_cosmos():
     assert dag is not None, "DAG should be created successfully"
 
 
+def test_base_env_config_merging():
+    """Test that configs from base/ and env/ directories are properly merged"""
+    from dbt_airflow_factory.config_utils import read_config
+
+    # Test read_config directly to verify base/env merging
+    test_path = path.dirname(path.abspath(__file__))
+
+    # Read k8s config with merging
+    k8s_config = read_config(test_path, "config_merge", "k8s.yml")
+
+    # Verify namespace from config_merge/k8s.yml overrides base
+    assert k8s_config["namespace"] == "dev-airflow", \
+        "Namespace from env-specific config should override base"
+
+    # Verify envs from base/k8s.yml are merged
+    assert "envs" in k8s_config, "Environment variables from base should be present"
+    assert k8s_config["envs"]["EXAMPLE_ENV"] == "example", \
+        "EXAMPLE_ENV from base config should be merged"
+
+    # Verify secrets from config_merge/k8s.yml are present
+    assert "secrets" in k8s_config, "Secrets from env config should be present"
+    assert len(k8s_config["secrets"]) > 0, "Should have at least one secret"
+    assert k8s_config["secrets"][0]["secret"] == "snowflake-private-keys", \
+        "Secret configuration should match config_merge/k8s.yml"
+
+    # Verify image_pull_policy from base/k8s.yml is preserved
+    assert k8s_config["image_pull_policy"] == "IfNotPresent", \
+        "image_pull_policy from base should be preserved when not overridden"
+
+    # Test that DAG factory successfully uses merged config
+    factory = AirflowDagFactory(test_path, "config_merge")
+    dag = factory.create()
+
+    assert dag is not None, "DAG should be created with merged config"
+    assert dag.dag_id == "test-config-merge"
+    assert len(dag.tasks) > 0, "DAG should have tasks"
+
+
 boolean_mapper = {True: "enabled", False: "disabled"}
 
 starting_task_mapper = {True: "dbt_seed", False: "start"}

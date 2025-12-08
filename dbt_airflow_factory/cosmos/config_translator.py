@@ -86,11 +86,11 @@ def translate_configs(
 
     profile_config = build_profile_config(dbt_config=dbt_config)
 
-    # Get dbt project path from dbt.yml - this is the path inside the container
-    # where Cosmos will execute dbt commands. Defaults to /dbt if not specified.
     dbt_project_path = dbt_config.get("project_dir_path", "/dbt")
     execution_config = build_execution_config(
-        execution_env_config=execution_env_config, dbt_project_path=dbt_project_path
+        execution_env_config=execution_env_config,
+        dbt_project_path=dbt_project_path,
+        cosmos_config=cosmos_config,
     )
 
     operator_args = build_operator_args(
@@ -99,19 +99,5 @@ def translate_configs(
         cosmos_config=cosmos_config,
         execution_env_config=execution_env_config,
     )
-
-    # Apply cosmos.yml overrides if present
-    if cosmos_config:
-        # Override load_mode if specified
-        if "load_mode" in cosmos_config:
-            # Note: This would require modifying ExecutionConfig after creation
-            # For now, document this as a limitation or use RenderConfig
-            pass
-
-        # Override render_config if specified
-        if "render_config" in cosmos_config:
-            # This would be passed separately to DbtTaskGroup
-            # Document as advanced feature
-            pass
 
     return project_config, profile_config, execution_config, operator_args

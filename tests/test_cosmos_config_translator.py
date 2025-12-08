@@ -232,11 +232,12 @@ def test_translate_configs_comprehensive():
     assert exec_cfg.execution_mode == ExecutionMode.KUBERNETES
     # Image config handled via operator_args:"gcr.io/project/dbt:1.8.0"
 
-    # then - operator_args (all merged)
+    # then - operator_args (all merged, resources flattened)
     assert op_args["namespace"] == "data-platform"
     assert op_args["image_pull_policy"] == "IfNotPresent"
     assert op_args["install_deps"] is True
-    assert op_args["resources"]["limit"]["memory"] == "2048M"
+    assert "resources" not in op_args
+    assert op_args["limit"]["memory"] == "2048M"
     # All envs merged
     assert op_args["envs"]["APP_ENV"] == "production"
     assert op_args["envs"]["DATAHUB_GMS_URL"] == "http://datahub:8080"

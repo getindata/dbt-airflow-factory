@@ -1,0 +1,5 @@
+type: k8s
+
+image:
+  repository: test/dbt
+  tag: latest

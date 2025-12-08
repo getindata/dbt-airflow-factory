@@ -150,3 +150,86 @@ def test_build_execution_config_default_type():
 
     # then
     assert result.execution_mode == ExecutionMode.KUBERNETES  # default
+
+
+def test_build_execution_config_with_execution_script():
+    """Test execution_script maps to dbt_executable_path."""
+    # given
+    execution_env_config = {
+        "type": "k8s",
+        "execution_script": "./executor_with_test_reports.sh",
+    }
+
+    # when
+    result = build_execution_config(execution_env_config)
+
+    # then
+    assert result.execution_mode == ExecutionMode.KUBERNETES
+    assert result.dbt_executable_path == "./executor_with_test_reports.sh"
+
+
+def test_build_execution_config_cosmos_overrides_for_k8s():
+    """Test cosmos.yml execution_config overrides for k8s mode."""
+    # given
+    execution_env_config = {"type": "k8s"}
+    cosmos_config = {
+        "execution_config": {
+            "test_indirect_selection": "cautious",
+            "dbt_executable_path": "/custom/dbt",
+        }
+    }
+
+    # when
+    result = build_execution_config(
+        execution_env_config=execution_env_config,
+        cosmos_config=cosmos_config,
+    )
+
+    # then
+    assert result.execution_mode == ExecutionMode.KUBERNETES
+    assert result.dbt_executable_path == "/custom/dbt"
+
+
+def test_build_execution_config_cosmos_overrides_for_bash():
+    """Test cosmos.yml execution_config overrides for bash/local mode."""
+    # given
+    execution_env_config = {"type": "bash"}
+    cosmos_config = {
+        "execution_config": {
+            "invocation_mode": "subprocess",
+            "dbt_executable_path": "/custom/dbt",
+        }
+    }
+
+    # when
+    result = build_execution_config(
+        execution_env_config=execution_env_config,
+        cosmos_config=cosmos_config,
+    )
+
+    # then
+    assert result.execution_mode == ExecutionMode.LOCAL
+    assert result.dbt_executable_path == "/custom/dbt"
+
+
+def test_build_execution_config_cosmos_overrides_execution_script():
+    """Test cosmos.yml dbt_executable_path overrides execution_script."""
+    # given
+    execution_env_config = {
+        "type": "k8s",
+        "execution_script": "/old/script.sh",
+    }
+    cosmos_config = {
+        "execution_config": {
+            "dbt_executable_path": "/new/script.sh",
+        }
+    }
+
+    # when
+    result = build_execution_config(
+        execution_env_config=execution_env_config,
+        cosmos_config=cosmos_config,
+    )
+
+    # then
+    assert result.dbt_executable_path == "/new/script.sh"
