@@ -160,14 +160,15 @@ class AirflowDagFactory:
         )
 
         # Note: seed_task config is ignored - Cosmos handles seeds automatically from manifest
-        # Use DBT_MANIFEST mode to read directly from manifest.json (fast, no dbt CLI needed)
         dbt_task_group = DbtTaskGroup(
             group_id="dbt",
             project_config=project_config,
             profile_config=profile_config,
             execution_config=execution_config,
             operator_args=operator_args,
-            render_config=RenderConfig(load_method=LoadMode.DBT_MANIFEST),
+            render_config=RenderConfig(
+                load_method=LoadMode.DBT_MANIFEST  # Read directly from manifest.json (fast, no dbt CLI)
+            ),
         )
 
         return dbt_task_group

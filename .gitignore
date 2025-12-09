@@ -38,6 +38,7 @@ env/
 
 # Python version management
 .python-version
+.tool-versions
 
 # AI and testing
 .claude/
