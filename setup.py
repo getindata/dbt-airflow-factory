@@ -11,6 +11,7 @@ INSTALL_REQUIRES = [
     "astronomer-cosmos>=1.10.0, <2.0",
     "apache-airflow>=2.5, <3",
     "apache-airflow-providers-cncf-kubernetes",
+    "apache-airflow-providers-docker",
     "apache-airflow-providers-slack",
     "apache-airflow-providers-airbyte>=3.1",
 ]

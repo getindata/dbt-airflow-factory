@@ -1,0 +1,5 @@
+type: docker
+
+image:
+  repository: ghcr.io/dbt-labs/dbt-core
+  tag: 1.8.0

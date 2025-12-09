@@ -289,6 +289,48 @@ def test_base_env_config_merging():
     assert len(dag.tasks) > 0, "DAG should have tasks"
 
 
+def test_bash_execution_dag_factory():
+    """Test that DAG factory works with bash/local execution mode"""
+    # given
+    factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "bash_execution")
+
+    # when
+    dag = factory.create()
+
+    # then - DAG should be created successfully
+    assert dag is not None, "DAG should be created with bash execution mode"
+    assert dag.dag_id == "dbt-platform-poc"
+
+    # then - Verify dbt tasks exist
+    task_ids = [t.task_id for t in dag.tasks]
+    assert any(".run" in tid for tid in task_ids), "Should have dbt run tasks"
+    assert len(dag.tasks) >= 2, "Should have dbt tasks created"
+
+    # then - Verify Cosmos DbtTaskGroup was created with correct execution mode
+    assert "dbt" in dag.task_group_dict, "Should have 'dbt' task group from Cosmos"
+
+
+def test_docker_execution_dag_factory():
+    """Test that DAG factory works with docker execution mode"""
+    # given
+    factory = AirflowDagFactory(path.dirname(path.abspath(__file__)), "docker_execution")
+
+    # when
+    dag = factory.create()
+
+    # then - DAG should be created successfully
+    assert dag is not None, "DAG should be created with docker execution mode"
+    assert dag.dag_id == "dbt-platform-poc"
+
+    # then - Verify dbt tasks exist
+    task_ids = [t.task_id for t in dag.tasks]
+    assert any(".run" in tid for tid in task_ids), "Should have dbt run tasks"
+    assert len(dag.tasks) >= 2, "Should have dbt tasks created"
+
+    # then - Verify Cosmos DbtTaskGroup was created with correct execution mode
+    assert "dbt" in dag.task_group_dict, "Should have 'dbt' task group from Cosmos"
+
+
 boolean_mapper = {True: "enabled", False: "disabled"}
 
 starting_task_mapper = {True: "dbt_seed", False: "start"}
