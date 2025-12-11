@@ -19,9 +19,8 @@ class AirflowDagFactory:
     """
     Factory creating Airflow DAG using Astronomer Cosmos for dbt task generation.
 
-    This factory provides 100% backward compatibility with existing configurations
-    while using Cosmos under the hood for dbt task execution. All existing YAML
-    configuration files work unchanged.
+    This factory uses Cosmos under the hood for dbt task execution while reading
+    configuration from standard YAML files (dbt.yml, execution_env.yml, k8s.yml, etc.).
 
     :param dag_path: path to directory containing config/ and manifest.json
     :type dag_path: str
@@ -126,25 +125,20 @@ class AirflowDagFactory:
         :return: Cosmos DbtTaskGroup containing all dbt tasks
         :rtype: cosmos.DbtTaskGroup
         """
-        # Read all configuration files (backward compatible)
         dbt_config = read_config(self.dag_path, self.env, self.dbt_config_file_name)
         execution_env_config = read_config(
             self.dag_path, self.env, self.execution_env_config_file_name
         )
 
-        # Determine which operator config to read based on execution type
         exec_type = execution_env_config.get("type", "k8s")
         operator_config_file = f"{exec_type}.yml"
         operator_config = read_config(
             dag_path=self.dag_path, env=self.env, file_name=operator_config_file
         )
 
-        # Read optional configs
         datahub_config = read_config(dag_path=self.dag_path, env=self.env, file_name="datahub.yml")
         cosmos_config = read_config(dag_path=self.dag_path, env=self.env, file_name="cosmos.yml")
 
-        # Get manifest path from airflow.yml configuration
-        # Defaults to dag_path/manifest.json if not specified
         manifest_path = self._manifest_file_path()
 
         dag_id = self.airflow_config.get("dag", {}).get("dag_id")
@@ -159,7 +153,6 @@ class AirflowDagFactory:
             dag_id=dag_id,
         )
 
-        # Note: seed_task config is ignored - Cosmos handles seeds automatically from manifest
         dbt_task_group = DbtTaskGroup(
             group_id="dbt",
             project_config=project_config,

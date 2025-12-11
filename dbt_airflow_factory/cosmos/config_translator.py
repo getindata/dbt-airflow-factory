@@ -22,9 +22,8 @@ def translate_configs(
     """
     Translate dbt-airflow-factory configuration files to Cosmos config objects.
 
-    This is the main entry point for config translation. It reads the existing
-    YAML-based configurations and converts them to Cosmos-compatible format,
-    maintaining 100% backward compatibility.
+    This is the main entry point for config translation. It reads the YAML-based
+    configurations and converts them to Cosmos-compatible format.
 
     Args:
         dbt_config: Dictionary from dbt.yml (target, project_dir_path, profile_dir_path, vars)
@@ -43,7 +42,7 @@ def translate_configs(
         from dbt_airflow_factory.config_utils import read_config
         from dbt_airflow_factory.cosmos import translate_configs
 
-        # Read existing config files (backward compatible)
+        # Read config files
         dbt_config = read_config(dag_path, env, "dbt.yml")
         exec_env_config = read_config(dag_path, env, "execution_env.yml")
         k8s_config = read_config(dag_path, env, "k8s.yml")
