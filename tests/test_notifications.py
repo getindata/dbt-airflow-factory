@@ -126,11 +126,7 @@ def create_context():
     return {"task_instance": task_instance, "execution_date": "some date", "ts": "ts"}
 
 
-@patch(
-    "airflow.hooks.base.BaseHook.get_connection"
-    if IS_AIRFLOW_NEWER_THAN_2_4
-    else "airflow.hooks.base_hook.BaseHook.get_connection"
-)
+@patch("airflow.hooks.base.BaseHook.get_connection")
 @patch("dbt_airflow_factory.notifications.handler.HttpHook.run")
 def test_notification_send_for_google_chat(mock_run, mock_get_connection):
     # given
