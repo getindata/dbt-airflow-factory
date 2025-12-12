@@ -55,6 +55,10 @@
 -   Model-level task visibility in Airflow UI (Cosmos feature)
 -   More execution modes available: Kubernetes, Local, Docker, VirtualEnv
 
+## [0.36.0] - 2025-12-01
+
+-   Add `Google Chat` notifications handler
+
 ## [0.35.0] - 2023-09-08
 
 ## [0.34.0] - 2023-08-10
@@ -210,7 +214,9 @@ This version brings compatibility with `dbt 1.0`.
 
 -   Initial implementation of `dbt_airflow_manifest_parser` library.
 
-[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.35.0...HEAD
+[Unreleased]: https://github.com/getindata/dbt-airflow-factory/compare/0.36.0...HEAD
+
+[0.36.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.35.0...0.36.0
 
 [0.35.0]: https://github.com/getindata/dbt-airflow-factory/compare/0.34.0...0.35.0
 
