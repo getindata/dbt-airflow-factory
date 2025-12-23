@@ -78,22 +78,37 @@ dbt.yml file
      - string
      - x
      -
-     - Values that are passed to DAG as default_arguments (check Airflow documentation for more details)
+     - The dbt target to use when running dbt commands (corresponds to target in profiles.yml). Passed to dbt via ``--target`` flag.
+   * - target_type
+     - string
+     - x
+     -
+     - The type of data warehouse being used (e.g., ``snowflake``, ``bigquery``, ``redshift``, ``postgres``). Used to determine the profile name in profiles.yml if ``profile_name`` is not specified.
    * - project_dir_path
      - string
      -
      - /dbt
-     - Values used to DAG creation. Currently ``dag_id``, ``description``, ``schedule_interval`` and ``catchup`` are supported. Check Airflow documentation for more details about each of them.
+     - Path to the dbt project directory containing dbt_project.yml and your dbt models.
    * - profile_dir_path
      - string
      -
      - /root/.dbt
-     - Enables first task of the DAG that is responsible for executing ``dbt seed`` command to load some data.
+     - Path to the directory containing profiles.yml file with dbt connection configurations.
+   * - dbt_project_name
+     - string
+     -
+     - dag_id
+     - Name of the dbt project. If not specified, defaults to the Airflow DAG ID. Added in v1.0.0 for explicit Cosmos ProjectConfig naming.
+   * - profile_name
+     - string
+     -
+     - target_type
+     - Override the profile name used in profiles.yml. If not specified, defaults to ``target_type`` for backward compatibility.
    * - vars
      - dictionary
      -
      -
-     - Dictionary of variables passed to DBT tasks.
+     - Dictionary of variables passed to dbt tasks via the ``--vars`` flag. Supports Airflow template variables like ``{{ ds }}``.
 
 execution_env.yml file
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,18 +121,18 @@ execution_env.yml file
      - Data type
      - Required
      - Description
-   * - image.repository
-     - string
-     - x
-     - Docker image repository URL
-   * - image.tag
-     - string
-     - x
-     - Docker image tag
    * - type
      - string
      - x
-     - Selects type of execution environment. Currently only k8s is available.
+     - Selects type of execution environment. Supported values: ``k8s`` (Kubernetes), ``bash`` (local execution), ``docker`` (Docker container). Maps to Cosmos ExecutionMode.
+   * - image.repository
+     - string
+     - x (for k8s/docker)
+     - Docker image repository URL (e.g., ``gcr.io/my-project/dbt``). Required when using k8s or docker execution types.
+   * - image.tag
+     - string
+     - x (for k8s/docker)
+     - Docker image tag (e.g., ``1.7.0``, ``latest``). Required when using k8s or docker execution types.
 
 k8s.yml file
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -178,10 +193,6 @@ k8s.yml file
      - dictionary
      -
      - See more details in Kubernetes documentation: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-   * - execution_script
-     - str
-     -
-     - Script that will be executed inside pod
    * - in_cluster
      - bool
      -
@@ -466,7 +477,7 @@ The ``operator_args`` section supports all Cosmos/KubernetesPodOperator paramete
      - string
      -
      - dbt
-     - Path to the dbt executable. Use this to specify custom dbt wrappers or non-standard installations. Replaces deprecated ``execution_script`` from ``execution_env.yml``.
+     - Path to the dbt executable. **Only works with execution_mode: LOCAL (bash).** Use this to specify non-standard dbt installations or custom paths in local execution. Not supported for Kubernetes or Docker execution modes.
    * - dbt_cmd_global_flags
      - list of strings
      -
@@ -525,7 +536,7 @@ The ``execution_config`` section configures how Cosmos executes dbt commands:
      - string
      -
      - dbt
-     - Alternative location to specify dbt executable path. Can also be set in ``operator_args``.
+     - Path to dbt executable. **Only works with execution_mode: LOCAL (bash).** Can also be set in ``operator_args``. Not supported for Kubernetes or Docker execution modes.
    * - virtualenv_dir
      - string
      -
