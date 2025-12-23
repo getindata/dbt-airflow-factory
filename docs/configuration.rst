@@ -371,6 +371,207 @@ ingestion.yml file
      -
      - Enumeration based option, currently only supported value is ``airbyte``
 
+datahub.yml file
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This configuration file enables DataHub integration by injecting environment variables into dbt tasks. Place in ``config/{env}/datahub.yml`` (e.g., ``config/production/datahub.yml``).
+
+.. list-table::
+   :widths: 25 20 2 13 40
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Required
+     - Default
+     - Description
+   * - datahub_gms_url
+     - string
+     -
+     -
+     - DataHub GMS (Graph Metadata Service) server URL. This field is informational and not directly used by the factory.
+   * - datahub_env_vars
+     - dictionary
+     -
+     - empty dict
+     - Dictionary of environment variables to inject into all dbt tasks for DataHub integration. These variables are automatically merged with other environment variables from ``k8s.yml`` and ``cosmos.yml``. Common variables include ``DATAHUB_GMS_URL``, ``DATAHUB_ENV``, and ``DATAHUB_PLATFORM_INSTANCE``.
+
+**Example datahub.yml:**
+
+.. code-block:: yaml
+
+   # config/production/datahub.yml
+   datahub_gms_url: "http://datahub-gms:8080"
+   datahub_env_vars:
+     DATAHUB_GMS_URL: "http://datahub-gms:8080"
+     DATAHUB_ENV: "PROD"
+     DATAHUB_PLATFORM_INSTANCE: "production-snowflake"
+
+cosmos.yml file
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This configuration file provides advanced Cosmos-specific overrides for fine-tuning dbt task execution. Place in ``config/{env}/cosmos.yml`` (e.g., ``config/production/cosmos.yml``). All fields are optional and override defaults from other configuration files.
+
+For complete documentation on available Cosmos parameters, see the `Astronomer Cosmos documentation <https://astronomer.github.io/astronomer-cosmos/>`_.
+
+.. list-table::
+   :widths: 25 20 2 13 40
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Required
+     - Default
+     - Description
+   * - load_mode
+     - string
+     -
+     - auto-detect
+     - How Cosmos loads the dbt project. Options: ``dbt_manifest`` (use manifest.json), ``dbt_ls`` (run dbt ls), ``custom`` (custom loader). Typically auto-detected, override only if needed.
+   * - operator_args
+     - dictionary
+     -
+     - empty dict
+     - Dictionary of arguments passed to Cosmos DbtTaskGroup operators. These override k8s.yml and other configurations. See operator_args section below for available parameters.
+   * - execution_config
+     - dictionary
+     -
+     - empty dict
+     - Dictionary of Cosmos ExecutionConfig parameters. See execution_config section below for available parameters.
+
+**operator_args Section:**
+
+The ``operator_args`` section supports all Cosmos/KubernetesPodOperator parameters. Common parameters:
+
+.. list-table::
+   :widths: 25 20 2 13 40
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Required
+     - Default
+     - Description
+   * - install_deps
+     - boolean
+     -
+     - False
+     - Run ``dbt deps`` before executing dbt commands to install dependencies.
+   * - full_refresh
+     - boolean
+     -
+     - False
+     - Force full refresh of incremental models (equivalent to ``dbt run --full-refresh``).
+   * - dbt_executable_path
+     - string
+     -
+     - dbt
+     - Path to the dbt executable. Use this to specify custom dbt wrappers or non-standard installations. Replaces deprecated ``execution_script`` from ``execution_env.yml``.
+   * - dbt_cmd_global_flags
+     - list of strings
+     -
+     - empty list
+     - Flags applied globally to all dbt commands (e.g., ``["--no-write-json", "--debug"]``).
+   * - dbt_cmd_flags
+     - list of strings
+     -
+     - empty list
+     - Flags applied to specific dbt commands (e.g., ``["--full-refresh", "--fail-fast"]``).
+   * - image_pull_policy
+     - string
+     -
+     -
+     - Kubernetes image pull policy. Overrides value from ``k8s.yml``. Options: ``Always``, ``IfNotPresent``, ``Never``.
+   * - envs
+     - dictionary
+     -
+     - empty dict
+     - Environment variables to inject into dbt tasks. These are merged with variables from ``k8s.yml`` and ``datahub.yml``. Cosmos variables take precedence.
+   * - retry_on_failure
+     - boolean
+     -
+     - True
+     - Whether to retry failed tasks.
+   * - retries
+     - integer
+     -
+     - 0
+     - Number of times to retry failed tasks.
+
+**execution_config Section:**
+
+The ``execution_config`` section configures how Cosmos executes dbt commands:
+
+.. list-table::
+   :widths: 25 20 2 13 40
+   :header-rows: 1
+
+   * - Parameter
+     - Data type
+     - Required
+     - Default
+     - Description
+   * - invocation_mode
+     - string
+     -
+     - subprocess
+     - How dbt commands are invoked. Options: ``subprocess`` (run as subprocess), ``dbt_runner`` (use dbt Python API). Use ``subprocess`` for most cases.
+   * - test_indirect_selection
+     - string
+     -
+     - eager
+     - How dbt selects tests when models are selected. Options: ``eager`` (all tests), ``cautious`` (only direct tests), ``buildable`` (tests for buildable models). See dbt documentation for details.
+   * - dbt_executable_path
+     - string
+     -
+     - dbt
+     - Alternative location to specify dbt executable path. Can also be set in ``operator_args``.
+   * - virtualenv_dir
+     - string
+     -
+     -
+     - Path to Python virtual environment containing dbt. Only used when execution_mode is LOCAL or VIRTUALENV.
+
+**Example cosmos.yml files:**
+
+.. code-block:: yaml
+
+   # config/production/cosmos.yml - Production with conservative settings
+   operator_args:
+     install_deps: false
+     full_refresh: false
+     dbt_executable_path: "/usr/local/bin/dbt"
+     retry_on_failure: true
+     retries: 2
+     dbt_cmd_global_flags:
+       - "--no-write-json"
+     envs:
+       DBT_ENV: "production"
+
+.. code-block:: yaml
+
+   # config/development/cosmos.yml - Development with full refresh
+   operator_args:
+     install_deps: true
+     full_refresh: true
+     dbt_cmd_flags:
+       - "--full-refresh"
+       - "--debug"
+     envs:
+       DBT_ENV: "development"
+       DBT_DEBUG: "true"
+
+.. code-block:: yaml
+
+   # config/staging/cosmos.yml - Override k8s image pull policy
+   operator_args:
+     image_pull_policy: "Always"
+     install_deps: true
+     envs:
+       DBT_ENV: "staging"
+   execution_config:
+     test_indirect_selection: "cautious"
+
 Example files
 +++++++++++++++++++
 

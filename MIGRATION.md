@@ -17,13 +17,13 @@ Version 1.0.0 is a major internal refactoring that replaces the custom task buil
 
 ### Replaced Components
 
-| Old (v0.35.0) | New (v1.0.0) | Purpose |
-|---------------|--------------|---------|
-| `dbt_graph_builder` | `astronomer-cosmos>=1.11.0` | Dependency |
-| Custom task builders | Cosmos `DbtTaskGroup` | Task orchestration |
+| Old (v0.35.0)        | New (v1.0.0)                  | Purpose               |
+| -------------------- | ----------------------------- | --------------------- |
+| `dbt_graph_builder`  | `astronomer-cosmos>=1.11.0`   | Dependency            |
+| Custom task builders | Cosmos `DbtTaskGroup`         | Task orchestration    |
 | `builder_factory.py` | `cosmos/config_translator.py` | Configuration mapping |
-| `tasks_builder/` | `cosmos/` module | Core logic |
-| `operator.py` | Cosmos operators | Task execution |
+| `tasks_builder/`     | `cosmos/` module              | Core logic            |
+| `operator.py`        | Cosmos operators              | Task execution        |
 
 ### Removed Modules
 
@@ -72,10 +72,8 @@ All your existing YAML configurations work without modification, with two new op
 - ✅ `config/{env}/<target_type>.yml` (e.g., `snowflake.yml`) - Same format, same fields
 
 **New optional fields:**
-```yaml
-# config/base/airflow.yml
-manifest_file_name: dbt_project/target/manifest.json  # Default: manifest.json
 
+```yaml
 # config/base/dbt.yml
 dbt_project_name: my_project  # Default: auto-extracted from manifest
 ```
@@ -404,13 +402,13 @@ operator_args:
 
 All Cosmos `operator_args` are now supported. Common parameters:
 
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `dbt_executable_path` | Path to dbt executable | `/usr/local/bin/dbt` |
-| `dbt_cmd_global_flags` | Flags for all dbt commands | `["--no-write-json"]` |
-| `dbt_cmd_flags` | Flags for specific commands | `["--full-refresh"]` |
-| `install_deps` | Run `dbt deps` before execution | `true` |
-| `full_refresh` | Force full refresh | `false` |
+| Parameter              | Description                     | Example               |
+| ---------------------- | ------------------------------- | --------------------- |
+| `dbt_executable_path`  | Path to dbt executable          | `/usr/local/bin/dbt`  |
+| `dbt_cmd_global_flags` | Flags for all dbt commands      | `["--no-write-json"]` |
+| `dbt_cmd_flags`        | Flags for specific commands     | `["--full-refresh"]`  |
+| `install_deps`         | Run `dbt deps` before execution | `true`                |
+| `full_refresh`         | Force full refresh              | `false`               |
 
 See [Cosmos documentation](https://astronomer-cosmos.readthedocs.io) for the complete list.
 

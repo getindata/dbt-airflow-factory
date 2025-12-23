@@ -3,9 +3,8 @@ from typing import Any
 from urllib.parse import quote_plus
 
 from airflow.hooks.base import BaseHook
-from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
-
 from airflow.providers.http.hooks.http import HttpHook
+from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 
 from dbt_airflow_factory.notifications.ms_teams_webhook_operator import (
     MSTeamsWebhookOperator,

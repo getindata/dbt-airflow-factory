@@ -2,58 +2,47 @@
 
 ## [Unreleased]
 
-### Changed
-
--   **BREAKING:** Dropped Airflow 1.x support (min: `apache-airflow>=2.5`)
--   **BREAKING:** Dropped Python 3.8 (min: Python 3.9)
--   **MAJOR:** Replaced `dbt-graph-builder` dependency with `astronomer-cosmos>=1.10.0, <2.0`
--   **MAJOR:** Removed custom task builders (~900 lines total): `tasks_builder/`, `k8s/`, `ecs/`, `bash/`, `operator.py`, `dbt_parameters.py`, `builder_factory.py`, `tasks.py`
--   Rewrote `AirflowDagFactory` to use Cosmos `DbtTaskGroup` for dbt task generation
--   Replaced `apache-airflow[kubernetes,slack]` with individual provider packages (no upper bounds)
--   Updated `apache-airflow-providers-airbyte` to remove upper bound (auto-resolves based on Airflow version)
--   Migrated `DummyOperator` → `EmptyOperator` (Airflow 2.4+ standard)
-
 ### Added
 
--   Python 3.12 support
+- Added Python 3.12 support.
+- Introduced new `cosmos/` module for Cosmos integration (~400 lines):
+  - `project_config_builder.py` – Maps `dbt.yml` to Cosmos `ProjectConfig`.
+  - `profile_config_builder.py` – Builds Cosmos `ProfileConfig` from `profile_dir_path`.
+  - `execution_config_builder.py` – Maps `execution_env.yml` to Cosmos `ExecutionConfig`.
+  - `operator_args_builder.py` – Passes `k8s.yml` configuration transparently to Cosmos.
+  - `config_translator.py` – Orchestrates all Cosmos configuration builders.
+- Added support for `cosmos.yml` configuration file for advanced Cosmos features.
+- Added `tests/fixtures/` directory with manifest files for multiple test scenarios.
 
--   New `cosmos/` module for Cosmos integration (~400 lines):
-    -   `project_config_builder.py` - Maps `dbt.yml` to Cosmos `ProjectConfig`
-    -   `profile_config_builder.py` - Maps `profile_dir_path` to Cosmos `ProfileConfig`
-    -   `execution_config_builder.py` - Maps `execution_env.yml` to Cosmos `ExecutionConfig`
-    -   `operator_args_builder.py` - Transparent pass-through of `k8s.yml` config to Cosmos
-    -   `config_translator.py` - Main translator coordinating all config builders
--   Optional `cosmos.yml` configuration file support for advanced Cosmos features
+### Changed
 
-### Breaking Changes (Internal Only)
+- **BREAKING:** Dropped support for Airflow 1.x (minimum now `apache-airflow>=2.5`).
+- **BREAKING:** Dropped support for Python 3.8 (minimum now Python 3.9).
+- **MAJOR:** Replaced `dbt-graph-builder` dependency with `astronomer-cosmos>=1.10.0,<2.0`.
+- Rewrote `AirflowDagFactory` to use Cosmos `DbtTaskGroup` for dbt task generation.
+- Replaced `apache-airflow[kubernetes,slack]` with individual provider packages (no upper bounds).
+- Updated `apache-airflow-providers-airbyte` to remove version upper bound (auto-resolves based on Airflow version).
+- Migrated all uses of `DummyOperator` → `EmptyOperator` (Airflow 2.4+ standard).
+- Behavior change: `use_task_group: false` configuration is now ignored (Cosmos always uses `DbtTaskGroup`).
+- Behavior change: `seed_task` config is now ignored (Cosmos automatically creates seed tasks from the dbt manifest).
+- Rewrote test suite for Cosmos integration (50 tests passing).
 
--   **Dependency Change:** `dbt-graph-builder` removed, `astronomer-cosmos` added
--   **Removed Modules:** All custom task builder code deleted (internal implementation)
--   **ECS Execution Removed:** `type: ecs` in `execution_env.yml` is no longer supported (Cosmos 1.10 limitation). Use `type: k8s` or `type: docker` instead
--   **Behavior Change:** `use_task_group: false` config now ignored (Cosmos always uses `DbtTaskGroup`)
--   **Behavior Change:** `seed_task` config now ignored (Cosmos automatically creates seed tasks from manifest)
+### Removed
 
-### Tests
-
--   Python 3.9, 3.10, 3.11 supported
--   Rewrote tests for Cosmos (50 passing)
--   Added `tests/fixtures/` with manifest files for various test scenarios
-
-### Backward Compatibility Maintained
-
--   ✅ **Zero config changes required:** All existing YAML files work unchanged
--   ✅ **Zero code changes required:** Same API - `AirflowDagFactory(dag_path, env).create()`
--   ✅ **Preserved features:** Airbyte ingestion, Slack/Teams notifications, DataHub integration
--   ✅ **Migration:** Only requires `pip install --upgrade dbt-airflow-factory`
+- **MAJOR:** Removed custom task builder implementations (~900 lines total):
+  - Deleted modules `tasks_builder/`, `k8s/`, `ecs/`, `bash/`, `operator.py`, `dbt_parameters.py`, `builder_factory.py`, and `tasks.py`.
+- **Dependency:** Removed `dbt-graph-builder`; added `astronomer-cosmos`.
+- Removed ECS execution (`type: ecs` in `execution_env.yml`) due to Cosmos 1.10 limitation.  
+  Use `type: k8s` or `type: docker` instead.
 
 ### Improvements
 
--   Support for Airflow 2.5-2.11 (previously limited to 2.x)
--   Support for dbt 1.7-1.10 via Cosmos (peer dependency)
--   Reduced codebase by ~600 net lines
--   Simplified architecture: delegate dbt execution to Cosmos, focus on orchestration
--   Model-level task visibility in Airflow UI (Cosmos feature)
--   More execution modes available: Kubernetes, Local, Docker, VirtualEnv
+- Added support for Airflow 2.5–2.11 (previously 2.x only).
+- Added support for dbt 1.7–1.10 via Cosmos peer dependency.
+- Reduced total codebase size by ~600 lines (simplified architecture).
+- Focused the project solely on orchestration; delegated dbt execution to Cosmos.
+- Improved Airflow UI with model-level task visibility (Cosmos feature).
+- Expanded execution options: Kubernetes, Local, Docker, and VirtualEnv modes.
 
 ## [0.36.0] - 2025-12-01
 
