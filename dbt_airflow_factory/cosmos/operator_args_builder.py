@@ -128,8 +128,7 @@ def build_operator_args(
     if "secrets" in operator_args and isinstance(operator_args["secrets"], list):
         secrets_list = operator_args["secrets"]
         if secrets_list and isinstance(secrets_list[0], dict):
-            operator_args["secrets"] = _convert_secrets_to_objects(
-                secrets_list)
+            operator_args["secrets"] = _convert_secrets_to_objects(secrets_list)
 
     # 3. Inject DataHub environment variables if provided
     if datahub_config:
