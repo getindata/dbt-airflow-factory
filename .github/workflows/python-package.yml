@@ -16,7 +16,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v2.2.1
         with:
-          python-version: "3.8"
+          python-version: "3.9"
 
       - name: Setup virtualenv
         run: |
@@ -36,7 +36,7 @@ jobs:
 
       - name: Test with tox
         run: |
-          tox -e py38
+          tox -e py39
 
       # TODO: Fix coverage report. For now, fails are ignored using "continue-on-error: true"
       - name: Report coverage

@@ -17,7 +17,13 @@ dag:
   catchup: False
 
 seed_task: False
-manifest_file_name: ../tests/manifest.json
+manifest_file_name: fixtures/manifests/basic/manifest.json
+use_task_group: True
+seed_task: False
+manifest_file_name: fixtures/manifests/basic/manifest.json
+use_task_group: True
+seed_task: False
+manifest_file_name: fixtures/manifests/basic/manifest.json
 use_task_group: True
 dags_path: "gs://example-bucket/dags/experimental-sandbox"
 show_ephemeral_models: True

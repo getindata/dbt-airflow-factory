@@ -8,9 +8,12 @@ with open("README.md") as f:
 # Runtime Requirements.
 INSTALL_REQUIRES = [
     "pytimeparse>=1.1, <2",
-    "dbt-graph-builder>=0.7.0, <0.8.0",
-    "apache-airflow[kubernetes,slack]>=2.5, <3",
-    "apache-airflow-providers-airbyte>=3.1, <4",
+    "astronomer-cosmos>=1.10.0, <2.0",
+    "apache-airflow>=2.5, <3",
+    "apache-airflow-providers-cncf-kubernetes",
+    "apache-airflow-providers-docker",
+    "apache-airflow-providers-slack",
+    "apache-airflow-providers-airbyte>=3.1",
 ]
 
 # Dev Requirements
@@ -38,13 +41,13 @@ setup(
     long_description=README,
     long_description_content_type="text/markdown",
     license="Apache Software License (Apache 2.0)",
-    python_requires=">=3",
+    python_requires=">=3.9",
     classifiers=[
-        "Development Status :: 3 - Alpha",
-        "Programming Language :: Python :: 3.8",
+        "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
     keywords="dbt airflow manifest parser python",
     author="Piotr Pekala",

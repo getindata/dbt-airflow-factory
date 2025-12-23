@@ -2,6 +2,48 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added Python 3.12 support.
+- Introduced new `cosmos/` module for Cosmos integration (~400 lines):
+  - `project_config_builder.py` – Maps `dbt.yml` to Cosmos `ProjectConfig`.
+  - `profile_config_builder.py` – Builds Cosmos `ProfileConfig` from `profile_dir_path`.
+  - `execution_config_builder.py` – Maps `execution_env.yml` to Cosmos `ExecutionConfig`.
+  - `operator_args_builder.py` – Passes `k8s.yml` configuration transparently to Cosmos.
+  - `config_translator.py` – Orchestrates all Cosmos configuration builders.
+- Added support for `cosmos.yml` configuration file for advanced Cosmos features.
+- Added `tests/fixtures/` directory with manifest files for multiple test scenarios.
+
+### Changed
+
+- **BREAKING:** Dropped support for Airflow 1.x (minimum now `apache-airflow>=2.5`).
+- **BREAKING:** Dropped support for Python 3.8 (minimum now Python 3.9).
+- **MAJOR:** Replaced `dbt-graph-builder` dependency with `astronomer-cosmos>=1.10.0,<2.0`.
+- Rewrote `AirflowDagFactory` to use Cosmos `DbtTaskGroup` for dbt task generation.
+- Replaced `apache-airflow[kubernetes,slack]` with individual provider packages (no upper bounds).
+- Updated `apache-airflow-providers-airbyte` to remove version upper bound (auto-resolves based on Airflow version).
+- Migrated all uses of `DummyOperator` → `EmptyOperator` (Airflow 2.4+ standard).
+- Behavior change: `use_task_group: false` configuration is now ignored (Cosmos always uses `DbtTaskGroup`).
+- Behavior change: `seed_task` config is now ignored (Cosmos automatically creates seed tasks from the dbt manifest).
+- Rewrote test suite for Cosmos integration (50 tests passing).
+
+### Removed
+
+- **MAJOR:** Removed custom task builder implementations (~900 lines total):
+  - Deleted modules `tasks_builder/`, `k8s/`, `ecs/`, `bash/`, `operator.py`, `dbt_parameters.py`, `builder_factory.py`, and `tasks.py`.
+- **Dependency:** Removed `dbt-graph-builder`; added `astronomer-cosmos`.
+- Removed ECS execution (`type: ecs` in `execution_env.yml`) due to Cosmos 1.10 limitation.  
+  Use `type: k8s` or `type: docker` instead.
+
+### Improvements
+
+- Added support for Airflow 2.5–2.11 (previously 2.x only).
+- Added support for dbt 1.7–1.10 via Cosmos peer dependency.
+- Reduced total codebase size by ~600 lines (simplified architecture).
+- Focused the project solely on orchestration; delegated dbt execution to Cosmos.
+- Improved Airflow UI with model-level task visibility (Cosmos feature).
+- Expanded execution options: Kubernetes, Local, Docker, and VirtualEnv modes.
+
 ## [0.36.0] - 2025-12-01
 
 -   Add `Google Chat` notifications handler

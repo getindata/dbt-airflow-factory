@@ -1,0 +1,9 @@
+namespace: dev-airflow
+
+secrets:
+  - secret: snowflake-private-keys
+    deploy_type: env
+    key: dbt
+    deploy_target: SNOWFLAKE_DBT_PRIVATE_KEY
+
+resources: {}

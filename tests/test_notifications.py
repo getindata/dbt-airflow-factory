@@ -5,16 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from airflow.models import Connection
-
-from dbt_airflow_factory.constants import (
-    IS_AIRFLOW_NEWER_THAN_2_4,
-    IS_FIRST_AIRFLOW_VERSION,
-)
-
-if IS_FIRST_AIRFLOW_VERSION:
-    from airflow.contrib.operators.slack_webhook_operator import SlackWebhookOperator
-else:
-    from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
+from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 
 from dbt_airflow_factory.airflow_dag_factory import AirflowDagFactory
 from dbt_airflow_factory.notifications.handler import NotificationHandlersFactory
@@ -39,16 +30,8 @@ def test_notification_callback_creation(config_dir):
     assert dag.default_args["on_failure_callback"]
 
 
-@patch(
-    "airflow.hooks.base.BaseHook.get_connection"
-    if IS_AIRFLOW_NEWER_THAN_2_4
-    else "airflow.hooks.base_hook.BaseHook.get_connection"
-)
-@patch(
-    "airflow.contrib.operators.slack_webhook_operator.SlackWebhookOperator.__new__"
-    if IS_FIRST_AIRFLOW_VERSION
-    else "airflow.providers.slack.operators.slack_webhook.SlackWebhookOperator.__new__"
-)
+@patch("airflow.hooks.base.BaseHook.get_connection")
+@patch("airflow.providers.slack.operators.slack_webhook.SlackWebhookOperator.__new__")
 def test_notification_send_for_slack(mock_operator_init, mock_get_connection):
     # given
     notifications_config = AirflowDagFactory(
@@ -79,11 +62,7 @@ def test_notification_send_for_slack(mock_operator_init, mock_get_connection):
     mock_operator.execute.assert_called_once_with(context=context)
 
 
-@patch(
-    "airflow.hooks.base.BaseHook.get_connection"
-    if IS_AIRFLOW_NEWER_THAN_2_4
-    else "airflow.hooks.base_hook.BaseHook.get_connection"
-)
+@patch("airflow.hooks.base.BaseHook.get_connection")
 @patch("dbt_airflow_factory.notifications.ms_teams_webhook_hook.MSTeamsWebhookHook.run")
 def test_notification_send_for_teams(mock_hook_run, mock_get_connection):
     # given
@@ -93,7 +72,9 @@ def test_notification_send_for_teams(mock_hook_run, mock_get_connection):
     factory = NotificationHandlersFactory()
     context = create_context()
     mock_get_connection.return_value = create_teams_connection()
-    expected_payload_path = pathlib.Path(__file__).parent / "teams_webhook_expected_paylaod.json"
+    expected_payload_path = (
+        pathlib.Path(__file__).parent / "fixtures/test_data/teams_webhook_expected_paylaod.json"
+    )
     with open(expected_payload_path, "rt") as f:
         webhook_expected_payload = json.load(f)
 
@@ -145,11 +126,7 @@ def create_context():
     return {"task_instance": task_instance, "execution_date": "some date", "ts": "ts"}
 
 
-@patch(
-    "airflow.hooks.base.BaseHook.get_connection"
-    if IS_AIRFLOW_NEWER_THAN_2_4
-    else "airflow.hooks.base_hook.BaseHook.get_connection"
-)
+@patch("airflow.hooks.base.BaseHook.get_connection")
 @patch("dbt_airflow_factory.notifications.handler.HttpHook.run")
 def test_notification_send_for_google_chat(mock_run, mock_get_connection):
     # given

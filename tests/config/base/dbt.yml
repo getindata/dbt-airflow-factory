@@ -1,4 +1,5 @@
 target: local
 target_type: bigquery
-project_dir_path: /dbt
+project_dir_path: tests/fixtures/dbt_projects/basic
 profile_dir_path: /root/.dbt
+dbt_project_name: dbt_test

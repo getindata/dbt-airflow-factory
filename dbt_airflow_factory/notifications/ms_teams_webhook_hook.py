@@ -5,13 +5,7 @@ MS Teams webhook implementation.
 from typing import Any, Optional
 
 from airflow.exceptions import AirflowException
-
-from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
-
-if IS_FIRST_AIRFLOW_VERSION:
-    from airflow.hooks.http_hook import HttpHook
-else:
-    from airflow.providers.http.hooks.http import HttpHook
+from airflow.providers.http.hooks.http import HttpHook
 
 
 # Credits: https://code.mendhak.com/Airflow-MS-Teams-Operator/

@@ -1,2 +1,2 @@
 use_task_group: True
-manifest_file_name: ../tests/manifest_task_group_tests.json
+# Note: manifest_file_name is deprecated with Cosmos - it reads from project_dir_path in dbt.yml
