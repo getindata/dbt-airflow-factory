@@ -1,13 +1,29 @@
 # DBT Airflow Factory
 
-[![Python Version](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-blue)](https://github.com/getindata/dbt-airflow-factory)
+[![Python Version](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue)](https://github.com/getindata/dbt-airflow-factory)
 [![PyPI Version](https://badge.fury.io/py/dbt-airflow-factory.svg)](https://pypi.org/project/dbt-airflow-factory/)
 [![Downloads](https://pepy.tech/badge/dbt-airflow-factory)](https://pepy.tech/project/dbt-airflow-factory)
 [![Maintainability](https://api.codeclimate.com/v1/badges/47fd3570c858b6c166ad/maintainability)](https://codeclimate.com/github/getindata/dbt-airflow-factory/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/47fd3570c858b6c166ad/test_coverage)](https://codeclimate.com/github/getindata/dbt-airflow-factory/test_coverage)
 [![Documentation Status](https://readthedocs.org/projects/dbt-airflow-factory/badge/?version=latest)](https://dbt-airflow-factory.readthedocs.io/en/latest/?badge=latest)
 
-Library to convert DBT manifest metadata to Airflow tasks
+Library to convert DBT manifest metadata to Airflow tasks using [Astronomer Cosmos](https://astronomer.github.io/astronomer-cosmos/)
+
+## What's New in v1.0.0
+
+Version 1.0.0 replaces custom task builders with [Astronomer Cosmos](https://astronomer.github.io/astronomer-cosmos/) integration. This change maintains 100% backward compatibility - no configuration or code changes are required.
+
+**Compatibility:**
+- Apache Airflow 2.5 - 2.11
+- dbt-core 1.7 - 1.10 (peer dependency via Cosmos)
+- Python 3.9 - 3.11
+
+**Key changes:**
+- Uses Cosmos DbtTaskGroup for model-level task granularity
+- Seeds handled automatically from manifest (no config needed)
+- Transparent pass-through of all Kubernetes configuration
+
+See [MIGRATION.md](MIGRATION.md) for upgrade details.
 
 ## Documentation
 
@@ -71,6 +87,50 @@ Any other Airflow template variables will not work in `airflow.yml`.
 **DBT Airflow Factory** works best in tandem with [data-pipelines-cli][dp-cli] tool. **dp** not only prepares directory
 for the library to digest, but also automates Docker image building and pushes generated directory to the cloud storage
 of your choice.
+
+## Development
+
+### Running Tests
+
+```bash
+# Install with test dependencies
+pip install -e ".[tests]"
+
+# Run tests
+pytest tests/
+
+# Run with coverage
+pytest tests/ --cov=dbt_airflow_factory --cov-report=term-missing
+```
+
+### Known Issue: Installing on Some Systems
+
+If you encounter compilation errors related to `google-re2` (an Airflow dependency), use one of these solutions:
+
+**Option 1 (Recommended) - Use pre-compiled binaries:**
+
+```bash
+pip install dbt-airflow-factory --only-binary=google-re2
+```
+
+This tells pip to use pre-compiled binary wheels instead of compiling from source.
+
+**Option 2 - Install system dependencies:**
+
+If binary wheels aren't available for your platform, install the system-level RE2 library:
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install -y libre2-dev
+
+# macOS
+brew install re2
+
+# Alpine Linux
+apk add --no-cache re2-dev
+```
+
+Then retry: `pip install dbt-airflow-factory`
 
 [airflow-vars]: https://airflow.apache.org/docs/apache-airflow/stable/templates-ref.html#variables
 [dp-cli]: https://pypi.org/project/data-pipelines-cli/

@@ -18,7 +18,7 @@ dag:
   catchup: False
 
 seed_task: True
-manifest_file_name: ../tests/manifest_gateway_source.json
+# Note: manifest_file_name is deprecated with Cosmos - it reads from project_dir_path in dbt.yml
 use_task_group: True
 dags_path: "gs://example-bucket/dags/experimental-sandbox"
 show_ephemeral_models: True

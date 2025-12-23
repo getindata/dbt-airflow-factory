@@ -1,0 +1,11 @@
+dbt_test:
+  target: local
+  outputs:
+    local:
+      type: bigquery
+      method: service-account
+      project: test-project
+      dataset: test_dataset
+      threads: 4
+      keyfile: /path/to/keyfile.json
+      timeout_seconds: 300

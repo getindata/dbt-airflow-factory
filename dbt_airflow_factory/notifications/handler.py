@@ -2,22 +2,9 @@ from collections.abc import Callable
 from typing import Any
 from urllib.parse import quote_plus
 
-from dbt_airflow_factory.constants import (
-    IS_AIRFLOW_NEWER_THAN_2_4,
-    IS_FIRST_AIRFLOW_VERSION,
-)
-
-if IS_FIRST_AIRFLOW_VERSION:
-    from airflow.contrib.operators.slack_webhook_operator import SlackWebhookOperator
-else:
-    from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
-
-if IS_AIRFLOW_NEWER_THAN_2_4:
-    from airflow.hooks.base import BaseHook
-else:
-    from airflow.hooks.base_hook import BaseHook
-
+from airflow.hooks.base import BaseHook
 from airflow.providers.http.hooks.http import HttpHook
+from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 
 from dbt_airflow_factory.notifications.ms_teams_webhook_operator import (
     MSTeamsWebhookOperator,

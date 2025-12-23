@@ -5,14 +5,7 @@ MS Teams webhook operator.
 import logging
 from typing import Any, Optional
 
-from dbt_airflow_factory.constants import IS_FIRST_AIRFLOW_VERSION
-
-if IS_FIRST_AIRFLOW_VERSION:
-    from airflow.providers.http.operators.http import SimpleHttpOperator
-else:
-    from airflow.operators.http_operator import SimpleHttpOperator
-
-from airflow.utils.decorators import apply_defaults
+from airflow.providers.http.operators.http import HttpOperator as SimpleHttpOperator
 
 from dbt_airflow_factory.notifications.ms_teams_webhook_hook import MSTeamsWebhookHook
 
@@ -47,7 +40,6 @@ class MSTeamsWebhookOperator(SimpleHttpOperator):
         "subtitle",
     )
 
-    @apply_defaults
     def __init__(
         self,
         http_conn_id: Optional[str] = None,

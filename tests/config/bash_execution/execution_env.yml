@@ -1,0 +1,5 @@
+type: bash
+
+image:
+  repository: dbt/dbt-core
+  tag: 1.7.0

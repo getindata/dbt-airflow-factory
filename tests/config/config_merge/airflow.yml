@@ -1,0 +1,14 @@
+dag:
+  dag_id: test-config-merge
+  description: Test config merging
+  schedule_interval: "0 12 * * *"
+  catchup: False
+
+default_args:
+  owner: Test
+  email: ["test@test.com"]
+  depends_on_past: False
+  start_date: "2021-10-20"
+  email_on_failure: False
+  email_on_retry: False
+  retries: 0
